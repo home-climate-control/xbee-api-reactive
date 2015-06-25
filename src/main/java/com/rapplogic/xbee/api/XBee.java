@@ -425,8 +425,8 @@ public class XBee implements IXBee {
 			throw new XBeeException("Error while attempting to remove packet from queue", e);
 		}
 		
-		if (response == null && timeout > 0) {
-			throw new XBeeTimeoutException(timeout == null ? "null" : Integer.toString(timeout));
+		if (response == null && timeout != null && timeout > 0) {
+			throw new XBeeTimeoutException(Integer.toString(timeout));
 		}
 		
 		return response;
