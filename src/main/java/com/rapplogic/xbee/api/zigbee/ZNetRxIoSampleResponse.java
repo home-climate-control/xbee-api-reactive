@@ -129,7 +129,7 @@ public class ZNetRxIoSampleResponse extends ZNetRxBaseResponse implements NoRequ
 			enabledCount++;
 		}
 		
-		log.debug("There are " + analog + " analog inputs in this packet");
+		log.debug("There are " + enabledCount + " analog inputs in this packet");
 	}
 	
 	public int getDigitalChannelMaskMsb() {
