@@ -353,7 +353,7 @@ public class XBee implements IXBee {
 			
 			if (container.size() == 0) {
 				// we didn't find a matching packet
-				throw new XBeeTimeoutException();
+				throw new XBeeTimeoutException(Integer.toString(timeout));
 			}
 			
 			return (XBeeResponse) container.get(0);
@@ -426,7 +426,7 @@ public class XBee implements IXBee {
 		}
 		
 		if (response == null && timeout > 0) {
-			throw new XBeeTimeoutException();
+			throw new XBeeTimeoutException(timeout == null ? "null" : Integer.toString(timeout));
 		}
 		
 		return response;
@@ -607,7 +607,7 @@ public class XBee implements IXBee {
 	 */
 	public void updateFrameId(int val) {
 		if (val <=0 || val > 0xff) {
-			throw new IllegalArgumentException("invalid frame id");
+			throw new IllegalArgumentException("invalid frame id " + val);
 		}
 		
 		this.sequentialFrameId = val;

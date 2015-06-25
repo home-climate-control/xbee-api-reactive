@@ -32,4 +32,8 @@ public class XBeeTimeoutException extends XBeeException {
 	public XBeeTimeoutException() {
 		super();
 	}
+
+    public XBeeTimeoutException(String message) {
+        super(message);
+    }
 }
