@@ -111,7 +111,7 @@ public class XBee implements IXBee {
 			
 			this.clearResponseQueue();
 		} catch (XBeeTimeoutException ex) {
-			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  Check that the XBee radio is in API mode (AP=2); it will not function propertly in AP=1");
+			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  Check that the XBee radio is in API mode (AP=2); it will not function propertly in AP=1", ex);
 		}		
 	}
 	
