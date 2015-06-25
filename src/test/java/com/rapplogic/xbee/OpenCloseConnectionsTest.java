@@ -1,7 +1,8 @@
-package com.rapplogic.xbee.test;
+package com.rapplogic.xbee;
+
+import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
@@ -13,18 +14,13 @@ import com.rapplogic.xbee.api.XBeeException;
  * @author andrew
  *
  */
-public class OpenCloseConnectionsTest {
+public class OpenCloseConnectionsTest extends TestCase {
 
 	private final static Logger log = Logger.getLogger(OpenCloseConnectionsTest.class);
 	
 	private XBee xbee = new XBee();
 	
-	public static void main(String[] args) throws XBeeException, InterruptedException {
-		PropertyConfigurator.configure("log4j.properties");
-		new OpenCloseConnectionsTest();
-	}
-
-	public OpenCloseConnectionsTest() throws XBeeException, InterruptedException {
+	public void testOpenCloseConnections() throws XBeeException, InterruptedException {
 		
 		// series 1
 		String device = "/dev/tty.usbserial-A4004Rim";
