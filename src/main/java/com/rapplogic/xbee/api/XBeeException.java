@@ -28,31 +28,21 @@ package com.rapplogic.xbee.api;
  */
 public class XBeeException extends Exception {
 
-	private static final long serialVersionUID = -5501299728920565639L;
-	private Exception cause;
+	private static final long serialVersionUID = -3357089578207576813L;
 	
+        public XBeeException() {
+            super();
+        }
+    
 	public XBeeException(String message) {
 		super(message);
 	}
 
-	public XBeeException(String message, Exception e) {
-		super(message, e);
+	public XBeeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 	
-	public XBeeException() {
-		super();
-	}
-	
-	public XBeeException(Exception cause) {
-		super();
-		this.setCause(cause);
-	}
-
-	public Exception getCause() {
-		return cause;
-	}
-
-	public void setCause(Exception cause) {
-		this.cause = cause;
+	public XBeeException(Throwable cause) {
+		super(cause);
 	}
 }
