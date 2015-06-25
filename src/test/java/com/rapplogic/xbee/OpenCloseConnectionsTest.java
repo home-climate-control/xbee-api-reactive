@@ -34,37 +34,47 @@ public class OpenCloseConnectionsTest extends TestCase {
 		// first connect directly to end device and configure.  then comment out configureXXX methods and connect to coordinator
 		xbee.open(device, 9600);
 		
-		if (!xbee.isConnected()) throw new RuntimeException("Should be connected");
+		if (!xbee.isConnected()) {
+		    fail("Should be connected");
+		}
 		
 		try {
 			log.info("attempting duplicate open");
 			xbee.open(device, 9600);
-			throw new RuntimeException("fail -- already open");
+			fail("already open");
+			
 		} catch (Exception e) {
 			log.debug("Expected", e);
 		}
 		
 		log.info("sending channel command");
 		
-		if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) throw new RuntimeException("fail");
+		if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) {
+		    fail("fail");
+		}
+		
 		log.info("closing connection");
 		xbee.close();
 		
 		if (xbee.isConnected()) {
-			throw new RuntimeException("Should be disconnected");
+			fail("Should be disconnected");
 		}
 		
 		try {
 			log.info("sending at command, but we're disconnected");
 			xbee.sendAtCommand(new AtCommand("CH")).isOk();
-			throw new RuntimeException("Should be disconnected");
+			fail("Should be disconnected");
+			
 		} catch (Exception e) {
 			log.debug("Expected", e);
 		}
 		
 		log.info("reconnecting");
 		xbee.open(device, 9600);
-		if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) throw new RuntimeException("fail");
+		
+		if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) {
+		    fail("fail");
+		}
 		
 		log.info("closing conn");
 		xbee.close();
@@ -72,7 +82,8 @@ public class OpenCloseConnectionsTest extends TestCase {
 		try {
 			log.info("try duplicate close");
 			xbee.close();
-			throw new RuntimeException("Already closed");
+			fail("Already closed");
+			
 		} catch (Exception e) {
 			log.debug("Expected", e);
 		}
