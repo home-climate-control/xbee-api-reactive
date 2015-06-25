@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeException;
+import com.rapplogic.xbee.api.XBeeNotConnectedException;
 
 /**
  * Tests opening and closing connections to the radio
@@ -24,14 +25,16 @@ public class OpenCloseConnectionsTest extends TestCase {
 	
 	public void testOpenCloseConnections() throws XBeeException, InterruptedException {
 		
-		// series 1
-		String device = "/dev/tty.usbserial-A4004Rim";
-		// series 2
-//		String device = "/dev/tty.usbserial-A6005v5M";
+		// series 1 (VT: FIXME: series of what?)
+		// String device = "/dev/tty.usbserial-A4004Rim";
+
+		// series 2 (VT: FIXME: series of what?)
+		// String device = "/dev/tty.usbserial-A6005v5M";
 		
-		log.info("opening connection");
+		// x86
+		String device = "/dev/ttyUSB0";
 		
-//		xbee.setStartupChecks(false);
+		log.info("opening connection on " + device);
 		
 		// first connect directly to end device and configure.  then comment out configureXXX methods and connect to coordinator
 		xbee.open(device, 9600);
@@ -41,12 +44,15 @@ public class OpenCloseConnectionsTest extends TestCase {
 		}
 		
 		try {
+			
 			log.info("attempting duplicate open");
 			xbee.open(device, 9600);
 			fail("already open");
 			
-		} catch (Exception e) {
-			log.debug("Expected", e);
+		} catch (Throwable t) {
+
+			assertSame("Wrong exception class", XBeeException.class, t.getClass());
+			assertEquals("Wrong exception message", "java.lang.IllegalStateException: Cannot open new connection -- existing connection is still open.  Please close first", t.getMessage());
 		}
 		
 		log.info("sending channel command");
@@ -63,12 +69,17 @@ public class OpenCloseConnectionsTest extends TestCase {
 		}
 		
 		try {
+			
 			log.info("sending at command, but we're disconnected");
 			xbee.sendAtCommand(new AtCommand("CH")).isOk();
 			fail("Should be disconnected");
 			
-		} catch (Exception e) {
-			log.debug("Expected", e);
+		} catch (Throwable t) {
+			
+			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
+
+			assertSame("Wrong exception class", XBeeNotConnectedException.class, t.getClass());
+			assertEquals("Wrong exception message", null, t.getMessage());
 		}
 		
 		log.info("reconnecting");
@@ -82,12 +93,17 @@ public class OpenCloseConnectionsTest extends TestCase {
 		xbee.close();
 		
 		try {
+			
 			log.info("try duplicate close");
 			xbee.close();
 			fail("Already closed");
 			
-		} catch (Exception e) {
-			log.debug("Expected", e);
+		} catch (Throwable t) {
+
+			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
+
+			assertSame("Wrong exception class", IllegalStateException.class, t.getClass());
+			assertEquals("Wrong exception message", "XBee is not connected", t.getMessage());
 		}
 	}	
 }
