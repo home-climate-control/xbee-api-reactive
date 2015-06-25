@@ -29,7 +29,7 @@ public class OpenCloseConnectionsTest {
 	private XBee xbee = new XBee();
 
 	/**
-	 * Test the funcctionality with the actual serial port.
+	 * Test the functionality with the actual serial port.
 	 * 
 	 * Enable this test only if you have the hardware connected.
 	 */
