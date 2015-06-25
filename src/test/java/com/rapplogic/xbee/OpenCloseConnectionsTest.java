@@ -3,6 +3,7 @@ package com.rapplogic.xbee;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
@@ -14,6 +15,7 @@ import com.rapplogic.xbee.api.XBeeException;
  * @author andrew
  *
  */
+@Ignore
 public class OpenCloseConnectionsTest extends TestCase {
 
 	private final static Logger log = Logger.getLogger(OpenCloseConnectionsTest.class);
