@@ -279,7 +279,7 @@ public class XBee implements IXBee {
 	 * <p/>
 	 * Timeout value is fixed at 5 seconds
 	 * 
-	 * @deprecated Use this.sendSynchronous(command, timeout);
+	 * @deprecated Use {@link #sendSynchronous(XBeeRequest)}
 	 * @param command
 	 * @return
 	 * @throws XBeeException
