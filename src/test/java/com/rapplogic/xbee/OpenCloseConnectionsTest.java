@@ -1,9 +1,12 @@
 package com.rapplogic.xbee;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
@@ -16,13 +19,14 @@ import com.rapplogic.xbee.api.XBeeNotConnectedException;
  * @author andrew
  *
  */
-@Ignore
-public class OpenCloseConnectionsTest extends TestCase {
+public class OpenCloseConnectionsTest {
 
 	private final static Logger log = Logger.getLogger(OpenCloseConnectionsTest.class);
 	
 	private XBee xbee = new XBee();
 	
+	@Test
+	@Ignore
 	public void testOpenCloseConnections() throws XBeeException, InterruptedException {
 		
 		// series 1 (VT: FIXME: series of what?)
