@@ -49,7 +49,7 @@ public class OpenCloseConnectionsTest {
 		testOpenCloseConnections(port);
 	}
 
-	public void testOpenCloseConnections(String port) throws XBeeException, InterruptedException, IOException {
+	private void testOpenCloseConnections(String port) throws XBeeException, InterruptedException, IOException {
 		NDC.push("testOpenClose(" + port + ")");
 
 		try {
