@@ -75,7 +75,7 @@ public class OpenCloseConnectionsTest {
 
 			log.info("sending channel command");
 
-			if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) {
+			if (xbee.sendSynchronous(new AtCommand("CH")).isError()) {
 				fail("fail");
 			}
 
@@ -89,7 +89,7 @@ public class OpenCloseConnectionsTest {
 			try {
 
 				log.info("sending at command, but we're disconnected");
-				xbee.sendAtCommand(new AtCommand("CH")).isOk();
+				xbee.sendSynchronous(new AtCommand("CH"));
 				fail("Should be disconnected");
 
 			} catch (Throwable t) {
@@ -103,7 +103,7 @@ public class OpenCloseConnectionsTest {
 			log.info("reconnecting");
 			xbee.open(device, 9600);
 
-			if (!xbee.sendAtCommand(new AtCommand("CH")).isOk()) {
+			if (xbee.sendSynchronous(new AtCommand("CH")).isError()) {
 				fail("fail");
 			}
 
