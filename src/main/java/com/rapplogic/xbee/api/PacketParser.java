@@ -130,8 +130,6 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	 */
 	public XBeeResponse parsePacket() {
 		
-		Exception exception = null;
-		
 		try {
 			// BTW, length doesn't account for escaped bytes
 			int msbLength = this.read("Length MSB");
@@ -179,9 +177,11 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			
 			response.finish();
 		} catch (Exception e) {
+			
 			// added bytes read for troubleshooting
 			log.error("Failed due to exception.  Returning ErrorResponse.  bytes read: " + ByteUtils.toBase16(rawBytes.getIntArray()), e);
-			exception = e;
+			
+			Exception exception = e;
 			
 			response = new ErrorResponse();
 			
