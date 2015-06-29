@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import com.rapplogic.xbee.api.XBeeException;
 
@@ -136,39 +137,58 @@ public class SerialPortConnection implements XBeeConnection, SerialPortEventList
 		}
 	}
 	
+	@Override
 	public OutputStream getOutputStream() {
 		return outputStream;
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		return inputStream;
 	}
 	
+	@Override
 	public void serialEvent(SerialPortEvent event) {
-		
-		switch (event.getEventType()) {	
+
+		NDC.push("serialEvent");
+
+		try {
+
+			switch (event.getEventType()) {
+
 			case SerialPortEvent.DATA_AVAILABLE:
 
-				try {
-					if (this.getInputStream().available() > 0) {
-						try {
-							log.debug("serialEvent: " + serialPort.getInputStream().available() + " bytes available");
-							
-							synchronized (this) {
-								this.notify();										
-							}
-						} catch (Exception e) {
-							log.error("Error in handleSerialData method", e);
-						}				
-					} else {
-						log.warn("We were notified of new data but available() is returning 0");
-					}
-				} catch (IOException ex) {
-					// it's best not to throw the exception because the RXTX thread may not be prepared to handle
-					log.error("RXTX error in serialEvent method", ex);
+				if (this.getInputStream().available() == 0) {
+					
+					log.warn("We were notified of new data but available() is returning 0");
+					return;
 				}
+
+				log.debug(serialPort.getInputStream().available() + " bytes available");
+
+				synchronized (this) {
+					
+					// VT: FIXME: Whom are we notifying? There's not a single wait() in this class,
+					// and this is the only synchronized clause. No subclasses, either
+					// (at least in this project and in examples).
+					
+					this.notify();										
+				}
+				
+				break;
+
 			default:
-				log.debug("Ignoring serial port event type: " + event.getEventType());
-		}		
+				
+				log.warn("Ignoring serial port event type: " + event.getEventType());
+			}
+
+		} catch (Throwable t) {
+
+			// it's best not to throw the exception because the RXTX thread may not be prepared to handle
+			log.error("Unexpected RXTX error", t);
+
+		} finally {
+			NDC.pop();
+		}
 	}
 }
