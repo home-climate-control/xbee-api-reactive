@@ -9,6 +9,12 @@
     <!-- Design feature, null return indicates "this pin is not digital" -->
     <Match>
         <Class name="com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse"/>
+        <Method name="isDigitalOn" signature="(I)Ljava/lang/Boolean;"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+    <!-- Design feature, null return indicates "this pin is not digital" -->
+    <Match>
+        <Class name="com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse"/>
         <Method name="isD0On" signature="(I)Ljava/lang/Boolean;"/>
         <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
     </Match>
