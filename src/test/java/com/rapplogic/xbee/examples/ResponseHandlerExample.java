@@ -2,13 +2,16 @@ package com.rapplogic.xbee.examples;
 
 import java.io.IOException;
 
+import org.junit.Test;
+
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeResponse;
 
 public class ResponseHandlerExample {
 
-	public ResponseHandlerExample() {
+	@Test
+	public void testResponseHandlerExample() {
 		XBee xbee = new XBee();
 		XBee.registerResponseHandler(0x88, MyResponse.class);
 //		xbee.open(..);

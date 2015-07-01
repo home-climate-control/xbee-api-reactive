@@ -19,8 +19,11 @@
 
 package com.rapplogic.xbee.examples;
 
+import static org.junit.Assert.fail;
+
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
@@ -42,15 +45,18 @@ public class ApiAtExample {
 
 //	TODO split class in to WPAN class
 	 
-	private final static Logger log = Logger.getLogger(ApiAtExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private XBee xbee = new XBee(new XBeeConfiguration().withStartupChecks(false));
+	private final XBee xbee = new XBee(new XBeeConfiguration().withStartupChecks(false));
 	
-	public ApiAtExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testApiAtExample() throws XBeeException {
 			
 		try {	
 			// replace with port and baud rate of your XBee
-			xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			// xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			xbee.open("/dev/ttyUSB0", 9600);
 			
 //			// set D1 analog input
 //			this.sendCommand(new AtCommand("D1", 2));
@@ -62,17 +68,15 @@ public class ApiAtExample {
 			log.info("MY is " + xbee.sendAtCommand(new AtCommand("MY")));
 //			log.info("SH is " + xbee.sendAtCommand(new AtCommand("SH")));
 //			log.info("SL is " + xbee.sendAtCommand(new AtCommand("SL")));
-		} catch (Exception e) {
-			log.error("at command failed", e);
+		} catch (Throwable t) {
+			
+			log.error("at command failed", t);
+			fail("Failed, check the logs");
+			
 		} finally {
 			if (xbee != null && xbee.isConnected()) {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException {
-		PropertyConfigurator.configure("log4j.properties");
-		new ApiAtExample();
 	}
 }
