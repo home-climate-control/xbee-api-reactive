@@ -225,9 +225,12 @@ public class XBeePin {
 	 * @author andrew
 	 *
 	 */
-	private static class PinSorter implements Comparator {
-		public int compare(Object o1, Object o2) {
-			return ((XBeePin)o1).getPin().compareTo(((XBeePin)o2).getPin());
+	private static class PinSorter implements Comparator<XBeePin> {
+
+		@Override
+		public int compare(XBeePin p1, XBeePin p2) {
+
+			return p1.getPin().compareTo(p2.getPin());
 		}		
 	}
 	
