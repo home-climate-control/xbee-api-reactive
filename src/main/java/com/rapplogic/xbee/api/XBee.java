@@ -75,19 +75,20 @@ public class XBee implements IXBee {
 			AtCommandResponse ap = this.sendAtCommand(new AtCommand("AP"));
 
 			if (!ap.isOk()) {
-				throw new XBeeException("Attempt to query AP parameter failed");
+				throw new XBeeException("Attempt to query AP parameter failed: " + ap);
 			}
 			
 			if (ap.getValue()[0] != 2) {
+
 				log.warn("XBee radio is in API mode without escape characters (AP=1).  The radio must be configured in API mode with escape bytes (AP=2) for use with this library.");
-				
 				log.info("Attempting to set AP to 2");
+				
 				ap = this.sendAtCommand(new AtCommand("AP", 2));
 				
 				if (ap.isOk()) {
 					log.info("Successfully set AP mode to 2.  This setting will not persist a power cycle without the WR (write) command");	
 				} else {
-					throw new XBeeException("Attempt to set AP=2 failed");
+					throw new XBeeException("Attempt to set AP=2 failed: " + ap);
 				}
 			} else {
 				log.info("Radio is in correct AP mode (AP=2)");
