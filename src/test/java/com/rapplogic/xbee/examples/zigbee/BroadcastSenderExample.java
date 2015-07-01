@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -33,9 +34,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class BroadcastSenderExample {
 
-	private final static Logger log = Logger.getLogger(BroadcastSenderExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private BroadcastSenderExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testBroadcastSenderExample() throws XBeeException {
 		
 		XBee xbee = new XBee();
 		
@@ -51,7 +54,7 @@ public class BroadcastSenderExample {
 				// make it a broadcast packet
 				request.setOption(ZNetTxRequest.Option.BROADCAST);
 
-				log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getPacket()));
+				log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getByteArray()));
 				
 				xbee.sendAsynchronous(request);
 				// we just assume it was sent.  that's just the way it is with broadcast.  
@@ -68,10 +71,5 @@ public class BroadcastSenderExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException  {
-		PropertyConfigurator.configure("log4j.properties");
-		new BroadcastSenderExample();
 	}
 }

@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.AtCommand;
@@ -41,9 +42,12 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class ZNetReceiverExample {
 
-	private final static Logger log = Logger.getLogger(ZNetReceiverExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private ZNetReceiverExample() throws Exception {
+	@Test
+	@Ignore
+	public void  testZNetReceiverExample() throws Exception {
+		
 		XBee xbee = new XBee();		
 
 		try {			
@@ -81,8 +85,8 @@ public class ZNetReceiverExample {
 					} else {
 						log.debug("received unexpected packet " + response.toString());
 					}
-				} catch (Exception e) {
-					log.error(e);
+				} catch (Throwable t) {
+					log.error("Unexpected exception", t);
 				}
 			}
 		} finally {
@@ -90,11 +94,5 @@ public class ZNetReceiverExample {
 				xbee.close();		
 			}
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		// init log4j
-		PropertyConfigurator.configure("log4j.properties");
-		new ZNetReceiverExample();
 	}
 }

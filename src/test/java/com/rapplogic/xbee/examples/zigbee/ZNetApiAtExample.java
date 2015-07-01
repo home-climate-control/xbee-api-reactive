@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -38,11 +39,13 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class ZNetApiAtExample {
 
-	private final static Logger log = Logger.getLogger(ZNetApiAtExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private XBee xbee = new XBee();
+	private final XBee xbee = new XBee();
 	
-	public ZNetApiAtExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testZNetApiAtExample() throws XBeeException {
 		try {
 			
 			// replace with port and baud rate of your XBee
@@ -65,12 +68,14 @@ public class ZNetApiAtExample {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void associationStatus(XBee xbee) throws XBeeException {
 		// get association status - success indicates it is associated to another XBee
 		AtCommandResponse response = (AtCommandResponse) xbee.sendAtCommand(new AtCommand("AI"));
 		log.debug("Association Status is " + AssociationStatus.get(response));		
 	}
 	
+	@SuppressWarnings("unused")
 	private void configureEndDevice(XBee xbee) throws XBeeException {
 				
 		// basic end device configuration (assumes ZNet radio flashed with end device API firmware)
@@ -101,6 +106,7 @@ public class ZNetApiAtExample {
 		log.debug("FR is " + response);	
 	}
 	
+	@SuppressWarnings("unused")
 	private void configureCoordinator(XBee xbee) throws XBeeException {			
 		// basic coordinator configuration (assumes ZNet radio flashed with COORDINATOR API firmware)
 		XBeeResponse response = null;
@@ -137,6 +143,7 @@ public class ZNetApiAtExample {
 	 * @param xbee
 	 * @throws XBeeException
 	 */
+	@SuppressWarnings("unused")
 	private void configureIOSamples(XBee xbee) throws XBeeException {			
 		// basic coordinator configuration (assumes ZNet radio flashed with COORDINATOR API firmware)
 		XBeeResponse response = null;
@@ -162,10 +169,5 @@ public class ZNetApiAtExample {
 		log.debug("D6 is " + response);
 		
 		// optionally configure DH + DL; if set to zero (default), samples will be sent to coordinator
-	}
-	
-	public static void main(String[] args) throws XBeeException {
-		PropertyConfigurator.configure("log4j.properties");
-		new ZNetApiAtExample();
 	}
 }

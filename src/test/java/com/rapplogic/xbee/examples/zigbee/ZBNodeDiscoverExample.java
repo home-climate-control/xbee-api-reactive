@@ -22,7 +22,8 @@ package com.rapplogic.xbee.examples.zigbee;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -42,11 +43,13 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class ZBNodeDiscoverExample {
 
-	private final static Logger log = Logger.getLogger(ZBNodeDiscoverExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private XBee xbee = new XBee();
+	private final XBee xbee = new XBee();
 	
-	public ZBNodeDiscoverExample() throws XBeeException, InterruptedException {
+	@Test
+	@Ignore
+	public void testZBNodeDiscoverExample() throws XBeeException, InterruptedException {
 		
 		try {
 			// replace with your serial port
@@ -85,10 +88,5 @@ public class ZBNodeDiscoverExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException {
-		PropertyConfigurator.configure("log4j.properties");
-		new ZBNodeDiscoverExample();
 	}
 }

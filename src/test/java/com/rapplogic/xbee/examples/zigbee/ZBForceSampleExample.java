@@ -20,14 +20,15 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
+import com.rapplogic.xbee.api.RemoteAtResponse;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.XBeeTimeoutException;
-import com.rapplogic.xbee.api.RemoteAtResponse;
 import com.rapplogic.xbee.api.zigbee.ZBForceSampleRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
 
@@ -41,9 +42,12 @@ import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
  */
 public class ZBForceSampleExample {
 
-	private final static Logger log = Logger.getLogger(ZBForceSampleExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private ZBForceSampleExample() throws Exception {
+	@Test
+	@Ignore
+	public void testZBForceSampleExample() throws Exception {
+		
 		XBee xbee = new XBee();		
 
 		try {			
@@ -84,11 +88,5 @@ public class ZBForceSampleExample {
 				xbee.close();		
 			}
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		// init log4j
-		PropertyConfigurator.configure("log4j.properties");
-		new ZBForceSampleExample();
 	}
 }

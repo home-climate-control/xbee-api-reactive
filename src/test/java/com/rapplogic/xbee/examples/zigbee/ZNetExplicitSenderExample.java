@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -41,9 +42,11 @@ import com.rapplogic.xbee.util.DoubleByte;
  */
 public class ZNetExplicitSenderExample {
 
-	private final static Logger log = Logger.getLogger(ZNetExplicitSenderExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private ZNetExplicitSenderExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testZNetExplicitSenderExample() throws XBeeException {
 		
 		XBee xbee = new XBee();
 		
@@ -89,10 +92,5 @@ public class ZNetExplicitSenderExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException  {
-		PropertyConfigurator.configure("log4j.properties");
-		new ZNetExplicitSenderExample();
 	}
 }

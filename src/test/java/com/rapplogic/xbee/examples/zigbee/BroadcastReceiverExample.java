@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeException;
@@ -31,9 +32,11 @@ import com.rapplogic.xbee.api.XBeeResponse;
  */
 public class BroadcastReceiverExample {
 
-	private final static Logger log = Logger.getLogger(BroadcastReceiverExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private BroadcastReceiverExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testBroadcastReceiverExample() throws XBeeException {
 		
 		XBee xbee = new XBee();
 		
@@ -50,10 +53,5 @@ public class BroadcastReceiverExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException  {
-		PropertyConfigurator.configure("log4j.properties");
-		new BroadcastReceiverExample();
 	}
 }

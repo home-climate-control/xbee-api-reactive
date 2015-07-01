@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.PacketListener;
@@ -38,9 +39,12 @@ import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
  */
 public class ZNetIoSampleExample implements PacketListener {
 
-	private final static Logger log = Logger.getLogger(ZNetIoSampleExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private ZNetIoSampleExample() throws Exception {
+	@Test
+	@Ignore
+	public void testZNetIoSampleExample() throws Exception {
+		
 		XBee xbee = new XBee();		
 
 		try {			
@@ -60,6 +64,7 @@ public class ZNetIoSampleExample implements PacketListener {
 	/**
 	 * Called by XBee API thread when a packet is received
 	 */
+	@Override
 	public void processResponse(XBeeResponse response) {
 		// This is a I/O sample response.  You will only get this is you are connected to a Coordinator that is configured to
 		// receive I/O samples from a remote XBee.
@@ -73,11 +78,5 @@ public class ZNetIoSampleExample implements PacketListener {
 			log.debug("pin 20 (DO) digital is " + ioSample.isD0On());
 			log.debug("pin 19 (D1) analog is " + ioSample.getAnalog1());
 		}
-	}
-	
-	public static void main(String[] args) throws Exception {
-		// init log4j
-		PropertyConfigurator.configure("log4j.properties");
-		new ZNetIoSampleExample();
 	}
 }

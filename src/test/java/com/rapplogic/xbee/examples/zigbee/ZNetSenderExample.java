@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.zigbee;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -108,9 +109,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class ZNetSenderExample {
 
-	private final static Logger log = Logger.getLogger(ZNetSenderExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private ZNetSenderExample() throws XBeeException {
+	@Test
+	@Ignore
+	public void testZNetSenderExample() throws XBeeException {
 		
 		XBee xbee = new XBee();
 		
@@ -130,12 +133,12 @@ public class ZNetSenderExample {
 		// first request we just send 64-bit address.  we get 16-bit network address with status response
 		ZNetTxRequest request = new ZNetTxRequest(addr64, payload);
 		
-		log.debug("zb request is " + request.getXBeePacket().getPacket());
+		log.debug("zb request is " + request.getXBeePacket().getByteArray());
 		
 		log.info("sending tx " + request);
 		
 		while (true) {
-			log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getPacket()));
+			log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getByteArray()));
 			
 			long start = System.currentTimeMillis();
 			//log.info("sending tx packet: " + request.toString());
@@ -173,10 +176,5 @@ public class ZNetSenderExample {
 			} catch (InterruptedException e) {
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException  {
-		PropertyConfigurator.configure("log4j.properties");
-		new ZNetSenderExample();
 	}
 }
