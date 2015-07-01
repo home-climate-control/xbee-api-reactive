@@ -28,7 +28,6 @@ import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeePacket;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.wpan.TxRequest16;
-import com.rapplogic.xbee.api.wpan.TxRequest64;
 import com.rapplogic.xbee.api.wpan.TxStatusResponse;
 
 /**

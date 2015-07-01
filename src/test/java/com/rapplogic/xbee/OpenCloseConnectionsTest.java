@@ -34,7 +34,6 @@ public class OpenCloseConnectionsTest {
 	 * Enable this test only if you have the hardware connected.
 	 */
 	@Test
-	@Ignore
 	public void testSerial() throws XBeeException, InterruptedException, IOException {
 
 		// series 1 (VT: FIXME: series of what?)
@@ -59,6 +58,15 @@ public class OpenCloseConnectionsTest {
 		} finally {
 			NDC.pop();
 		}
+	}
+	
+	/**
+	 * See how the XBee reacts when the response is too slow.
+	 * 
+	 * Side effect: this test can be run without hardware, and will provide comparable test coverage.
+	 */
+	public void testSlowStart() {
+		
 	}
 	
 	private void testConnection(XBeeConnectionWrapper connectionWrapper) throws XBeeException, IOException {

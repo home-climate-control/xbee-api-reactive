@@ -25,7 +25,6 @@ import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.XBeeAddress;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.util.ByteUtils;
-import com.rapplogic.xbee.util.IIntInputStream;
 
 /**
  * Series 1 XBee.  Common elements of 16 and 64 bit Address Receive packets

@@ -21,7 +21,6 @@ package com.rapplogic.xbee.api.wpan;
 
 import java.io.IOException;
 
-import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.NoRequestResponse;
 import com.rapplogic.xbee.api.XBeeAddress16;
