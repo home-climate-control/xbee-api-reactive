@@ -21,6 +21,8 @@ package com.rapplogic.xbee.examples.wpan;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.ErrorResponse;
@@ -76,9 +78,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class IoSamplesExample {
 
-	private final static Logger log = Logger.getLogger(IoSamplesExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private IoSamplesExample() throws Exception {
+	@Test
+	@Ignore
+	public void testIoSamplesExample() throws Exception {
 		XBee xbee = new XBee();		
 		
 		try {			
@@ -90,7 +94,7 @@ public class IoSamplesExample {
 					XBeeResponse response = xbee.getResponse();
 					
 					log.info("Received i/o response: " + response);
-					log.info("packet bytes is " + ByteUtils.toBase16(response.getPacketBytes()));
+					log.info("packet bytes is " + ByteUtils.toBase16(response.getRawPacketBytes()));
 					
 					if (response.isError()) {
 						log.info("response contains errors", ((ErrorResponse)response).getException());
@@ -119,8 +123,8 @@ public class IoSamplesExample {
 						// not what we expected
 						log.info("Ignoring mystery packet " + response.toString());
 					}
-				} catch (Exception e) {
-					log.error(e);
+				} catch (Throwable t) {
+					log.error("Unexpected exception", t);
 				}
 			}
 		} finally {
@@ -128,11 +132,5 @@ public class IoSamplesExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws Exception {
-		// init log4j
-		PropertyConfigurator.configure("log4j.properties");
-		new IoSamplesExample();
 	}
 }

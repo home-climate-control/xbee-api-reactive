@@ -20,7 +20,8 @@
 package com.rapplogic.xbee.examples.wpan;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.XBee;
@@ -39,9 +40,11 @@ import com.rapplogic.xbee.api.wpan.TxStatusResponse;
  */
 public class ApiSenderExample {
 
-	private final static Logger log = Logger.getLogger(ApiSenderExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 
-	private ApiSenderExample() throws Exception {
+	@Test
+	@Ignore
+	public void testApiSenderExample() throws Exception {
 
 		XBee xbee = new XBee();
 
@@ -57,7 +60,8 @@ public class ApiSenderExample {
 		
 		try {
 			// replace with port and baud rate of your XBee
-			xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			// xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			xbee.open("/dev/ttyUSB0", 9600);
 
 			while (true) {
 
@@ -124,11 +128,5 @@ public class ApiSenderExample {
 				xbee.close();		
 			}
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		// init log4j
-		PropertyConfigurator.configure("log4j.properties");
-		new ApiSenderExample();
 	}
 }

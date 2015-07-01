@@ -22,7 +22,8 @@ package com.rapplogic.xbee.examples.wpan;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -43,11 +44,13 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class WpanNodeDiscoverExample {
 
-	private final static Logger log = Logger.getLogger(WpanNodeDiscoverExample.class);
+	private final Logger log = Logger.getLogger(getClass());
 	
-	private XBee xbee = new XBee();
+	private final XBee xbee = new XBee();
 	
-	public WpanNodeDiscoverExample() throws XBeeException, InterruptedException {
+	@Test
+	@Ignore
+	public void testWpanNodeDiscoverExample() throws XBeeException, InterruptedException {
 		
 		try {
 			// my coordinator com/baud
@@ -96,10 +99,5 @@ public class WpanNodeDiscoverExample {
 				xbee.close();		
 			}
 		}
-	}
-	
-	public static void main(String[] args) throws XBeeException, InterruptedException {
-		PropertyConfigurator.configure("log4j.properties");
-		new WpanNodeDiscoverExample();
 	}
 }
