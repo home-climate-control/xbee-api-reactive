@@ -24,7 +24,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * RF module status messages are sent from the module in response to specific conditions. 
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
  */
 public class ModemStatusResponse extends XBeeResponse implements NoRequestResponse {
 		
-	private final static Logger log = Logger.getLogger(ModemStatusResponse.class);
+	private final static Logger log = LogManager.getLogger(ModemStatusResponse.class);
 	
 	public enum Status {
 		HARDWARE_RESET (0),

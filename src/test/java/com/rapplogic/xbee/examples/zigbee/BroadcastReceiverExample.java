@@ -19,7 +19,8 @@
 
 package com.rapplogic.xbee.examples.zigbee;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ import com.rapplogic.xbee.api.XBeeResponse;
  */
 public class BroadcastReceiverExample {
 
-	private final Logger log = Logger.getLogger(getClass());
+	private final Logger log = LogManager.getLogger(getClass());
 	
 	@Test
 	@Ignore

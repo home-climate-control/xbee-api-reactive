@@ -24,7 +24,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -44,7 +45,7 @@ import com.rapplogic.xbee.api.XBeeResponse;
  */
 public abstract class ZNetRxBaseResponse extends XBeeResponse {
 
-	private final static Logger log = Logger.getLogger(ZNetRxBaseResponse.class);
+	private final static Logger log = LogManager.getLogger(ZNetRxBaseResponse.class);
 	
 	public enum Option {
 //		0x01 - Packet Acknowledged

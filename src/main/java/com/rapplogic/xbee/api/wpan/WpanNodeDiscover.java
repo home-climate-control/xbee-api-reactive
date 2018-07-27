@@ -19,7 +19,8 @@
 
 package com.rapplogic.xbee.api.wpan;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -33,7 +34,7 @@ import com.rapplogic.xbee.util.IntArrayInputStream;
  */
 public class WpanNodeDiscover {
 
-	private final static Logger log = Logger.getLogger(WpanNodeDiscover.class);
+	private final static Logger log = LogManager.getLogger(WpanNodeDiscover.class);
 	
 	private XBeeAddress16 nodeAddress16;
 	private XBeeAddress64 nodeAddress64;

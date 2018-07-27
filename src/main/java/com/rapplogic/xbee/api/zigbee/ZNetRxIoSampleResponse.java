@@ -21,7 +21,8 @@ package com.rapplogic.xbee.api.zigbee;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.IPacketParser;
@@ -42,7 +43,7 @@ import com.rapplogic.xbee.util.IntArrayInputStream;
  */
 public class ZNetRxIoSampleResponse extends ZNetRxBaseResponse implements NoRequestResponse {
 	
-	private final static Logger log = Logger.getLogger(ZNetRxIoSampleResponse.class);
+	private final static Logger log = LogManager.getLogger(ZNetRxIoSampleResponse.class);
 	
 	private int digitalChannelMaskMsb;
 	private int digitalChannelMaskLsb;

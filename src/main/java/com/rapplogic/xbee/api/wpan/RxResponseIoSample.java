@@ -21,7 +21,8 @@ package com.rapplogic.xbee.api.wpan;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.IPacketParser;
@@ -42,7 +43,7 @@ import com.rapplogic.xbee.util.IIntInputStream;
  */
 public class RxResponseIoSample extends RxBaseResponse implements NoRequestResponse {
 	
-	private final static Logger log = Logger.getLogger(RxResponseIoSample.class);
+	private final static Logger log = LogManager.getLogger(RxResponseIoSample.class);
 	
 	public final static int ADC_CHANNEL1 = 0x7e; //01111110
 	public final static int DIO_CHANNEL1 = 0x1; //00000001

@@ -27,7 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.XBeeConnection;
 import com.rapplogic.xbee.util.ByteUtils;
@@ -41,7 +42,7 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class InputStreamThread implements Runnable {
 	
-	private final static Logger log = Logger.getLogger(InputStreamThread.class);
+	private final static Logger log = LogManager.getLogger(InputStreamThread.class);
 	
 	private Thread thread;
 	private ExecutorService listenerPool;

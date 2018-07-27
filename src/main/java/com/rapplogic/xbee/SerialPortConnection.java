@@ -33,8 +33,9 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.rapplogic.xbee.api.XBeeException;
 
@@ -47,7 +48,7 @@ import com.rapplogic.xbee.api.XBeeException;
  */
 public class SerialPortConnection implements XBeeConnection, SerialPortEventListener {
 
-	private final static Logger log = Logger.getLogger(SerialPortConnection.class);
+	private final static Logger log = LogManager.getLogger(SerialPortConnection.class);
 	
 	private InputStream inputStream;
 	private OutputStream outputStream;
@@ -150,7 +151,7 @@ public class SerialPortConnection implements XBeeConnection, SerialPortEventList
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 
-		NDC.push("serialEvent");
+		ThreadContext.push("serialEvent");
 
 		try {
 
@@ -188,7 +189,7 @@ public class SerialPortConnection implements XBeeConnection, SerialPortEventList
 			log.error("Unexpected RXTX error", t);
 
 		} finally {
-			NDC.pop();
+			ThreadContext.pop();
 		}
 	}
 }
