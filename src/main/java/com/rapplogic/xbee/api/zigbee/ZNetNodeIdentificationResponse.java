@@ -24,7 +24,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -35,7 +36,7 @@ import com.rapplogic.xbee.util.DoubleByte;
 
 public class ZNetNodeIdentificationResponse extends XBeeResponse {
 
-	private final static Logger log = Logger.getLogger(ZNetNodeIdentificationResponse.class);
+	private final static Logger log = LogManager.getLogger(ZNetNodeIdentificationResponse.class);
 
 	// TODO this is repeated in NodeDiscover
 	public enum DeviceType  {

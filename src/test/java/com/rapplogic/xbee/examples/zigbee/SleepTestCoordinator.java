@@ -1,7 +1,7 @@
 package com.rapplogic.xbee.examples.zigbee;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.RemoteAtRequest;
 import com.rapplogic.xbee.api.RemoteAtResponse;
@@ -21,11 +21,9 @@ import com.rapplogic.xbee.api.XBeeTimeoutException;
  */
 public class SleepTestCoordinator {
 
-	private final static Logger log = Logger.getLogger(ZNetSenderExample.class);
+	private final static Logger log = LogManager.getLogger(ZNetSenderExample.class);
 	
 	public SleepTestCoordinator(String args[]) throws XBeeTimeoutException, XBeeException, InterruptedException {
-		
-		PropertyConfigurator.configure("log4j.properties");
 		
 		XBee xbee = new XBee(new XBeeConfiguration().withStartupChecks(false));
 		

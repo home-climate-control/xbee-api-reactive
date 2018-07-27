@@ -6,7 +6,8 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This is a bit of a misnomer as we are not connected to anything.  This class serves as a buffer
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractXBeeConnection implements XBeeConnection {
 
-	private final static Logger log = Logger.getLogger(XBeeConnection.class);
+	private final static Logger log = LogManager.getLogger(XBeeConnection.class);
 	
 	// we write to this to provide xbee-api with RX packets 
 	private PipedOutputStream pipeToInputStream = new PipedOutputStream();

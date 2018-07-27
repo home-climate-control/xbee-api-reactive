@@ -24,7 +24,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -41,7 +42,7 @@ import com.rapplogic.xbee.api.XBeeFrameIdResponse;
  */
 public class ZNetTxStatusResponse extends XBeeFrameIdResponse {
 	
-	private final static Logger log = Logger.getLogger(ZNetTxStatusResponse.class);
+	private final static Logger log = LogManager.getLogger(ZNetTxStatusResponse.class);
 
 	public enum DeliveryStatus {
 //		0x00 = Success

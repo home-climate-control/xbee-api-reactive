@@ -3,8 +3,6 @@ package com.rapplogic.xbee.examples.wpan;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeResponse;
@@ -18,8 +16,6 @@ public class Processing {
 	  
 	void setup() {
 	  try { 
-	    //optional.  set up logging
-	    PropertyConfigurator.configure(dataPath("")+"log4j.properties");
 
 	    xbee = new XBee();
 	    // replace with your COM port

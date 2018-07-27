@@ -23,7 +23,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.XBeeAddress16;
@@ -39,7 +40,7 @@ import com.rapplogic.xbee.util.IntArrayInputStream;
  */
 public class ZBNodeDiscover {
 
-	private final static Logger log = Logger.getLogger(ZBNodeDiscover.class);
+	private final static Logger log = LogManager.getLogger(ZBNodeDiscover.class);
 	
 	public enum DeviceType {
 		DEV_TYPE_COORDINATOR (0),

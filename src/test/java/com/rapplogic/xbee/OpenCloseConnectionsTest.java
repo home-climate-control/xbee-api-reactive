@@ -6,8 +6,9 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ import com.rapplogic.xbee.api.XBeeNotConnectedException;
  */
 public class OpenCloseConnectionsTest {
 
-	private final static Logger log = Logger.getLogger(OpenCloseConnectionsTest.class);
+	private final static Logger log = LogManager.getLogger(OpenCloseConnectionsTest.class);
 
 	private XBee xbee = new XBee();
 
@@ -50,14 +51,14 @@ public class OpenCloseConnectionsTest {
 	}
 
 	private void testOpenCloseConnections(String port) throws XBeeException, InterruptedException, IOException {
-		NDC.push("testOpenClose(" + port + ")");
+		ThreadContext.push("testOpenClose(" + port + ")");
 
 		try {
 			
 			testConnection(new XBeeSerialConnectionWrapper(port, 9600));
 
 		} finally {
-			NDC.pop();
+			ThreadContext.pop();
 		}
 	}
 	

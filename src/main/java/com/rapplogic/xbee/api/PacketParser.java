@@ -24,7 +24,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.wpan.RxResponse16;
 import com.rapplogic.xbee.api.wpan.RxResponse64;
@@ -53,7 +54,7 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class PacketParser implements IIntInputStream, IPacketParser {
 
-	private final static Logger log = Logger.getLogger(PacketParser.class);
+	private final static Logger log = LogManager.getLogger(PacketParser.class);
 
 	private IIntInputStream in;
 	

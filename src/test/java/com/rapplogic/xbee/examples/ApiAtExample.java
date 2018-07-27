@@ -21,7 +21,8 @@ package com.rapplogic.xbee.examples;
 
 import static org.junit.Assert.fail;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class ApiAtExample {
 
 //	TODO split class in to WPAN class
 	 
-	private final Logger log = Logger.getLogger(getClass());
+	private final Logger log = LogManager.getLogger(getClass());
 	
 	private final XBee xbee = new XBee(new XBeeConfiguration().withStartupChecks(false));
 	

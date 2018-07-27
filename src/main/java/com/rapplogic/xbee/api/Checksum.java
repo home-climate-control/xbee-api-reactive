@@ -19,7 +19,8 @@
 
 package com.rapplogic.xbee.api;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.util.ByteUtils;
 
@@ -31,7 +32,7 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class Checksum {
 	
-	private final static Logger log = Logger.getLogger(Checksum.class);
+	private final static Logger log = LogManager.getLogger(Checksum.class);
 	
 	public int checksum = 0;
 	
