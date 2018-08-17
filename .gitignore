@@ -3,3 +3,7 @@
 .project
 /bin
 /target
+/.gradle/
+/build/
+gradlew.bat
+*~
