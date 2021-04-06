@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.rapplogic.xbee.api.RemoteAtRequest;
@@ -46,8 +47,9 @@ import com.rapplogic.xbee.api.XBeeTimeoutException;
 public class RemoteAtExample {
 
 	private final Logger log = LogManager.getLogger(RemoteAtExample.class);
-	
+
 	@Test
+	@Ignore
 	public void testRemoteAtExample() throws XBeeException, InterruptedException {
 		
 		XBee xbee = new XBee();
