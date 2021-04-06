@@ -3,6 +3,7 @@ apply plugin: 'maven'
 group = 'com.rapplogic'
 version = '0.9.1-dz'
 
+/*
 apply plugin: 'findbugs'
 
 findbugs {
@@ -10,6 +11,7 @@ findbugs {
     excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     ignoreFailures = true
 }
+ */
 
 repositories {
 
