@@ -3,7 +3,7 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'net.ltgt.errorprone'
 
 sourceCompatibility = 11
@@ -29,11 +29,11 @@ repositories {
 
 dependencies {
 
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
-    compile 'org.rxtx:rxtx:2.1.7'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    implementation 'org.rxtx:rxtx:2.1.7'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
     errorprone 'com.google.errorprone:error_prone_core:2.6.0'
 }
