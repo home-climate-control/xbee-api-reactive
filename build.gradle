@@ -1,5 +1,14 @@
+plugins {
+    id 'net.ltgt.errorprone' version '1.1.1'
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'net.ltgt.errorprone'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
 group = 'com.rapplogic'
 version = '0.9.1-dz'
 
@@ -25,4 +34,6 @@ dependencies {
     compile 'org.rxtx:rxtx:2.1.7'
 
     testCompile 'junit:junit:4.12'
+
+    errorprone 'com.google.errorprone:error_prone_core:2.6.0'
 }

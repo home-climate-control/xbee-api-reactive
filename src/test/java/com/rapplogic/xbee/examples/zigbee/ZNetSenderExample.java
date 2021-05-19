@@ -33,6 +33,8 @@ import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.api.zigbee.ZNetTxStatusResponse;
 import com.rapplogic.xbee.util.ByteUtils;
 
+import java.util.Arrays;
+
 /** 
  * To run this example you need to have at least two ZNet XBees powered up and configured to the same PAN ID (ATID) in API mode (2).
  * This software requires the XBee to be configured in API mode; if your ZNet radios are flashed with the transparent (AT) firmware, 
@@ -134,7 +136,7 @@ public class ZNetSenderExample {
 		// first request we just send 64-bit address.  we get 16-bit network address with status response
 		ZNetTxRequest request = new ZNetTxRequest(addr64, payload);
 		
-		log.debug("zb request is " + request.getXBeePacket().getByteArray());
+		log.debug("zb request is " + Arrays.toString(request.getXBeePacket().getByteArray()));
 		
 		log.info("sending tx " + request);
 		
