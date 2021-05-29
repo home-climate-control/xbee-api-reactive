@@ -5,6 +5,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
 apply plugin: 'net.ltgt.errorprone'
 
 sourceCompatibility = 11
@@ -45,4 +46,16 @@ sonarqube {
         property "sonar.organization", "home-climate-control"
         property "sonar.host.url", "https://sonarcloud.io"
     }
+
+jacoco {
+    toolVersion = "0.8.6"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
 }
