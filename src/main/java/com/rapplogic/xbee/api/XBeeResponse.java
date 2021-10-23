@@ -19,11 +19,11 @@
 
 package com.rapplogic.xbee.api;
 
+import com.rapplogic.xbee.util.ByteUtils;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
-
-import com.rapplogic.xbee.util.ByteUtils;
 
 /**
  * The super class of all XBee Receive packets
@@ -51,7 +51,7 @@ public abstract class XBeeResponse implements Serializable {
 
 	private boolean error = false;
 
-	public XBeeResponse() {
+	protected XBeeResponse() {
 
 	}
 
@@ -163,13 +163,11 @@ public abstract class XBeeResponse implements Serializable {
 				return false;
 		} else if (!length.equals(other.length))
 			return false;
-		if (!Arrays.equals(rawPacketBytes, other.rawPacketBytes))
-			return false;
-		return true;
-	}
+        return Arrays.equals(rawPacketBytes, other.rawPacketBytes);
+    }
 
-	public String toString() {
-		// 8/19/09 fixed null pointer on length.get16BitValue
+    @Override
+    public String toString() {
 		return "apiId=" + this.apiId +
 			",length=" + (length == null ? "null" : length.get16BitValue()) +
 			",checksum=" + ByteUtils.toBase16(checksum) +

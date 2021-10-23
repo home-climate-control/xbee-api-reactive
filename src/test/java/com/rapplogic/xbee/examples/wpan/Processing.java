@@ -1,33 +1,34 @@
 package com.rapplogic.xbee.examples.wpan;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.wpan.RxResponseIoSample;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class Processing {
 	XBee xbee;
-	Queue<XBeeResponse> queue = new ConcurrentLinkedQueue<XBeeResponse>();
+	Queue<XBeeResponse> queue = new ConcurrentLinkedQueue<>();
 	boolean message;
 	XBeeResponse response;
-	  
+
 	void setup() {
-	  try { 
+	  try {
 
 	    xbee = new XBee();
 	    // replace with your COM port
 	    xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
 
 	    xbee.addPacketListener(new PacketListener() {
-	      public void processResponse(XBeeResponse response) {
+	      @Override
+          public void processResponse(XBeeResponse response) {
 	        queue.offer(response);
 	      }
 	    }
 	    );
-	  } 
+	  }
 	  catch (Exception e) {
 	    System.out.println("XBee failed to initialize");
 	    e.printStackTrace();
@@ -38,13 +39,13 @@ public class Processing {
 	void draw() {
 	  try {
 	    readPackets();
-	  } 
+	  }
 	  catch (Exception e) {
 	    e.printStackTrace();
 	  }
 	}
 
-	void readPackets() throws Exception {
+	void readPackets() {
 
 	  while ((response = queue.poll()) != null) {
 	    // we got something!
@@ -57,13 +58,14 @@ public class Processing {
 	        println("10-bit temp reading (pin 19) is " +
 	          ioSample.getSamples()[0].getAnalog1());
 	      }
-	    } 
+	    }
 	    catch (ClassCastException e) {
 	      // not an IO Sample
 	    }
 	  }
 	}
-	
-	void println(String s) {};
-	String dataPath(String s) {return null;};
+
+	void println(String s) {}
+
+    String dataPath(String s) {return null;}
 }

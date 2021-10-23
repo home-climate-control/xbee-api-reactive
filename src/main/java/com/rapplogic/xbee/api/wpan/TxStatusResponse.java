@@ -1,31 +1,31 @@
 /**
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.rapplogic.xbee.api.wpan;
 
+import com.rapplogic.xbee.api.IPacketParser;
+import com.rapplogic.xbee.api.XBeeFrameIdResponse;
+
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.rapplogic.xbee.api.IPacketParser;
-import com.rapplogic.xbee.api.XBeeFrameIdResponse;
 
 /**
  * Series 1 XBee.  This is sent out the UART of the transmitting XBee immediately following
@@ -38,28 +38,28 @@ import com.rapplogic.xbee.api.XBeeFrameIdResponse;
  *
  */
 public class TxStatusResponse extends XBeeFrameIdResponse {
-	
+
 	public enum Status {
-	
+
 		SUCCESS (0),
 		NO_ACK (1),
 		CCA_FAILURE(2),
 		PURGED(3);
-		
-		private static final Map<Integer,Status> lookup = new HashMap<Integer,Status>();
-		
+
+		private static final Map<Integer,Status> lookup = new HashMap<>();
+
 		static {
 			for(Status s : EnumSet.allOf(Status.class)) {
 				lookup.put(s.getValue(), s);
 			}
 		}
-		
-		public static Status get(int value) { 
-			return lookup.get(value); 
+
+		public static Status get(int value) {
+			return lookup.get(value);
 		}
-		
+
 	    private final int value;
-	    
+
 	    Status(int value) {
 	        this.value = value;
 	    }
@@ -68,12 +68,8 @@ public class TxStatusResponse extends XBeeFrameIdResponse {
 			return value;
 		}
 	}
-	
-	private Status status;
-	
-	public TxStatusResponse() {
 
-	}
+	private Status status;
 
 	public Status getStatus() {
 		return status;
@@ -82,7 +78,7 @@ public class TxStatusResponse extends XBeeFrameIdResponse {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-	
+
 	/**
 	 * Returns true if the delivery status is SUCCESS
 	 */
@@ -90,34 +86,35 @@ public class TxStatusResponse extends XBeeFrameIdResponse {
 		return this.status == Status.SUCCESS;
 	}
 
-	// isError() was overridding XBeeResponse isError()
-		
+	// isError() was overriding XBeeResponse isError()
+
 	public boolean isAckError() {
 		return this.status == Status.NO_ACK;
 	}
-	
+
 	public boolean isCcaError() {
 		return this.status == Status.CCA_FAILURE;
 	}
-	
+
 	public boolean isPurged() {
 		return this.status == Status.PURGED;
 	}
-	
-	
+
+    @Override
 	public void parse(IPacketParser parser) throws IOException {
 		// frame id
 		int frameId = parser.read("TxStatus Frame Id");
 		this.setFrameId(frameId);
-		
+
 		//log.debug("frame id is " + frameId);
 
 		// Status: 0=Success, 1= No Ack, 2= CCA Failure, 3= Purge
-		int status = parser.read("TX Status");
-		this.setStatus(TxStatusResponse.Status.get(status));	
-	}	
-	
-	public String toString() {
+		var status = parser.read("TX Status");
+		this.setStatus(TxStatusResponse.Status.get(status));
+	}
+
+	@Override
+    public String toString() {
 		return super.toString() + ",status=" + this.getStatus();
 	}
 }

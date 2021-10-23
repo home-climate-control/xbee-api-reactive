@@ -19,14 +19,13 @@
 
 package com.rapplogic.xbee.api;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.rapplogic.xbee.util.ByteUtils;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Packages a frame data array into an XBee packet.
@@ -36,13 +35,15 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class XBeePacket {
 
-	public enum SpecialByte {
+    private static final Logger logger = LogManager.getLogger(XBeePacket.class);
+
+    public enum SpecialByte {
 		START_BYTE (0x7e), // ~
 		ESCAPE (0x7d), // }
 		XON (0x11),
 		XOFF (0x13);
 
-		private static final Map<Integer,SpecialByte> lookup = new HashMap<Integer,SpecialByte>();
+		private static final Map<Integer,SpecialByte> lookup = new HashMap<>();
 
 		static {
 			for(SpecialByte s : EnumSet.allOf(SpecialByte.class)) {
@@ -65,8 +66,6 @@ public class XBeePacket {
 		}
 	}
 
-	private final static Logger log = LogManager.getLogger(XBeePacket.class);
-
 	private int[] packet;
 
 	/**
@@ -76,8 +75,6 @@ public class XBeePacket {
 	 * The format of a packet is as follows:
 	 *
 	 * start byte - msb length byte - lsb length byte - frame data - checksum byte
-	 *
-	 * @param frameData
 	 */
 	public XBeePacket(int[] frameData) {
 
@@ -124,7 +121,7 @@ public class XBeePacket {
 		// TODO save escaping for the serial out method. this is an unnecessary operation
 		packet = escapePacket(packet);
 
-		if (log.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("Packet: ");
 			for (int i = 0; i < packet.length; i++) {
@@ -133,17 +130,14 @@ public class XBeePacket {
 					stringBuilder.append(" ");
 				}
 			}
-			log.debug(stringBuilder);
+			logger.debug(stringBuilder);
 
-			log.debug("pre-escape packet size is " + preEscapeLength + ", post-escape packet size is " + packet.length);
+            logger.debug("pre-escape packet size is {}, post-escape packet size is {}", preEscapeLength, packet.length);
 		}
 	}
 
 	/**
 	 * Escape all bytes in packet after start byte, and including checksum
-	 *
-	 * @param packet
-	 * @return
 	 */
 	private static int[] escapePacket(int[] packet) {
 		int escapeBytes = 0;
@@ -151,7 +145,7 @@ public class XBeePacket {
 		// escape packet.  start at one so we don't escape the start byte
 		for (int i = 1; i < packet.length; i++) {
 			if (isSpecialByte(packet[i])) {
-				log.debug("escapeFrameData: packet byte requires escaping byte " + ByteUtils.toBase16(packet[i]));
+				logger.debug("escapeFrameData: packet byte requires escaping byte {}", ByteUtils.toBase16(packet[i]));
 				escapeBytes++;
 			}
 		}
@@ -159,7 +153,7 @@ public class XBeePacket {
 		if (escapeBytes == 0) {
 			return packet;
 		} else {
-			log.debug("packet requires escaping");
+			logger.debug("packet requires escaping");
 
 			int[] escapePacket = new int[packet.length + escapeBytes];
 
@@ -172,7 +166,7 @@ public class XBeePacket {
 					escapePacket[pos] = SpecialByte.ESCAPE.getValue();
 					escapePacket[++pos] = 0x20 ^ packet[i];
 
-					log.debug("escapeFrameData: xor'd byte is 0x" + Integer.toHexString(escapePacket[pos]));
+					logger.debug("escapeFrameData: xor'd byte is 0x{}", Integer.toHexString(escapePacket[pos]));
 				} else {
 					escapePacket[pos] = packet[i];
 				}
@@ -194,7 +188,8 @@ public class XBeePacket {
 
     }
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return ByteUtils.toBase16(this.packet);
 	}
 
@@ -267,12 +262,6 @@ public class XBeePacket {
 		return (packet[packet.length - 1] == SpecialByte.ESCAPE.getValue());
 	}
 
-	/**
-	 *
-	 * @param packet
-	 * @return
-	 * @throws IncompletePacketException
-	 */
 	public static int[] unEscapePacket(int[] packet) {
 
 		int escapeBytes = 0;

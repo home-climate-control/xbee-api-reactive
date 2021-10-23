@@ -19,7 +19,7 @@ import com.rapplogic.xbee.api.XBeeNotConnectedException;
 
 /**
  * Tests opening and closing connections to the radio
- * 
+ *
  * @author andrew
  *
  */
@@ -31,7 +31,7 @@ public class OpenCloseConnectionsTest {
 
 	/**
 	 * Test the functionality with the actual serial port.
-	 * 
+	 *
 	 * Enable this test only if you have the hardware connected.
 	 */
 	@Test
@@ -54,20 +54,20 @@ public class OpenCloseConnectionsTest {
 		ThreadContext.push("testOpenClose(" + port + ")");
 
 		try {
-			
+
 			testConnection(new XBeeSerialConnectionWrapper(port, 9600));
 
 		} finally {
 			ThreadContext.pop();
 		}
 	}
-	
+
 	private void testConnection(XBeeConnectionWrapper connectionWrapper) throws XBeeException, IOException {
-		
+
 		log.info("opening connection");
 
 		XBeeConnection connection = connectionWrapper.open();
-		
+
 		// first connect directly to end device and configure.  then comment out configureXXX methods and connect to coordinator
 		xbee.initProviderConnection(connection);
 
@@ -140,35 +140,35 @@ public class OpenCloseConnectionsTest {
 			assertEquals("Wrong exception message", "XBee is not connected", t.getMessage());
 		}
 	}
-	
+
 	private abstract static class XBeeConnectionWrapper {
-		
+
 		abstract XBeeConnection open() throws IOException;
 		abstract XBeeConnection reopen() throws IOException;
 	}
-	
+
 	private static class XBeeSerialConnectionWrapper extends XBeeConnectionWrapper {
 
 		public final String port;
 		public final int baudRate;
-		
+
 		private final SerialPortConnection serial = new SerialPortConnection();
-		
+
 		public XBeeSerialConnectionWrapper(String port, int baudRate) {
-			
+
 			this.port = port;
 			this.baudRate = baudRate;
 		}
-		
+
 		@Override
 		XBeeConnection open() throws IOException {
 
 			try {
-				
+
 				serial.openSerialPort(port, baudRate);
-				
+
 				return serial;
-				
+
 			} catch (Throwable t) {
 				throw new IOException("Oops", t);
 			}
@@ -176,9 +176,9 @@ public class OpenCloseConnectionsTest {
 
 		@Override
 		XBeeConnection reopen() throws IOException {
-			
+
 			// VT: FIXME: Is there a way to assert that the connection is now closed?
-			
+
 			return open();
 		}
 	}

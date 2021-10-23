@@ -1,31 +1,23 @@
-/**
+/*
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.rapplogic.xbee.api;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.rapplogic.xbee.api.wpan.RxResponse16;
 import com.rapplogic.xbee.api.wpan.RxResponse64;
@@ -40,6 +32,13 @@ import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IIntInputStream;
 import com.rapplogic.xbee.util.InputStreamWrapper;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Reads a packet from the input stream, verifies checksum and creates an XBeeResponse object
@@ -54,30 +53,30 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class PacketParser implements IIntInputStream, IPacketParser {
 
-	private final static Logger log = LogManager.getLogger(PacketParser.class);
+    private static final Logger logger = LogManager.getLogger();
 
-	private IIntInputStream in;
-	
+	private final IIntInputStream in;
+
 	// size of packet after special bytes have been escaped
 	private XBeePacketLength length;
-	private Checksum checksum = new Checksum();
-	
+	private final Checksum checksum = new Checksum();
+
 	private boolean done = false;
-	
+
 	private int bytesRead;
 	private int escapeBytes;
 
 	private XBeeResponse response;
 	private ApiId apiId;
 	private int intApiId;
-	
-	private static Map<Integer, Class<? extends XBeeResponse>> handlerMap = new HashMap<Integer, Class<? extends XBeeResponse>>();
-	
+
+	private static final Map<Integer, Class<? extends XBeeResponse>> handlerMap = new HashMap<>();
+
 	// TODO reuse this object for all packets
-	
+
 	// experiment to preserve original byte array for transfer over network (Starts with length)
-	private IntArrayOutputStream rawBytes = new IntArrayOutputStream();
-	
+	private final IntArrayOutputStream rawBytes = new IntArrayOutputStream();
+
 	static {
 		// TODO put all response handlers in specific packet and load all.  implement static handlesApi method
 		handlerMap.put(ApiId.AT_RESPONSE.getValue(), AtCommandResponse.class);
@@ -94,173 +93,169 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 		handlerMap.put(ApiId.ZNET_RX_RESPONSE.getValue(), ZNetRxResponse.class);
 		handlerMap.put(ApiId.ZNET_TX_STATUS_RESPONSE.getValue(), ZNetTxStatusResponse.class);
 	}
-	
+
 	static void registerResponseHandler(int apiId, Class<? extends XBeeResponse> clazz) {
 		if (handlerMap.get(apiId) == null) {
-			log.info("Registering response handler " + clazz.getCanonicalName() + " for apiId: " + apiId);
+            logger.info("Registering response handler {} for apiId: {}", clazz.getCanonicalName(), apiId);
 		} else {
-			log.warn("Overriding existing implementation: " + handlerMap.get(apiId).getCanonicalName() + ", with " + clazz.getCanonicalName() + " for apiId: " + apiId);
+            logger.warn("Overriding existing implementation: {}, with {} for apiId: {}", handlerMap.get(apiId).getCanonicalName(), clazz.getCanonicalName(), apiId);
 		}
-		
+
 		handlerMap.put(apiId, clazz);
 	}
-	
+
 	static void unRegisterResponseHandler(int apiId) {
 		if (handlerMap.get(apiId) != null) {
-			log.info("Unregistering response handler " + handlerMap.get(apiId).getCanonicalName() + " for apiId: " + apiId);
+			logger.info("Unregistering response handler {} for apiId: ", handlerMap.get(apiId).getCanonicalName(), apiId);
 			handlerMap.remove(apiId);
 		} else {
 			throw new IllegalArgumentException("No response handler for: " + apiId);
 		}
 	}
-	
+
 	public PacketParser(InputStream in) {
 		this.in = new InputStreamWrapper(in);
 	}
-	
+
 	// for parsing a packet from a byte array
 	public PacketParser(IIntInputStream in) {
 		this.in = in;
 	}
-	
+
 	/**
 	 * This method is guaranteed (unless I screwed up) to return an instance of XBeeResponse and should never throw an exception
-	 * If an exception occurs, it will be packaged and returned as an ErrorResponse. 
-	 * 
-	 * @return
+	 * If an exception occurs, it will be packaged and returned as an ErrorResponse.
 	 */
 	public XBeeResponse parsePacket() {
-		
+
 		try {
 			// BTW, length doesn't account for escaped bytes
 			int msbLength = this.read("Length MSB");
 			int lsbLength = this.read("Length LSB");
-			
+
 			// length of api structure, starting here (not including start byte or length bytes, or checksum)
 			this.length = new XBeePacketLength(msbLength, lsbLength);
 
-			log.debug("packet length is " + String.format("[0x%03X]", length.getLength()));
-			
+			logger.debug("packet length is " + String.format("[0x%03X]", length.getLength()));
+
 			// total packet length = stated length + 1 start byte + 1 checksum byte + 2 length bytes
-			
+
 			intApiId = this.read("API ID");
-			
+
 			this.apiId = ApiId.get(intApiId);
-			
+
 			if (apiId == null) {
-				this.apiId = ApiId.UNKNOWN;	
+				this.apiId = ApiId.UNKNOWN;
 			}
-			
-			log.info("Handling ApiId: " + apiId);
-			
+
+			logger.info("Handling ApiId: {}", apiId);
+
 			// TODO parse I/O data page 12. 82 API Identifier Byte for 64 bit address A/D data (83 is for 16bit A/D data)
-			
+
 			for (Integer handlerApiId : handlerMap.keySet()) {
 				if (intApiId == handlerApiId) {
-					log.debug("Found response handler for apiId [" + ByteUtils.toBase16(intApiId) + "]: " + handlerMap.get(handlerApiId).getCanonicalName());		
-					response = (XBeeResponse) handlerMap.get(handlerApiId).newInstance();
+					logger.debug("Found response handler for apiId [{}]: {}", ByteUtils.toBase16(intApiId), handlerMap.get(handlerApiId).getCanonicalName());
+					response = handlerMap.get(handlerApiId).newInstance();
 					response.parse(this);
 					break;
 				}
 			}
-			
+
 			if (response == null) {
-				log.info("Did not find a response handler for ApiId [" + ByteUtils.toBase16(intApiId) + "].  Returning GenericResponse");
+				logger.info("Did not find a response handler for ApiId [{}].  Returning GenericResponse", ByteUtils.toBase16(intApiId));
 				response = new GenericResponse();
 				response.parse(this);
 			}
-			
+
 			response.setChecksum(this.read("Checksum"));
-			
+
 			if (!this.isDone()) {
 				throw new XBeeParseException("There are remaining bytes according to stated packet length but we have read all the bytes we thought were required for this packet (if that makes sense)");
 			}
-			
+
 			response.finish();
 		} catch (Exception e) {
-			
+
 			// added bytes read for troubleshooting
-			log.error("Failed due to exception.  Returning ErrorResponse.  bytes read: " + ByteUtils.toBase16(rawBytes.getIntArray()), e);
-			
-			Exception exception = e;
-			
+			logger.error("Failed due to exception.  Returning ErrorResponse.  bytes read: {}", ByteUtils.toBase16(rawBytes.getIntArray()), e);
+
 			response = new ErrorResponse();
-			
-			((ErrorResponse)response).setErrorMsg(exception.getMessage());	
+
+			((ErrorResponse)response).setErrorMsg(e.getMessage());
 			// but this isn't
 			((ErrorResponse)response).setException(e);
 		}
-		
+
 		if (response != null) {
 			response.setLength(length);
-			response.setApiId(apiId);			
+			response.setApiId(apiId);
 			// preserve original byte array for transfer over networks
-			response.setRawPacketBytes(rawBytes.getIntArray());			
+			response.setRawPacketBytes(rawBytes.getIntArray());
 		}
 
 		return response;
 	}
-	
+
 	/**
 	 * Same as read() but logs the context of the byte being read.  useful for debugging
 	 */
-	public int read(String context) throws IOException {
+	@Override
+    public int read(String context) throws IOException {
 		int b = this.read();
-		log.debug("Read " + context + " byte, val is " + ByteUtils.formatByte(b));
+		logger.debug("Read {} byte, val is {}", context, ByteUtils.formatByte(b));
 		return b;
 	}
-	
+
 	/**
 	 * This method should only be called by read()
-	 * 
-	 * @throws IOException
 	 */
 	private int readFromStream() throws IOException {
 		int b = in.read();
 		// save raw bytes to transfer via network
-		rawBytes.write(b);		
-		
+		rawBytes.write(b);
+
 		return b;
 	}
-	
+
 	/**
 	 * This method reads bytes from the underlying input stream and performs the following tasks:
 	 * 1. Keeps track of how many bytes we've read
 	 * 2. Un-escapes bytes if necessary and verifies the checksum.
 	 */
-	public int read() throws IOException {
+	@Override
+    public int read() throws IOException {
 
 		if (done) {
 			throw new XBeeParseException("Packet has read all of its bytes");
 		}
-		
+
 		int b = this.readFromStream();
 
-		
+
 		if (b == -1) {
 			throw new XBeeParseException("Read -1 from input stream while reading packet!");
 		}
-		
+
 		if (XBeePacket.isSpecialByte(b)) {
-			log.debug("Read special byte that needs to be unescaped"); 
-			
+			logger.debug("Read special byte that needs to be unescaped");
+
 			if (b == XBeePacket.SpecialByte.ESCAPE.getValue()) {
-				log.debug("found escape byte");
+				logger.debug("found escape byte");
 				// read next byte
 				b = this.readFromStream();
-				
-				log.debug("next byte is " + ByteUtils.formatByte(b));
+
+				logger.debug("next byte is {}", ByteUtils.formatByte(b));
 				b = 0x20 ^ b;
-				log.debug("unescaped (xor) byte is " + ByteUtils.formatByte(b));
-					
+				logger.debug("unescaped (xor) byte is {}", ByteUtils.formatByte(b));
+
 				escapeBytes++;
 			} else {
 				// TODO some responses such as AT Response for node discover do not escape the bytes?? shouldn't occur if AP mode is 2?
-				// while reading remote at response Found unescaped special byte base10=19,base16=0x13,base2=00010011 at position 5 
-				log.warn("Found unescaped special byte " + ByteUtils.formatByte(b) + " at position " + bytesRead);
+				// while reading remote at response Found unescaped special byte base10=19,base16=0x13,base2=00010011 at position 5
+                logger.warn("Found unescaped special byte {}} at position {}", ByteUtils.formatByte(b), bytesRead);
 			}
 		}
-	
+
 		bytesRead++;
 
 		// do this only after reading length bytes
@@ -270,16 +265,16 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			// checksum should only include unescaped bytes!!!!
 			// when computing checksum, do not include start byte, length, or checksum; when verifying, include checksum
 			checksum.addByte(b);
-			
-			log.debug("Read byte " + ByteUtils.formatByte(b) + " at position " + bytesRead + ", packet length is " + this.length.get16BitValue() + ", #escapeBytes is " + escapeBytes + ", remaining bytes is " + this.getRemainingBytes());
-			
+
+            logger.debug("Read byte {} at position {}, packet length is {}, #escapeBytes is {}, remaining bytes is {}", ByteUtils.formatByte(b), bytesRead, this.length.get16BitValue(), escapeBytes, this.getRemainingBytes());
+
 			// escape bytes are not included in the stated packet length
 			if (this.getFrameDataBytesRead() >= (length.get16BitValue() + 1)) {
 				// this is checksum and final byte of packet
 				done = true;
-				
-				log.debug("Checksum byte is " + b);
-				
+
+				logger.debug("Checksum byte is {}", b);
+
 				if (!checksum.verify()) {
 					throw new XBeeParseException("Checksum is incorrect.  Expected 0xff, but got " + checksum.getChecksum());
 				}
@@ -288,71 +283,72 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 		return b;
 	}
-		
+
 	/**
 	 * Reads all remaining bytes except for checksum
-	 * @return
-	 * @throws IOException
 	 */
-	public int[] readRemainingBytes() throws IOException {
-		
+	@Override
+    public int[] readRemainingBytes() throws IOException {
+
 		// minus one since we don't read the checksum
 		int[] value = new int[this.getRemainingBytes() - 1];
-		
-		log.debug("There are " + value.length + " remaining bytes");
-		
+
+		logger.debug("There are {} remaining bytes", value.length);
+
 		for (int i = 0; i < value.length; i++) {
 			value[i] = this.read("Remaining bytes " + i);
 		}
-		
+
 		return value;
 	}
-	
-	public XBeeAddress64 parseAddress64() throws IOException {
+
+	@Override
+    public XBeeAddress64 parseAddress64() throws IOException {
 		XBeeAddress64 addr = new XBeeAddress64();
-		
+
 		for (int i = 0; i < 8; i++) {
 			addr.getAddress()[i] = this.read("64-bit Address byte " + i);
-		}	
-		
+		}
+
 		return addr;
 	}
-	
-	public XBeeAddress16 parseAddress16() throws IOException {
+
+	@Override
+    public XBeeAddress16 parseAddress16() throws IOException {
 		XBeeAddress16 addr16 = new XBeeAddress16();
-		
+
 		addr16.setMsb(this.read("Address 16 MSB"));
 		addr16.setLsb(this.read("Address 16 LSB"));
-		
+
 		return addr16;
 	}
-	
+
 	/**
 	 * Returns number of bytes remaining, relative to the stated packet length (not including checksum).
-	 * @return
 	 */
-	public int getFrameDataBytesRead() {
+	@Override
+    public int getFrameDataBytesRead() {
 		// subtract out the 2 length bytes
 		return this.getBytesRead() - 2;
 	}
-	
+
 	/**
 	 * Number of bytes remaining to be read, including the checksum
-	 * @return
 	 */
-	public int getRemainingBytes() {
+	@Override
+    public int getRemainingBytes() {
 		// add one for checksum byte (not included) in packet length
 		return this.length.get16BitValue() - this.getFrameDataBytesRead() + 1;
 	}
-	
+
 	// get unescaped packet length
 	// get escaped packet length
-	
+
 	/**
 	 * Does not include any escape bytes
-	 * @return
 	 */
-	public int getBytesRead() {
+	@Override
+    public int getBytesRead() {
 		return bytesRead;
 	}
 
@@ -372,15 +368,18 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 		return checksum.getChecksum();
 	}
 
-	public XBeePacketLength getLength() {
+	@Override
+    public XBeePacketLength getLength() {
 		return length;
 	}
 
-	public ApiId getApiId() {
+	@Override
+    public ApiId getApiId() {
 		return apiId;
 	}
-	
-	public int getIntApiId() {
+
+	@Override
+    public int getIntApiId() {
 		return this.intApiId;
 	}
 }

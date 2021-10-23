@@ -1,29 +1,29 @@
 /**
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.rapplogic.xbee.api.zigbee;
 
-import java.io.IOException;
-
 import com.rapplogic.xbee.api.IPacketParser;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.DoubleByte;
+
+import java.io.IOException;
 
 // TODO deprecate all ZNet* classes and replace with ZigBee*
 /**
@@ -34,12 +34,12 @@ import com.rapplogic.xbee.util.DoubleByte;
  * API ID: 0x91
  */
 public class ZNetExplicitRxResponse extends ZNetRxResponse {
-	
+
 	private int sourceEndpoint;
 	private int destinationEndpoint;
 	private DoubleByte clusterId;
 	private DoubleByte profileId;
-	
+
 	public ZNetExplicitRxResponse() {
 		super();
 	}
@@ -75,28 +75,30 @@ public class ZNetExplicitRxResponse extends ZNetRxResponse {
 	public void setProfileId(DoubleByte profileId) {
 		this.profileId = profileId;
 	}
-	
+
+    @Override
 	public void parse(IPacketParser parser) throws IOException {
 		this.parseAddress(parser);
 
 		this.setSourceEndpoint(parser.read("Reading Source Endpoint"));
 		this.setDestinationEndpoint(parser.read("Reading Destination Endpoint"));
-		DoubleByte clusterId = new DoubleByte();
+		var clusterId = new DoubleByte();
 		clusterId.setMsb(parser.read("Reading Cluster Id MSB"));
 		clusterId.setLsb(parser.read("Reading Cluster Id LSB"));
 		this.setClusterId(clusterId);
-		
-		DoubleByte profileId = new DoubleByte();
+
+		var profileId = new DoubleByte();
 		profileId.setMsb(parser.read("Reading Profile Id MSB"));
 		profileId.setLsb(parser.read("Reading Profile Id LSB"));
 		this.setProfileId(profileId);
-		
+
 		this.parseOption(parser);
-		this.setData(parser.readRemainingBytes());	
+		this.setData(parser.readRemainingBytes());
 	}
 
-	public String toString() {
-		return super.toString() + 
+	@Override
+    public String toString() {
+		return super.toString() +
 			",sourceEndpoint=" + ByteUtils.toBase16(this.getSourceEndpoint()) +
 			",destinationEndpoint=" + ByteUtils.toBase16(this.getDestinationEndpoint()) +
 			",clusterId(msb)=" + ByteUtils.toBase16(this.getClusterId().getMsb()) +
