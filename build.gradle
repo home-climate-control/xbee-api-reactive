@@ -12,7 +12,7 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 group = 'com.rapplogic'
-version = '0.9.1-dz'
+version = '0.10.1-dz'
 
 /*
 apply plugin: 'findbugs'
