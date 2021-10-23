@@ -1,6 +1,6 @@
 package com.rapplogic.xbee;
 
-import java.io.IOException;
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -14,12 +14,11 @@ import java.io.OutputStream;
  * write(int) and flush() on the OutputStream
  * <p/>
  * It's recommended to implement close
- *  
+ *
  * @author andrew
  *
  */
-public interface XBeeConnection {
-	public OutputStream getOutputStream();
-	public InputStream getInputStream();
-	public void close() throws IOException; 
+public interface XBeeConnection extends Closeable {
+	OutputStream getOutputStream();
+	InputStream getInputStream();
 }
