@@ -12,9 +12,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests opening and closing connections to the radio
@@ -26,7 +27,7 @@ class OpenCloseConnectionsTest {
 
 	private final static Logger log = LogManager.getLogger(OpenCloseConnectionsTest.class);
 
-	private XBee xbee = new XBee();
+	private final XBee xbee = new XBee();
 
 	/**
 	 * Test the functionality with the actual serial port.
@@ -35,7 +36,7 @@ class OpenCloseConnectionsTest {
 	 */
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
-	void testSerial() throws XBeeException, InterruptedException, IOException {
+	void testSerial() throws XBeeException, IOException {
 
 		// series 1 (VT: FIXME: series of what?)
 		// String port = "/dev/tty.usbserial-A4004Rim";
@@ -49,7 +50,7 @@ class OpenCloseConnectionsTest {
 		testOpenCloseConnections(port);
 	}
 
-	private void testOpenCloseConnections(String port) throws XBeeException, InterruptedException, IOException {
+	private void testOpenCloseConnections(String port) throws XBeeException, IOException {
 		ThreadContext.push("testOpenClose(" + port + ")");
 
 		try {
@@ -61,7 +62,7 @@ class OpenCloseConnectionsTest {
 		}
 	}
 
-	private void testConnection(XBeeConnectionWrapper connectionWrapper) throws XBeeException, IOException {
+	private void testConnection(XBeeSerialConnectionWrapper connectionWrapper) throws XBeeException, IOException {
 
 		log.info("opening connection");
 
@@ -70,83 +71,46 @@ class OpenCloseConnectionsTest {
 		// first connect directly to end device and configure.  then comment out configureXXX methods and connect to coordinator
 		xbee.initProviderConnection(connection);
 
-		if (!xbee.isConnected()) {
-			fail("Should be connected");
-		}
-
-		try {
-
-			log.info("attempting duplicate open");
-			xbee.initProviderConnection(connection);
-			fail("already open");
-
-		} catch (Throwable t) {
-
-			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-
-			assertSame(IllegalStateException.class, t.getClass(), "Wrong exception class");
-			assertEquals("Wrong exception message", "Cannot open new connection -- existing connection is still open.  Please close first", t.getMessage());
-		}
+        assertThat(xbee.isConnected()).isTrue();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
+                    log.info("attempting duplicate open");
+                    xbee.initProviderConnection(connection);
+                }).withMessage("Cannot open new connection -- existing connection is still open.  Please close first");
 
 		log.info("sending channel command");
 
-		if (xbee.sendSynchronous(new AtCommand("CH")).isError()) {
-			fail("fail");
-		}
+		assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
 
 		log.info("closing connection");
 		xbee.close();
 
-		if (xbee.isConnected()) {
-			fail("Should be disconnected");
-		}
+		assertThat(xbee.isConnected()).isFalse();
 
-		try {
-
-			log.info("sending at command, but we're disconnected");
-			xbee.sendSynchronous(new AtCommand("CH"));
-			fail("Should be disconnected");
-
-		} catch (Throwable t) {
-
-			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-
-			assertSame(XBeeNotConnectedException.class, t.getClass(), "Wrong exception class");
-			assertEquals("Wrong exception message", null, t.getMessage());
-		}
+        assertThatExceptionOfType(XBeeNotConnectedException.class).isThrownBy(() -> {
+            // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
+            log.info("sending at command, but we're disconnected");
+            xbee.sendSynchronous(new AtCommand("CH"));
+        });
 
 		log.info("reconnecting");
 		xbee.initProviderConnection(connectionWrapper.reopen());
 
-		if (xbee.sendSynchronous(new AtCommand("CH")).isError()) {
-			fail("fail");
-		}
+        assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
 
 		log.info("closing conn");
 		xbee.close();
 
-		try {
-
-			log.info("try duplicate close");
-			xbee.close();
-			fail("Already closed");
-
-		} catch (Throwable t) {
-
-			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-
-			assertSame(IllegalStateException.class, t.getClass(), "Wrong exception class");
-			assertEquals("Wrong exception message", "XBee is not connected", t.getMessage());
-		}
+        assertThatIllegalStateException()
+                .isThrownBy(() -> {
+                    // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
+                    log.info("try duplicate close");
+                    xbee.close();
+                }).withMessage("XBee is not connected");
 	}
 
-	private abstract static class XBeeConnectionWrapper {
-
-		abstract XBeeConnection open() throws IOException;
-		abstract XBeeConnection reopen() throws IOException;
-	}
-
-	private static class XBeeSerialConnectionWrapper extends XBeeConnectionWrapper {
+	private static class XBeeSerialConnectionWrapper {
 
 		public final String port;
 		public final int baudRate;
@@ -159,7 +123,6 @@ class OpenCloseConnectionsTest {
 			this.baudRate = baudRate;
 		}
 
-		@Override
 		XBeeConnection open() throws IOException {
 
 			try {
@@ -173,7 +136,6 @@ class OpenCloseConnectionsTest {
 			}
 		}
 
-		@Override
 		XBeeConnection reopen() throws IOException {
 
 			// VT: FIXME: Is there a way to assert that the connection is now closed?
