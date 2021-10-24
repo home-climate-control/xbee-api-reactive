@@ -278,6 +278,7 @@ public class XBee implements IXBee {
 	 *
 	 * @deprecated Use {@link #sendSynchronous(XBeeRequest)}
 	 */
+    @Deprecated
 	public AtCommandResponse sendAtCommand(AtCommand command) throws XBeeException {
 		return (AtCommandResponse) this.sendSynchronous(command, 5000);
 	}

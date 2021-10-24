@@ -130,7 +130,7 @@ public class ByteUtils {
 			throw new IllegalArgumentException("input value [" + b + "] is larger than a byte");
 		}
 
-        return ((b >> (--position)) & 0x1) == 0x1;
+        return ((b >> --position) & 0x1) == 0x1;
 
     }
 
