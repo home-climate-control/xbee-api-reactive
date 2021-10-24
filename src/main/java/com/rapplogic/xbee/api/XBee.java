@@ -70,7 +70,7 @@ public class XBee implements IXBee {
 	private void doStartupChecks() throws XBeeException {
 		// Perform startup checks
 		try {
-			AtCommandResponse ap = this.sendAtCommand(new AtCommand("AP"));
+			AtCommandResponse ap = this.sendSynchronousAT(new AtCommand("AP"));
 
 			if (!ap.isOk()) {
 				throw new XBeeException("Attempt to query AP parameter failed: " + ap);
@@ -81,7 +81,7 @@ public class XBee implements IXBee {
 				logger.warn("XBee radio is in API mode without escape characters (AP=1).  The radio must be configured in API mode with escape bytes (AP=2) for use with this library.");
 				logger.info("Attempting to set AP to 2");
 
-				ap = this.sendAtCommand(new AtCommand("AP", 2));
+				ap = this.sendSynchronousAT(new AtCommand("AP", 2));
 
 				if (ap.isOk()) {
 					logger.info("Successfully set AP mode to 2.  This setting will not persist a power cycle without the WR (write) command");
@@ -92,7 +92,7 @@ public class XBee implements IXBee {
 				logger.info("Radio is in correct AP mode (AP=2)");
 			}
 
-			ap = this.sendAtCommand(new AtCommand("HV"));
+			ap = this.sendSynchronousAT(new AtCommand("HV"));
 
 			RadioType radioType = HardwareVersion.parse(ap);
 
@@ -102,7 +102,7 @@ public class XBee implements IXBee {
 				logger.warn("Unknown radio type (HV): {}", ap.getValue()[0]);
 			}
 
-			AtCommandResponse vr = this.sendAtCommand(new AtCommand("VR"));
+			AtCommandResponse vr = this.sendSynchronousAT(new AtCommand("VR"));
 
 			if (vr.isOk()) {
 				logger.info("Firmware version is {}", ByteUtils.toBase16(vr.getValue()));
@@ -273,19 +273,14 @@ public class XBee implements IXBee {
 		}
 	}
 
-	/**
-	 * Uses sendSynchronous to send an AtCommand and collect the response
-	 * <p/>
-	 * Timeout value is fixed at 5 seconds
-	 *
-	 * @deprecated Use {@link #sendSynchronous(XBeeRequest)}
-	 */
-    @Deprecated
-	public AtCommandResponse sendAtCommand(AtCommand command) throws XBeeException {
-		return (AtCommandResponse) this.sendSynchronous(command, Duration.ofSeconds(5));
+    /**
+     * Syntax sugar for {@link #sendSynchronous} returning {@link AtCommandResponse}.
+     */
+	public AtCommandResponse sendSynchronousAT(AtCommand command) throws XBeeException {
+		return (AtCommandResponse) this.sendSynchronous(command);
 	}
 
-	/**
+    /**
 	 * Synchronous method for sending an XBeeRequest and obtaining the
 	 * corresponding response (response that has same frame id).
 	 * <p/>
@@ -364,7 +359,6 @@ public class XBee implements IXBee {
 	public XBeeResponse sendSynchronous(XBeeRequest request) throws XBeeException {
 		return this.sendSynchronous(request, conf.getSendSynchronousTimeout());
 	}
-
 
 	/**
 	 * Same as getResponse(int) but does not timeout.

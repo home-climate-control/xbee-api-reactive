@@ -52,8 +52,8 @@ class ZNetApiAtExample {
 			xbee.open("COM6", 9600);
 
 			// get the 8 byte SH/SL address
-			log.debug("SH is " + ByteUtils.toBase16(((AtCommandResponse)xbee.sendAtCommand(new AtCommand("SH"))).getValue()));
-			log.debug("SL is " + ByteUtils.toBase16(((AtCommandResponse)xbee.sendAtCommand(new AtCommand("SL"))).getValue()));
+			log.debug("SH is " + ByteUtils.toBase16(((AtCommandResponse)xbee.sendSynchronousAT(new AtCommand("SH"))).getValue()));
+			log.debug("SL is " + ByteUtils.toBase16(((AtCommandResponse)xbee.sendSynchronousAT(new AtCommand("SL"))).getValue()));
 
 			// uncomment to run
 //			this.configureIOSamples(xbee);
@@ -70,7 +70,7 @@ class ZNetApiAtExample {
 
 	private void associationStatus(XBee xbee) throws XBeeException {
 		// get association status - success indicates it is associated to another XBee
-		AtCommandResponse response = (AtCommandResponse) xbee.sendAtCommand(new AtCommand("AI"));
+		AtCommandResponse response = (AtCommandResponse) xbee.sendSynchronousAT(new AtCommand("AI"));
 		log.debug("Association Status is " + AssociationStatus.get(response));
 	}
 
@@ -80,27 +80,27 @@ class ZNetApiAtExample {
 		XBeeResponse response = null;
 
 		// reset to factory settings
-		response = xbee.sendAtCommand(new AtCommand("RE"));
+		response = xbee.sendSynchronousAT(new AtCommand("RE"));
 		log.debug("RE is " + response);
 
 		// set PAN id to arbitrary value
-		response = xbee.sendAtCommand(new AtCommand("ID", new int[] {0x1a, 0xaa}));
+		response = xbee.sendSynchronousAT(new AtCommand("ID", new int[] {0x1a, 0xaa}));
 		log.debug("ID is " + response);
 
 		// set NI -- can be any arbitrary sequence of chars
-		response = xbee.sendAtCommand(new AtCommand("NI", new int[] {'E','N','D','_','D','E','V','I','C','E','_','2' }));
+		response = xbee.sendSynchronousAT(new AtCommand("NI", new int[] {'E','N','D','_','D','E','V','I','C','E','_','2' }));
 		log.debug("NI is " + response);
 
 		// set API mode to 2.  factory setting is 1
-		response = xbee.sendAtCommand(new AtCommand("AP", 2));
+		response = xbee.sendSynchronousAT(new AtCommand("AP", 2));
 		log.debug("AP is " + response);
 
 		// save to settings to survive power cycle
-		response = xbee.sendAtCommand(new AtCommand("WR"));
+		response = xbee.sendSynchronousAT(new AtCommand("WR"));
 		log.debug("WR is " + response);
 
 		// software reset
-		response = xbee.sendAtCommand(new AtCommand("FR"));
+		response = xbee.sendSynchronousAT(new AtCommand("FR"));
 		log.debug("FR is " + response);
 	}
 
@@ -109,27 +109,27 @@ class ZNetApiAtExample {
 		XBeeResponse response = null;
 
 		// reset to factory settings
-		response = xbee.sendAtCommand(new AtCommand("RE"));
+		response = xbee.sendSynchronousAT(new AtCommand("RE"));
 		log.debug("RE is " + response);
 
 		// set PAN id to arbitrary value
-		response = xbee.sendAtCommand(new AtCommand("ID", new int[] {0x1a, 0xaa}));
+		response = xbee.sendSynchronousAT(new AtCommand("ID", new int[] {0x1a, 0xaa}));
 		log.debug("RE is " + response);
 
 		// set NI
-		response = xbee.sendAtCommand(new AtCommand("NI", new int[] {'C','O','O','R','D','I','N','A','T','O','R' }));
+		response = xbee.sendSynchronousAT(new AtCommand("NI", new int[] {'C','O','O','R','D','I','N','A','T','O','R' }));
 		log.debug("NI is " + response);
 
 		// set API mode to 2.  factory setting is 1
-		response = xbee.sendAtCommand(new AtCommand("AP", 2));
+		response = xbee.sendSynchronousAT(new AtCommand("AP", 2));
 		log.debug("AP is " + response);
 
 		// save to settings to survive power cycle
-		response = xbee.sendAtCommand(new AtCommand("WR"));
+		response = xbee.sendSynchronousAT(new AtCommand("WR"));
 		log.debug("WR is " + response);
 
 		// software reset
-		response = xbee.sendAtCommand(new AtCommand("FR"));
+		response = xbee.sendSynchronousAT(new AtCommand("FR"));
 		log.debug("FR is " + response);
 	}
 
@@ -142,23 +142,23 @@ class ZNetApiAtExample {
 		XBeeResponse response = null;
 
 		// set IR to 1 sample every 10 seconds.  Set to 0 to disable
-		response = xbee.sendAtCommand(new AtCommand("IR", new int[] {0x27, 0x10}));
+		response = xbee.sendSynchronousAT(new AtCommand("IR", new int[] {0x27, 0x10}));
 		log.debug("IR is " + response);
 
 		// set pin 20 to monitor digital input
-		response = xbee.sendAtCommand(new AtCommand("DO", 0x3));
+		response = xbee.sendSynchronousAT(new AtCommand("DO", 0x3));
 		log.debug("DO is " + response);
 
 		// set pin 19 to monitor analog input
-		response = xbee.sendAtCommand(new AtCommand("D1", 0x2));
+		response = xbee.sendSynchronousAT(new AtCommand("D1", 0x2));
 		log.debug("D1 is " + response);
 
 		// set pin 18 to monitor analog input
-		response = xbee.sendAtCommand(new AtCommand("D2", 0x2));
+		response = xbee.sendSynchronousAT(new AtCommand("D2", 0x2));
 		log.debug("D2 is " + response);
 
 		// set pin 16 to monitor digital input
-		response = xbee.sendAtCommand(new AtCommand("D6", 0x3));
+		response = xbee.sendSynchronousAT(new AtCommand("D6", 0x3));
 		log.debug("D6 is " + response);
 
 		// optionally configure DH + DL; if set to zero (default), samples will be sent to coordinator

@@ -65,7 +65,7 @@ class ApiAtExample {
 //			// send sample every 5 seconds
 //			this.sendCommand(new AtCommand("IR", new int[] {0x13, 0x88}));
 
-			log.info("MY is " + xbee.sendAtCommand(new AtCommand("MY")));
+			log.info("MY is " + xbee.sendSynchronousAT(new AtCommand("MY")));
 //			log.info("SH is " + xbee.sendAtCommand(new AtCommand("SH")));
 //			log.info("SL is " + xbee.sendAtCommand(new AtCommand("SL")));
 		} catch (Throwable t) {
