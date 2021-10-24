@@ -142,27 +142,41 @@ public abstract class XBeeResponse implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof XBeeResponse)) {
+            return false;
+        }
+
 		XBeeResponse other = (XBeeResponse) obj;
 		if (apiId == null) {
-			if (other.apiId != null)
-				return false;
-		} else if (!apiId.equals(other.apiId))
-			return false;
-		if (checksum != other.checksum)
-			return false;
-		if (error != other.error)
-			return false;
+			if (other.apiId != null) {
+                return false;
+            }
+		} else if (!apiId.equals(other.apiId)) {
+            return false;
+        }
+
+		if (checksum != other.checksum) {
+            return false;
+        }
+
+        if (error != other.error) {
+            return false;
+        }
+
 		if (length == null) {
-			if (other.length != null)
-				return false;
-		} else if (!length.equals(other.length))
-			return false;
+			if (other.length != null) {
+                return false;
+            }
+		} else if (!length.equals(other.length)) {
+            return false;
+        }
+
         return Arrays.equals(rawPacketBytes, other.rawPacketBytes);
     }
 
