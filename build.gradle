@@ -14,16 +14,6 @@ targetCompatibility = 11
 group = 'com.rapplogic'
 version = '0.10.1-dz'
 
-/*
-apply plugin: 'findbugs'
-
-findbugs {
-
-    excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
-    ignoreFailures = true
-}
- */
-
 repositories {
 
     jcenter()
