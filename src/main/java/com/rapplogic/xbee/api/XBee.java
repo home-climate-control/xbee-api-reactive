@@ -127,10 +127,11 @@ public class XBee implements IXBee {
 
 			this.type = null;
 
-			SerialPortConnection serial = new SerialPortConnection();
+			SerialPortConnection serial = new SerialPortConnection(); // NOSONAR False positive, this connection is closed in close()
 			serial.openSerialPort(port, baudRate);
 
 			this.initConnection(serial);
+
 		} catch (XBeeException e) {
 			throw e;
 		} catch (Exception e) {
