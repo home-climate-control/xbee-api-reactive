@@ -1,11 +1,15 @@
 package com.rapplogic.xbee.api;
 
+import java.time.Duration;
+
 public class XBeeConfiguration {
+
+    public static final Duration DEFAULT_SYNCHRONOUS_TIMEOUT = Duration.ofSeconds(5);
 
 	private boolean shutdownHook = false;
 	private boolean startupChecks = true;
 	private int maxQueueSize = 100;
-	private int sendSynchronousTimeout = 5000;
+	private Duration sendSynchronousTimeout = DEFAULT_SYNCHRONOUS_TIMEOUT;
 	private ResponseFilter responseQueueFilter;
 
     private static final ResponseFilter noRequestResponseQueueFilter = NoRequestResponse.class::isInstance;
@@ -48,7 +52,7 @@ public class XBeeConfiguration {
 		return this;
 	}
 
-	public XBeeConfiguration withSendSynchronousTimeout(int sendSynchronousTimeout) {
+	public XBeeConfiguration withSendSynchronousTimeout(Duration sendSynchronousTimeout) {
 		this.sendSynchronousTimeout = sendSynchronousTimeout;
 		return this;
 	}
@@ -73,7 +77,7 @@ public class XBeeConfiguration {
 		return responseQueueFilter;
 	}
 
-	public int getSendSynchronousTimeout() {
+	public Duration getSendSynchronousTimeout() {
 		return sendSynchronousTimeout;
 	}
 

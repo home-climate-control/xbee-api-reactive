@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 /**
@@ -146,7 +147,7 @@ class ZNetSenderExample {
 			//log.info("sending tx packet: " + request.toString());
 
 			try {
-				ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, 10000);
+				ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
 				// update frame id for next request
 				request.setFrameId(xbee.getNextFrameId());
 

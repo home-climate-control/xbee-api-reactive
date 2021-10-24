@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 /**
  * To run this sample you will need to configure pin 19 (D1) to Analog input on the remote XBee: D1=2.
  * To do this you can use X-CTU, the AtCommand [new AtCommand("D1", 2)] with your remote XBee connected to the serial port
@@ -65,7 +67,7 @@ class ZBForceSampleExample {
 				XBeeRequest request = new ZBForceSampleRequest(addr64);
 
 				try {
-					XBeeResponse response = xbee.sendSynchronous(request, 6000);
+					XBeeResponse response = xbee.sendSynchronous(request, Duration.ofSeconds(6));
 					RemoteAtResponse remoteAt = (RemoteAtResponse) response;
 
 					if (remoteAt.isOk())  {

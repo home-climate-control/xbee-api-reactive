@@ -30,6 +30,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -70,7 +72,7 @@ class RemoteAtExample {
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "P2", new int[] {3});
 			RemoteAtRequest request = new RemoteAtRequest(addr64, "P0", new int[] {1});
 
-			RemoteAtResponse response = (RemoteAtResponse) xbee.sendSynchronous(request, 10000);
+			RemoteAtResponse response = (RemoteAtResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
 
 			if (response.isOk()) {
 				log.info("successfully turned on pin 20 (D0)");
@@ -86,7 +88,7 @@ class RemoteAtExample {
 //			// now turn off end device D0
 			request.setValue(new int[] {4});
 
-			response = (RemoteAtResponse) xbee.sendSynchronous(request, 10000);
+			response = (RemoteAtResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
 
 			if (response.isOk()) {
 				log.info("successfully turned off pin 20 (D0)");

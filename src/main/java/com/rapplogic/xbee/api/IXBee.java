@@ -20,6 +20,7 @@
 package com.rapplogic.xbee.api;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public interface IXBee extends AutoCloseable {
 
 	void sendAsynchronous(XBeeRequest xbeeRequest) throws XBeeException;
 
-	XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, int timeout) throws XBeeException;
+	XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, Duration timeout) throws XBeeException;
 
 	XBeeResponse getResponse() throws XBeeException;
 

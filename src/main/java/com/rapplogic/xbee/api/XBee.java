@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -281,7 +282,7 @@ public class XBee implements IXBee {
 	 */
     @Deprecated
 	public AtCommandResponse sendAtCommand(AtCommand command) throws XBeeException {
-		return (AtCommandResponse) this.sendSynchronous(command, 5000);
+		return (AtCommandResponse) this.sendSynchronous(command, Duration.ofSeconds(5));
 	}
 
 	/**
@@ -307,7 +308,7 @@ public class XBee implements IXBee {
 	 * @throws XBeeTimeoutException thrown if no matching response is identified
 	 */
 	@Override
-    public XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, int timeout) throws XBeeException {
+    public XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, Duration timeout) throws XBeeException {
 		if (xbeeRequest.getFrameId() == XBeeRequest.NO_RESPONSE_FRAME_ID) {
 			throw new XBeeException("Frame Id cannot be 0 for a synchronous call -- it will always timeout as there is no response!");
 		}
@@ -338,13 +339,13 @@ public class XBee implements IXBee {
 
 			synchronized (container) {
 				try {
-					container.wait(timeout);
+					container.wait(timeout.toMillis());
 				} catch (InterruptedException e) { }
 			}
 
 			if (container.isEmpty()) {
 				// we didn't find a matching packet
-				throw new XBeeTimeoutException(Integer.toString(timeout));
+				throw new XBeeTimeoutException(Long.toString(timeout.toMillis()));
 			}
 
 			return container.get(0);
