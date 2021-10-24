@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,40 +24,39 @@ import java.util.List;
 
 /**
  * XBee interface
- * 
+ *
  * @author andrew
  *
  */
-public interface IXBee {
-	public void open(String port, int baudRate) throws XBeeException;
+public interface IXBee extends AutoCloseable {
 
-	public void addPacketListener(PacketListener packetListener);
+	void open(String port, int baudRate) throws XBeeException;
 
-	public void removePacketListener(PacketListener packetListener);
+	void addPacketListener(PacketListener packetListener);
 
-	public void sendPacket(XBeePacket packet) throws IOException;
+	void removePacketListener(PacketListener packetListener);
 
-	public void sendPacket(int[] packet)  throws IOException;
+	void sendPacket(XBeePacket packet) throws IOException;
 
-	public void sendAsynchronous(XBeeRequest xbeeRequest) throws XBeeException;
+	void sendPacket(int[] packet)  throws IOException;
 
-	public XBeeResponse sendSynchronous(final XBeeRequest xbeeRequest, int timeout) throws XBeeTimeoutException, XBeeException;
+	void sendAsynchronous(XBeeRequest xbeeRequest) throws XBeeException;
 
-	public XBeeResponse getResponse() throws XBeeException;
+	XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, int timeout) throws XBeeException;
 
-	public XBeeResponse getResponse(int timeout) throws XBeeException, XBeeTimeoutException;
+	XBeeResponse getResponse() throws XBeeException;
 
-	public void close();
+	XBeeResponse getResponse(int timeout) throws XBeeException;
 
-	public int getCurrentFrameId();
+	int getCurrentFrameId();
 
-	public int getNextFrameId();
+	int getNextFrameId();
 
-	public void updateFrameId(int val);
+	void updateFrameId(int val);
 
-	public boolean isConnected();
-	
-	public void clearResponseQueue();
-	
-	public List<? extends XBeeResponse> collectResponses(int wait, CollectTerminator terminator) throws XBeeException;
+	boolean isConnected();
+
+	void clearResponseQueue();
+
+	List<? extends XBeeResponse> collectResponses(int wait, CollectTerminator terminator) throws XBeeException;
 }

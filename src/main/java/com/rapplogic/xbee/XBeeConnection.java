@@ -1,6 +1,5 @@
 package com.rapplogic.xbee;
 
-import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -18,7 +17,7 @@ import java.io.OutputStream;
  * @author andrew
  *
  */
-public interface XBeeConnection extends Closeable {
+public interface XBeeConnection extends AutoCloseable {
 	OutputStream getOutputStream();
 	InputStream getInputStream();
 }
