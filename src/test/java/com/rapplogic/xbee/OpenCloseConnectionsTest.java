@@ -1,21 +1,20 @@
 package com.rapplogic.xbee;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeException;
 import com.rapplogic.xbee.api.XBeeNotConnectedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests opening and closing connections to the radio
@@ -23,7 +22,7 @@ import com.rapplogic.xbee.api.XBeeNotConnectedException;
  * @author andrew
  *
  */
-public class OpenCloseConnectionsTest {
+class OpenCloseConnectionsTest {
 
 	private final static Logger log = LogManager.getLogger(OpenCloseConnectionsTest.class);
 
@@ -35,8 +34,8 @@ public class OpenCloseConnectionsTest {
 	 * Enable this test only if you have the hardware connected.
 	 */
 	@Test
-	@Ignore
-	public void testSerial() throws XBeeException, InterruptedException, IOException {
+    @Disabled("Enable only if safe to use hardware is connected")
+	void testSerial() throws XBeeException, InterruptedException, IOException {
 
 		// series 1 (VT: FIXME: series of what?)
 		// String port = "/dev/tty.usbserial-A4004Rim";
@@ -85,7 +84,7 @@ public class OpenCloseConnectionsTest {
 
 			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
 
-			assertSame("Wrong exception class", IllegalStateException.class, t.getClass());
+			assertSame(IllegalStateException.class, t.getClass(), "Wrong exception class");
 			assertEquals("Wrong exception message", "Cannot open new connection -- existing connection is still open.  Please close first", t.getMessage());
 		}
 
@@ -112,7 +111,7 @@ public class OpenCloseConnectionsTest {
 
 			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
 
-			assertSame("Wrong exception class", XBeeNotConnectedException.class, t.getClass());
+			assertSame(XBeeNotConnectedException.class, t.getClass(), "Wrong exception class");
 			assertEquals("Wrong exception message", null, t.getMessage());
 		}
 
@@ -136,7 +135,7 @@ public class OpenCloseConnectionsTest {
 
 			// VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
 
-			assertSame("Wrong exception class", IllegalStateException.class, t.getClass());
+			assertSame(IllegalStateException.class, t.getClass(), "Wrong exception class");
 			assertEquals("Wrong exception message", "XBee is not connected", t.getMessage());
 		}
 	}

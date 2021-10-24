@@ -29,8 +29,8 @@ import com.rapplogic.xbee.api.wpan.WpanNodeDiscover;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -42,15 +42,15 @@ import java.util.List;
  * @author andrew
  *
  */
-public class WpanNodeDiscoverExample {
+class WpanNodeDiscoverExample {
 
 	private final Logger log = LogManager.getLogger(getClass());
 
 	private final XBee xbee = new XBee();
 
 	@Test
-	@Ignore
-	public void testWpanNodeDiscoverExample() throws XBeeException, InterruptedException {
+    @Disabled("Enable only if safe to use hardware is connected")
+	void testWpanNodeDiscoverExample() throws XBeeException, InterruptedException {
 
 		try {
 			// my coordinator com/baud

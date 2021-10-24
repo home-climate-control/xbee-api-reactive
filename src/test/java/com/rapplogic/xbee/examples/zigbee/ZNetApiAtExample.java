@@ -28,8 +28,8 @@ import com.rapplogic.xbee.api.zigbee.AssociationStatus;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class contains AtCommand examples that are specific to ZNet radios
@@ -37,14 +37,14 @@ import org.junit.Test;
  * @author andrew
  *
  */
-public class ZNetApiAtExample {
+class ZNetApiAtExample {
 
 	private final Logger log = LogManager.getLogger(getClass());
 
 	private final XBee xbee = new XBee();
 
 	@Test
-	@Ignore
+    @Disabled("Enable only if safe to use hardware is connected")
 	public void testZNetApiAtExample() throws XBeeException {
 		try {
 

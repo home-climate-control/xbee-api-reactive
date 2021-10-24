@@ -1,28 +1,23 @@
 /*
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.rapplogic.xbee.examples.wpan;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.XBee;
@@ -31,21 +26,25 @@ import com.rapplogic.xbee.api.XBeePacket;
 import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.api.wpan.TxRequest16;
 import com.rapplogic.xbee.api.wpan.TxStatusResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Sends a TX Request every 5000 ms and waits for TX status packet.
  * If the radio is sending samples it will continue to wait for tx status.
- * 
+ *
  * @author andrew
- * 
+ *
  */
-public class ApiSenderExample {
+class ApiSenderExample {
 
 	private final Logger log = LogManager.getLogger(getClass());
 
 	@Test
-	@Ignore
-	public void testApiSenderExample() throws Exception {
+	@Disabled("Enable only if safe to use hardware is connected")
+	void testApiSenderExample() throws Exception {
 
 		XBee xbee = new XBee();
 
@@ -58,10 +57,9 @@ public class ApiSenderExample {
 		int purgeErrors = 0;
 
 		long now;
-		
+
 		try {
 			// replace with port and baud rate of your XBee
-			// xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
 			xbee.open("/dev/ttyUSB0", 9600);
 
 			while (true) {
@@ -79,7 +77,7 @@ public class ApiSenderExample {
 				// or send a TX64 (same thing except we are addressing by SH+SL address)
 //				XBeeAddress64 destination = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x08, 0xb4, 0x8f);
 //				TxRequest64 tx2 = new TxRequest64(destination64, payload);
-				
+
 				now = System.currentTimeMillis();
 				xbee.sendAsynchronous(tx);
 
@@ -126,7 +124,7 @@ public class ApiSenderExample {
 			}
 		} finally {
 			if (xbee != null && xbee.isConnected()) {
-				xbee.close();		
+				xbee.close();
 			}
 		}
 	}
