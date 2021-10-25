@@ -335,7 +335,10 @@ public class XBee implements IXBee {
 			synchronized (container) {
 				try {
 					container.wait(timeout.toMillis());
-				} catch (InterruptedException e) { }
+				} catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    logger.warn("Interrupted?", ex);
+                }
 			}
 
 			if (container.isEmpty()) {
@@ -405,8 +408,9 @@ public class XBee implements IXBee {
 			} else {
 				response = parser.getResponseQueue().take();
 			}
-		} catch (InterruptedException e) {
-			throw new XBeeException("Error while attempting to remove packet from queue", e);
+		} catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+			throw new XBeeException("Error while attempting to remove packet from queue", ex);
 		}
 
 		if (response == null && timeout != null && timeout > 0) {

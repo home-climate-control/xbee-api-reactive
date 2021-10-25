@@ -132,45 +132,47 @@ public class InputStreamThread implements Runnable {
 		try {
 			while (!done) {
 				try {
-					if (connection.getInputStream().available() > 0) {
-						logger.debug("About to read from input stream");
-						var val = connection.getInputStream().read();
-						logger.debug("Read {} from input stream", ByteUtils.formatByte(val));
+                    if (connection.getInputStream().available() > 0) {
+                        logger.debug("About to read from input stream");
+                        var val = connection.getInputStream().read();
+                        logger.debug("Read {} from input stream", ByteUtils.formatByte(val));
 
-						if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
-							var packetStream = new PacketParser(connection.getInputStream());
-							var response = packetStream.parsePacket();
+                        if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
+                            var packetStream = new PacketParser(connection.getInputStream());
+                            var response = packetStream.parsePacket();
 
-							if (logger.isInfoEnabled()) {
-								logger.info("Received packet from XBee: {}", response);
+                            if (logger.isInfoEnabled()) {
+                                logger.info("Received packet from XBee: {}", response);
 //								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");
-							}
+                            }
 
-							// success
-							this.addResponse(response);
-						} else {
-							logger.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
-						}
-					} else {
-						logger.debug("No data available.. waiting for new data event");
+                            // success
+                            this.addResponse(response);
+                        } else {
+                            logger.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
+                        }
+                    } else {
+                        logger.debug("No data available.. waiting for new data event");
 
-						// we will wait here for RXTX to notify us of new data
-						synchronized (this.connection) {
-							// There's a chance that we got notified after the first in.available check
-							if (connection.getInputStream().available() > 0) {
-								continue;
-							}
+                        // we will wait here for RXTX to notify us of new data
+                        synchronized (this.connection) {
+                            // There's a chance that we got notified after the first in.available check
+                            if (connection.getInputStream().available() > 0) {
+                                continue;
+                            }
 
-							// wait until new data arrives
-							this.connection.wait();
-						}
-					}
-				} catch (Exception e) {
-					if (e instanceof InterruptedException) throw ((InterruptedException)e);
+                            // wait until new data arrives
+                            this.connection.wait();
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    // Nothing we can do with it here, just rethrow
+                    throw ex;
+				} catch (Exception ex) {
 
-					logger.error("Error while parsing packet:", e);
+					logger.error("Error while parsing packet:", ex);
 
-					if (e instanceof IOException) {
+					if (ex instanceof IOException) {
 						// this is thrown by RXTX if the serial device unplugged while we are reading data; if we are waiting then it will waiting forever
 						logger.error("Serial device IOException.. exiting");
 						break;
@@ -178,6 +180,7 @@ public class InputStreamThread implements Runnable {
 				}
 			}
 		} catch(InterruptedException ie) {
+            Thread.currentThread().interrupt();
 			// We've been told to stop -- the user called the close() method
 			logger.info("Packet parser thread was interrupted.  This occurs when close() is called");
 		} catch (Throwable t) {
