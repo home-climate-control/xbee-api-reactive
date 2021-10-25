@@ -79,15 +79,22 @@ public class DoubleByte {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof DoubleByte)) {
+            return false;
+        }
 
         DoubleByte that = (DoubleByte) o;
 
-        if (lsb != that.lsb) return false;
-        if (msb != that.msb) return false;
+        if (lsb != that.lsb) {
+            return false;
+        }
 
-        return true;
+        return msb == that.msb;
     }
 
     @Override

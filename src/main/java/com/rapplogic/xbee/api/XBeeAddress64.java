@@ -97,8 +97,14 @@ public class XBeeAddress64 extends XBeeAddress  {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof XBeeAddress64)) {
+            return false;
+        }
 
         XBeeAddress64 that = (XBeeAddress64) o;
 

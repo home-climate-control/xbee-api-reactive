@@ -69,8 +69,14 @@ public class XBeeAddress16 extends XBeeAddress {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof XBeeAddress16)) {
+            return false;
+        }
 
         XBeeAddress16 that = (XBeeAddress16) o;
 
