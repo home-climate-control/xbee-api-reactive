@@ -43,7 +43,7 @@ public abstract class XBeeRequest implements Serializable {
 
 	// TODO create XBeePacket(XBeeRequest) constructor and move operation there
 	public XBeePacket getXBeePacket() {
-		int[] frameData = this.getFrameData();
+        var frameData = this.getFrameData();
 
 		if (frameData == null) {
 			throw new IllegalArgumentException("frame data can't be null");

@@ -130,8 +130,8 @@ public abstract class XBeeResponse implements Serializable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+        var result = 1;
 		result = prime * result + ((apiId == null) ? 0 : apiId.hashCode());
 		result = prime * result + checksum;
 		result = prime * result + (error ? 1231 : 1237);

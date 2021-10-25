@@ -70,7 +70,7 @@ public class XBee implements IXBee {
 	private void doStartupChecks() throws XBeeException {
 		// Perform startup checks
 		try {
-			AtCommandResponse ap = this.sendSynchronousAT(new AtCommand("AP"));
+			var ap = this.sendSynchronousAT(new AtCommand("AP"));
 
 			if (!ap.isOk()) {
 				throw new XBeeException("Attempt to query AP parameter failed: " + ap);
@@ -94,7 +94,7 @@ public class XBee implements IXBee {
 
 			ap = this.sendSynchronousAT(new AtCommand("HV"));
 
-			RadioType radioType = HardwareVersion.parse(ap);
+            var radioType = HardwareVersion.parse(ap);
 
 			logger.info("XBee radio is {}", radioType);
 
@@ -102,7 +102,7 @@ public class XBee implements IXBee {
 				logger.warn("Unknown radio type (HV): {}", ap.getValue()[0]);
 			}
 
-			AtCommandResponse vr = this.sendSynchronousAT(new AtCommand("VR"));
+            var vr = this.sendSynchronousAT(new AtCommand("VR"));
 
 			if (vr.isOk()) {
 				logger.info("Firmware version is {}", ByteUtils.toBase16(vr.getValue()));

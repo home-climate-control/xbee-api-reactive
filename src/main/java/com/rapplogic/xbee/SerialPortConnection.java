@@ -69,7 +69,7 @@ public class SerialPortConnection implements XBeeConnection, SerialPortEventList
 
 		CommPortIdentifier portId = null;
 
-		boolean found = false;
+        var found = false;
 
 		while (portList.hasMoreElements()) {
 

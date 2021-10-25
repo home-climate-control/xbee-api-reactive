@@ -140,10 +140,10 @@ public class XBeePacket {
 	 * Escape all bytes in packet after start byte, and including checksum
 	 */
 	private static int[] escapePacket(int[] packet) {
-		int escapeBytes = 0;
+		var escapeBytes = 0;
 
 		// escape packet.  start at one so we don't escape the start byte
-		for (int i = 1; i < packet.length; i++) {
+		for (var i = 1; i < packet.length; i++) {
 			if (isSpecialByte(packet[i])) {
 				logger.debug("escapeFrameData: packet byte requires escaping byte {}", ByteUtils.toBase16(packet[i]));
 				escapeBytes++;
@@ -155,9 +155,8 @@ public class XBeePacket {
 		} else {
 			logger.debug("packet requires escaping");
 
-			int[] escapePacket = new int[packet.length + escapeBytes];
-
-			int pos = 1;
+            var escapePacket = new int[packet.length + escapeBytes];
+            var pos = 1;
 
 			escapePacket[0] = SpecialByte.START_BYTE.getValue();
 
@@ -204,7 +203,7 @@ public class XBeePacket {
 	 * Returns true if the packet is valid, Verifies both escaped and un-escaped packets
 	 */
 	public static boolean verify(int[] packet) {
-		boolean valid = true;
+        var valid = true;
 
 		try {
 			if (packet[0] != SpecialByte.START_BYTE.getValue()) {
@@ -225,22 +224,22 @@ public class XBeePacket {
 				return false;
 			}
 
-			int len = getPacketLength(unEscaped);
+            var len = getPacketLength(unEscaped);
 
 			// total packet length = stated length + 1 start byte + 1 checksum byte + 2 length bytes
 			// stated packet length does include escaping bytes, so actual packet size can be much larger, almost double
-			int expectedPacketLength = len + 4;
+            var expectedPacketLength = len + 4;
 
 			// if we are less bytes than expected packet length it can't be valid
 			if (unEscaped.length != expectedPacketLength) {
 				return false;
 			}
 
-			int[] frameData = new int[len];
+            var frameData = new int[len];
 
 			Checksum checksum = new Checksum();
 
-			for (int i = 3; i < unEscaped.length - 1; i++) {
+			for (var i = 3; i < unEscaped.length - 1; i++) {
 				frameData[i - 3] = unEscaped[i];
 				checksum.addByte(frameData[i - 3]);
 			}
@@ -264,7 +263,7 @@ public class XBeePacket {
 
 	public static int[] unEscapePacket(int[] packet) {
 
-		int escapeBytes = 0;
+        var escapeBytes = 0;
 
 		if (packetEndsWithEscapeByte(packet)) {
 			//packet can never end on a escape byte since the following byte is xor to unescape and will result in a array out of bounds exception
@@ -272,7 +271,7 @@ public class XBeePacket {
 		}
 
 		// first check if escape byte exists, if not we don't allocate a new array
-        for (int b : packet) {
+        for (var b : packet) {
             if (b == SpecialByte.ESCAPE.getValue()) {
                 escapeBytes++;
             }
@@ -282,11 +281,10 @@ public class XBeePacket {
 			return packet;
 		}
 
-		int[] unEscapedPacket = new int[packet.length - escapeBytes];
+        var unEscapedPacket = new int[packet.length - escapeBytes];
+        var pos = 0;
 
-		int pos = 0;
-
-		for (int i = 0; i < packet.length; i++) {
+		for (var i = 0; i < packet.length; i++) {
 			if (packet[i] == SpecialByte.ESCAPE.getValue()) {
 				// discard escape byte and un-escape following byte
 				if (i >= packet.length - 1) {

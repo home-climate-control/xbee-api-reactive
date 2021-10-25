@@ -96,7 +96,7 @@ public class InputStreamThread implements Runnable {
             // this occurs if packet listener add/remove is called while we are iterating
 
             synchronized (packetListenerList) {
-                for (PacketListener pl : packetListenerList) {
+                for (var pl : packetListenerList) {
                     try {
                         if (pl != null) {
                             pl.processResponse(response);

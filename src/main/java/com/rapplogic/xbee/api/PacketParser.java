@@ -130,18 +130,17 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 		try {
 			// BTW, length doesn't account for escaped bytes
-			int msbLength = this.read("Length MSB");
-			int lsbLength = this.read("Length LSB");
+            var msbLength = this.read("Length MSB");
+            var lsbLength = this.read("Length LSB");
 
 			// length of api structure, starting here (not including start byte or length bytes, or checksum)
 			this.length = new XBeePacketLength(msbLength, lsbLength);
 
-			logger.debug("packet length is " + String.format("[0x%03X]", length.getLength()));
+			logger.debug("packet length is {}", () -> String.format("[0x%03X]", length.getLength()));
 
 			// total packet length = stated length + 1 start byte + 1 checksum byte + 2 length bytes
 
 			intApiId = this.read("API ID");
-
 			this.apiId = ApiId.get(intApiId);
 
 			if (apiId == null) {

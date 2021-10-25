@@ -89,18 +89,18 @@ public class ModemStatusResponse extends XBeeResponse implements NoRequestRespon
 
 	@Override
     protected void parse(IPacketParser parser) throws IOException {
-		int value = parser.read("Modem Status");
+        var value = parser.read("Modem Status");
 
 		if (value >= 0x80) {
 			this.setStatus(ModemStatusResponse.Status.STACK_ERROR);
 		} else {
-			var status = ModemStatusResponse.Status.get(value);
+			var parsedStatus = ModemStatusResponse.Status.get(value);
 
-			if (status == null) {
+			if (parsedStatus == null) {
 				log.warn("Unknown status {}", value);
 				this.setStatus(ModemStatusResponse.Status.UNKNOWN);
 			} else {
-				this.setStatus(status);
+				this.setStatus(parsedStatus);
 			}
 		}
 	}
