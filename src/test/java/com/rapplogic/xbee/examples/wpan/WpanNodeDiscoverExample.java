@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ class WpanNodeDiscoverExample {
 			xbee.sendAsynchronous(new AtCommand("ND"));
 
 			// collect responses up to the timeout or until the terminating response is received, whichever occurs first
-			List<? extends XBeeResponse> responses = xbee.collectResponses(10000, new CollectTerminator() {
+			List<? extends XBeeResponse> responses = xbee.collectResponses(Duration.ofSeconds(10), new CollectTerminator() {
                 @Override
 				public boolean stop(XBeeResponse response) {
 					if (response instanceof AtCommandResponse) {

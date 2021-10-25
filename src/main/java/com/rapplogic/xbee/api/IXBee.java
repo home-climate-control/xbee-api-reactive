@@ -47,7 +47,7 @@ public interface IXBee extends AutoCloseable {
 
 	XBeeResponse getResponse() throws XBeeException;
 
-	XBeeResponse getResponse(int timeout) throws XBeeException;
+	XBeeResponse getResponse(Duration timeout) throws XBeeException;
 
 	int getCurrentFrameId();
 
@@ -59,5 +59,5 @@ public interface IXBee extends AutoCloseable {
 
 	void clearResponseQueue();
 
-	List<? extends XBeeResponse> collectResponses(int wait, CollectTerminator terminator) throws XBeeException;
+	List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException;
 }

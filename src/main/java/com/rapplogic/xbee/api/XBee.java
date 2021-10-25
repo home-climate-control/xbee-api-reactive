@@ -343,7 +343,7 @@ public class XBee implements IXBee {
 
 			if (container.isEmpty()) {
 				// we didn't find a matching packet
-				throw new XBeeTimeoutException(Long.toString(timeout.toMillis()));
+				throw new XBeeTimeoutException(timeout.toString());
 			}
 
 			return container.get(0);
@@ -385,16 +385,16 @@ public class XBee implements IXBee {
 	 * 2.  An XBeeTimeoutException is thrown (i.e. queue was empty for duration of timeout) <br/>
 	 * 3.  Null is returned if timeout is 0 and queue is empty. <br/>
 	 * <p/>
-	 * @param timeout milliseconds to wait for a response.  A value of zero disables the timeout
+	 * @param timeout Duration to wait for a response.  A value of zero disables the timeout
      *
 	 * @throws XBeeTimeoutException if timeout occurs before a response is received
 	 */
 	@Override
-    public XBeeResponse getResponse(int timeout) throws XBeeException {
+    public XBeeResponse getResponse(Duration timeout) throws XBeeException {
 		return this.getResponseTimeout(timeout);
 	}
 
-	private XBeeResponse getResponseTimeout(Integer timeout) throws XBeeException {
+	private XBeeResponse getResponseTimeout(Duration timeout) throws XBeeException {
 
 		// seeing this with xmpp
 		if (!this.isConnected()) {
@@ -403,8 +403,8 @@ public class XBee implements IXBee {
 
 		XBeeResponse response;
 		try {
-			if (timeout != null) {
-				response = parser.getResponseQueue().poll(timeout, TimeUnit.MILLISECONDS);
+			if (timeout != null && !timeout.isZero()) {
+				response = parser.getResponseQueue().poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
 			} else {
 				response = parser.getResponseQueue().take();
 			}
@@ -413,8 +413,8 @@ public class XBee implements IXBee {
 			throw new XBeeException("Error while attempting to remove packet from queue", ex);
 		}
 
-		if (response == null && timeout != null && timeout > 0) {
-			throw new XBeeTimeoutException(Integer.toString(timeout));
+		if (response == null && timeout != null && timeout.toMillis() > 0) {
+			throw new XBeeTimeoutException(timeout.toString());
 		}
 
 		return response;
@@ -424,39 +424,32 @@ public class XBee implements IXBee {
 	 * Collects responses until the timeout is reached or the CollectTerminator returns true
 	 */
 	@Override
-    public List<? extends XBeeResponse> collectResponses(int wait, CollectTerminator terminator) throws XBeeException {
+    public List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException {
 
 		// seeing this with xmpp
 		if (!this.isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
-		long start = System.currentTimeMillis();
-		long callStart = 0;
-		int waitTime;
-
-		List<XBeeResponse> responseList = new ArrayList<>();
+		var start = System.currentTimeMillis();
+		var responseList = new ArrayList<XBeeResponse>();
 
 		try {
 			while (true) {
 				// compute the remaining wait time
-				waitTime = wait - (int)(System.currentTimeMillis() - start);
+                // VT: FIXME: Write a test case, and rewrite this with Duration.between()
+				var waitTime = Duration.ofMillis(wait.toMillis() - (int)(System.currentTimeMillis() - start));
 
-				if (waitTime <= 0) {
+				if (waitTime.isNegative()) {
 					break;
 				}
 
-				logger.debug("calling getResponse with waitTime: " + waitTime);
+				logger.debug("calling getResponse with waitTime: {}", waitTime);
 
-				if (logger.isDebugEnabled()) {
-					callStart = System.currentTimeMillis();
-				}
-
+                var callStart = System.currentTimeMillis();
 				var response = this.getResponse(waitTime);
 
-				if (logger.isDebugEnabled()) {
-					logger.debug("Got response in " + (System.currentTimeMillis() - callStart));
-				}
+                logger.debug("Got response in {}", (System.currentTimeMillis() - callStart));
 
 				responseList.add(response);
 
@@ -465,13 +458,13 @@ public class XBee implements IXBee {
 					break;
 				}
 			}
-		} catch (XBeeTimeoutException e) {
-			// ok, we'll just return whatever is in the list
-		} catch (XBeeException e) {
-			throw e;
+		} catch (XBeeTimeoutException ex) {
+			logger.debug("Timeout reached, returning {} packets", responseList.size(), ex);
+            return responseList;
 		}
 
-		logger.debug("Time is up.. returning list with {} packets", responseList.size());
+        // VT: FIXME: How is this different from above? Where did the XBeeTimeoutException come from? Action item: rework the workflow for early returns
+		logger.debug("Time is up... returning {} packets", responseList.size());
 
 		return responseList;
 	}
@@ -479,7 +472,7 @@ public class XBee implements IXBee {
 	/**
 	 * Collects responses for wait milliseconds and returns responses as List
 	 */
-	public List<? extends XBeeResponse> collectResponses(int wait) throws XBeeException {
+	public List<? extends XBeeResponse> collectResponses(Duration wait) throws XBeeException {
 		return this.collectResponses(wait, null);
 	}
 

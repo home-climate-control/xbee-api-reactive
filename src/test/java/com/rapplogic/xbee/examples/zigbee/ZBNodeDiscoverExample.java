@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -61,8 +62,8 @@ class ZBNodeDiscoverExample {
 			AtCommandResponse nodeTimeout = (AtCommandResponse) xbee.getResponse();
 
 			// default is 6 seconds
-			int nodeDiscoveryTimeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
-			log.info("Node discovery timeout is " + nodeDiscoveryTimeout + " milliseconds");
+			var nodeDiscoveryTimeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100L);
+			log.info("Node discovery timeout is {}", nodeDiscoveryTimeout);
 
 			log.info("Sending Node Discover command");
 			xbee.sendAsynchronous(new AtCommand("ND"));
