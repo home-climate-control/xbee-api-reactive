@@ -19,9 +19,6 @@
 
 package com.rapplogic.xbee.api;
 
-import java.io.Serializable;
-
-
 /**
  * The super class of all XBee transmit packets.
  * Constructs frame data portion of an XBee packet
@@ -30,9 +27,7 @@ import java.io.Serializable;
  *
  */
 
-public abstract class XBeeRequest implements Serializable {
-
-	private static final long serialVersionUID = -9181542059678009341L;
+public abstract class XBeeRequest {
 
 	public static final int DEFAULT_FRAME_ID = 1;
 	// XBee will not generate a TX Status Packet if this frame id sent
@@ -42,7 +37,7 @@ public abstract class XBeeRequest implements Serializable {
 
 	// TODO create XBeePacket(XBeeRequest) constructor and move operation there
 	public XBeePacket getXBeePacket() {
-        var frameData = this.getFrameData();
+        var frameData = getFrameData();
 
 		if (frameData == null) {
 			throw new IllegalArgumentException("frame data can't be null");
@@ -62,7 +57,7 @@ public abstract class XBeeRequest implements Serializable {
 
     @Override
 	public String toString() {
-		return "apiId=" + this.getApiId() + ",frameId=" + this.getFrameId();
+		return "apiId=" + getApiId() + ",frameId=" + getFrameId();
 	}
 
 	public void setFrameId(int frameId) {
