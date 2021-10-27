@@ -53,7 +53,7 @@ class RemoteAtExample {
     @Disabled("Enable only if safe to use hardware is connected")
 	void testRemoteAtExample() throws XBeeException, InterruptedException {
 
-		XBee xbee = new XBee();
+		var xbee = new XBee();
 
 		try {
 			// replace with your coordinator com/baud
@@ -62,7 +62,7 @@ class RemoteAtExample {
 			xbee.open("/dev/ttyUSB0", 9600);
 
 			// replace with SH + SL of your end device
-			XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x0a, 0x3e, 0x02);
+            var addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x0a, 0x3e, 0x02);
 
 			// turn on end device (pin 20) D0 (Digital output high = 5)
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "D0", new int[] {5});
@@ -70,14 +70,14 @@ class RemoteAtExample {
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "D5", new int[] {3});
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "D0", new int[] {2});
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "P2", new int[] {3});
-			RemoteAtRequest request = new RemoteAtRequest(addr64, "P0", new int[] {1});
+            var request1 = new RemoteAtRequest(addr64, "P0", new int[] {1});
 
-			RemoteAtResponse response = (RemoteAtResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
+            var response1 = (RemoteAtResponse) xbee.sendSynchronous(request1, Duration.ofSeconds(10));
 
-			if (response.isOk()) {
+			if (response1.isOk()) {
 				log.info("successfully turned on pin 20 (D0)");
 			} else {
-				fail("failed to turn on pin 20.  status is " + response.getStatus());
+				fail("failed to turn on pin 20.  status is " + response1.getStatus());
 			}
 
 			System.exit(0);
@@ -86,14 +86,14 @@ class RemoteAtExample {
 			Thread.sleep(5000);
 //
 //			// now turn off end device D0
-			request.setValue(new int[] {4});
+            var request2 = new RemoteAtRequest(addr64, "P0", new int[] {4});
 
-			response = (RemoteAtResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
+			var response2 = (RemoteAtResponse) xbee.sendSynchronous(request2, Duration.ofSeconds(10));
 
-			if (response.isOk()) {
+			if (response2.isOk()) {
 				log.info("successfully turned off pin 20 (D0)");
 			} else {
-				fail("failed to turn off pin 20.  status is " + response.getStatus());
+				fail("failed to turn off pin 20.  status is " + response2.getStatus());
 			}
 
 		} catch (XBeeTimeoutException e) {
@@ -101,7 +101,7 @@ class RemoteAtExample {
 		} catch (Exception e) {
 			log.error("unexpected error", e);
 		} finally {
-			if (xbee != null && xbee.isConnected()) {
+			if (xbee.isConnected()) {
 				xbee.close();
 			}
 		}

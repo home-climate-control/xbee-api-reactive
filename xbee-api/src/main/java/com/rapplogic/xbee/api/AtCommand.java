@@ -43,8 +43,8 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class AtCommand extends XBeeRequest {
 
-	private String command;
-	private int[] value;
+	private final String command;
+	private final int[] value;
 
 //	// common i/o pin settings.  it is up to the developer to ensure the setting is applicable to the pin (e.g. not all pins support analog input)
 //	public enum IoSetting {
@@ -116,16 +116,8 @@ public class AtCommand extends XBeeRequest {
 		return command;
 	}
 
-	public void setCommand(String command) {
-		this.command = command;
-	}
-
 	public int[] getValue() {
 		return value;
-	}
-
-	public void setValue(int[] value) {
-		this.value = value;
 	}
 
     @Override
