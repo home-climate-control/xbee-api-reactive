@@ -38,7 +38,6 @@ public abstract class XBeeRequest implements Serializable {
 	// XBee will not generate a TX Status Packet if this frame id sent
 	public static final int NO_RESPONSE_FRAME_ID = 0;
 
-	private ApiId apiId;
 	private int frameId;
 
 	// TODO create XBeePacket(XBeeRequest) constructor and move operation there
@@ -55,9 +54,7 @@ public abstract class XBeeRequest implements Serializable {
 
 	public abstract int[] getFrameData();
 
-	public ApiId getApiId() {
-		return apiId;
-	}
+	public abstract ApiId getApiId();
 
 	public int getFrameId() {
 		return frameId;
@@ -66,10 +63,6 @@ public abstract class XBeeRequest implements Serializable {
     @Override
 	public String toString() {
 		return "apiId=" + this.getApiId() + ",frameId=" + this.getFrameId();
-	}
-
-	public void setApiId(ApiId apiId) {
-		this.apiId = apiId;
 	}
 
 	public void setFrameId(int frameId) {
