@@ -42,7 +42,11 @@ public abstract class TxRequestBase extends XBeeRequest {
 
 	private int maxPayloadSize;
 
-	public enum Option {
+    public TxRequestBase(int frameId) {
+        super(frameId);
+    }
+
+    public enum Option {
 
 		UNICAST (0),
 		DISABLE_ACK (1),
@@ -81,8 +85,8 @@ public abstract class TxRequestBase extends XBeeRequest {
 
 	public void setPayload(int[] payload) {
 
-		if (this.getMaxPayloadSize() > 0 && payload.length > this.getMaxPayloadSize()) {
-			throw new IllegalArgumentException("Payload exceeds user-defined maximum payload size of " + this.getMaxPayloadSize() + " bytes.  Please re-package into multiple packets");
+		if (getMaxPayloadSize() > 0 && payload.length > getMaxPayloadSize()) {
+			throw new IllegalArgumentException("Payload exceeds user-defined maximum payload size of " + getMaxPayloadSize() + " bytes.  Please re-package into multiple packets");
 		}
 
 		this.payload = payload;
@@ -98,8 +102,8 @@ public abstract class TxRequestBase extends XBeeRequest {
 
     @Override
 	public String toString() {
-		return super.toString() + ",option=" + this.option +
-			",payload=" + ByteUtils.toBase16(this.payload);
+		return super.toString() + ",option=" + option +
+			",payload=" + ByteUtils.toBase16(payload);
 	}
 
 	public int getMaxPayloadSize() {

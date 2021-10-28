@@ -33,9 +33,13 @@ public abstract class XBeeRequest {
 	// XBee will not generate a TX Status Packet if this frame id sent
 	public static final int NO_RESPONSE_FRAME_ID = 0;
 
-	private int frameId;
+	private final int frameId;
 
-	// TODO create XBeePacket(XBeeRequest) constructor and move operation there
+    protected XBeeRequest(int frameId) {
+        this.frameId = frameId;
+    }
+
+    // TODO create XBeePacket(XBeeRequest) constructor and move operation there
 	public XBeePacket getXBeePacket() {
         var frameData = getFrameData();
 
@@ -59,10 +63,4 @@ public abstract class XBeeRequest {
 	public String toString() {
 		return "apiId=" + getApiId() + ",frameId=" + getFrameId();
 	}
-
-	public void setFrameId(int frameId) {
-		this.frameId = frameId;
-	}
-
-	// TODO clear method to reuse request
 }

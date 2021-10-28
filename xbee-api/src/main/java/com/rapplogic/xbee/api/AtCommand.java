@@ -77,9 +77,9 @@ public class AtCommand extends XBeeRequest {
 	 * Warning: frameId must be > 0 for a response
 	 */
 	public AtCommand(String command, int[] value, int frameId) {
-		this.command = command;
+        super(frameId);
+        this.command = command;
 		this.value = value;
-		this.setFrameId(frameId);
 	}
 
 	@Override
@@ -91,9 +91,9 @@ public class AtCommand extends XBeeRequest {
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(this.getApiId().getValue());
+		out.write(getApiId().getValue());
 		// frame id
-		out.write(this.getFrameId());
+		out.write(getFrameId());
 		// at command byte 1
 		out.write(command.substring(0, 1).toCharArray()[0]);
 		// at command byte 2
@@ -123,7 +123,7 @@ public class AtCommand extends XBeeRequest {
     @Override
 	public String toString() {
 		return super.toString() +
-			",command=" + this.command +
+			",command=" + command +
 			",value=" + (value == null ? "null" : ByteUtils.toBase16(value));
 	}
 }

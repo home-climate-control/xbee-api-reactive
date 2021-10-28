@@ -118,7 +118,7 @@ class ZNetSenderExample {
     @Disabled("Enable only if safe to use hardware is connected")
 	void testZNetSenderExample() throws XBeeException {
 
-		XBee xbee = new XBee();
+		var xbee = new XBee();
 
 		// replace with port and baud rate of your XBee. this is the com port of my coordinator
 		//coord
@@ -128,13 +128,13 @@ class ZNetSenderExample {
 
 		// replace with end device's 64-bit address (SH + SL)
 		// router (firmware 23A7)
-		XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xff);
+        var addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xff);
 
 		// create an array of arbitrary data to send
 		int[] payload = new int[] { 'X', 'B', 'e', 'e' };
 
 		// first request we just send 64-bit address.  we get 16-bit network address with status response
-		ZNetTxRequest request = new ZNetTxRequest(addr64, payload);
+        var request = new ZNetTxRequest(addr64, payload);
 
 		log.debug("zb request is " + Arrays.toString(request.getXBeePacket().getByteArray()));
 
@@ -149,7 +149,8 @@ class ZNetSenderExample {
 			try {
 				ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
 				// update frame id for next request
-				request.setFrameId(xbee.getNextFrameId());
+
+                request = new ZNetTxRequest(xbee.getNextFrameId(), addr64, payload);
 
 				log.info("received response " + response);
 

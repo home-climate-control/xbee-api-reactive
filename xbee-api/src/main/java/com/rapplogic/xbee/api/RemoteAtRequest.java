@@ -52,10 +52,9 @@ public class RemoteAtRequest extends AtCommand {
 	 * @param value if null then the current setting will be queried
 	 */
 	public RemoteAtRequest(int frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int[] value) {
-		super(command, value);
-		this.setFrameId(frameId);
-		this.remoteAddr64 = remoteAddress64;
-		this.remoteAddr16 = remoteAddress16;
+		super(command, value, frameId);
+		remoteAddr64 = remoteAddress64;
+		remoteAddr16 = remoteAddress16;
 		this.applyChanges = applyChanges;
 	}
 
@@ -90,7 +89,7 @@ public class RemoteAtRequest extends AtCommand {
 	public RemoteAtRequest(XBeeAddress64 dest64, String command) {
 		this(dest64, command, null);
 		// apply changes doesn't make sense for a query
-		this.setApplyChanges(false);
+		setApplyChanges(false);
 	}
 
 	/**
@@ -102,7 +101,7 @@ public class RemoteAtRequest extends AtCommand {
 	public RemoteAtRequest(XBeeAddress16 dest16, String command) {
 		this(dest16, command, null);
 		// apply changes doesn't make sense for a query
-		this.setApplyChanges(false);
+		setApplyChanges(false);
 	}
 
 	/**
@@ -124,9 +123,9 @@ public class RemoteAtRequest extends AtCommand {
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(this.getApiId().getValue());
+		out.write(getApiId().getValue());
 		// frame id (arbitrary byte that will be sent back with ack)
-		out.write(this.getFrameId());
+		out.write(getFrameId());
 
 		out.write(remoteAddr64.getAddress());
 
@@ -148,12 +147,12 @@ public class RemoteAtRequest extends AtCommand {
 		}
 
 		// command name ascii [1]
-		out.write(this.getCommand().substring(0, 1).toCharArray()[0]);
+		out.write(getCommand().substring(0, 1).toCharArray()[0]);
 		// command name ascii [2]
-		out.write(this.getCommand().substring(1, 2).toCharArray()[0]);
+		out.write(getCommand().substring(1, 2).toCharArray()[0]);
 
-		if (this.getValue() != null) {
-			out.write(this.getValue());
+		if (getValue() != null) {
+			out.write(getValue());
 		}
 
 		return out.getIntArray();
@@ -171,8 +170,8 @@ public class RemoteAtRequest extends AtCommand {
 	@Override
     public String toString() {
 		return super.toString() +
-			",remoteAddr64=" + this.remoteAddr64 +
-			",remoteAddr16=" + this.remoteAddr16 +
-			",applyChanges=" + this.applyChanges;
+			",remoteAddr64=" + remoteAddr64 +
+			",remoteAddr16=" + remoteAddr16 +
+			",applyChanges=" + applyChanges;
 	}
 }

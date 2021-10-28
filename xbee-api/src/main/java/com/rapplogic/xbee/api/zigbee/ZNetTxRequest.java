@@ -117,34 +117,41 @@ public class ZNetTxRequest extends XBeeRequest {
 	 *  - keep a hash table mapping of 64-bit address to 16-bit network address.
 	 */
 	public ZNetTxRequest(int frameId, XBeeAddress64 dest64, XBeeAddress16 dest16, int broadcastRadius, Option option, int[] payload) {
-		this.setFrameId(frameId);
-		this.destAddr64 = dest64;
-		this.destAddr16 = dest16;
+        super(frameId);
+		destAddr64 = dest64;
+		destAddr16 = dest16;
 		this.broadcastRadius = broadcastRadius;
 		this.option = option;
 		this.payload = payload;
 	}
 
 	/**
-	 * Abbreviated constructor for sending a unicast TX packet
+	 * Abbreviated constructor for sending a unicast TX packet.
 	 */
 	public ZNetTxRequest(XBeeAddress64 dest64, int[] payload) {
 		this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, Option.UNICAST, payload);
 	}
 
+    /**
+     * Abbreviated constructor for sending a unicast TX packet with a specified frame ID.
+     */
+    public ZNetTxRequest(int frameId, XBeeAddress64 dest64, int[] payload) {
+        this(frameId, dest64, XBeeAddress16.ZNET_BROADCAST, ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, Option.UNICAST, payload);
+    }
+
 	protected IntArrayOutputStream getFrameDataAsIntArrayOutputStream() {
 
-		if (this.getMaxPayloadSize() > 0 && payload.length > this.getMaxPayloadSize()) {
-			throw new IllegalArgumentException("Payload exceeds user-defined maximum payload size of " + this.getMaxPayloadSize() + " bytes.  Please package into multiple packets");
+		if (getMaxPayloadSize() > 0 && payload.length > getMaxPayloadSize()) {
+			throw new IllegalArgumentException("Payload exceeds user-defined maximum payload size of " + getMaxPayloadSize() + " bytes.  Please package into multiple packets");
 		}
 
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(this.getApiId().getValue());
+		out.write(getApiId().getValue());
 
 		// frame id (arbitrary byte that will be sent back with ack)
-		out.write(this.getFrameId());
+		out.write(getFrameId());
 
 		// add 64-bit dest address
 		out.write(destAddr64.getAddress());
@@ -165,7 +172,7 @@ public class ZNetTxRequest extends XBeeRequest {
 
     @Override
 	public int[] getFrameData() {
-		return this.getFrameDataAsIntArrayOutputStream().getIntArray();
+		return getFrameDataAsIntArrayOutputStream().getIntArray();
 	}
 
     @Override
@@ -196,11 +203,11 @@ public class ZNetTxRequest extends XBeeRequest {
     @Override
 	public String toString() {
 		return super.toString() +
-			",destAddr64=" + this.destAddr64 +
-			",destAddr16=" + this.destAddr16 +
-			",broadcastRadius=" + this.broadcastRadius +
-			",option=" + this.option +
-			",payload=" + ByteUtils.toBase16(this.payload);
+			",destAddr64=" + destAddr64 +
+			",destAddr16=" + destAddr16 +
+			",broadcastRadius=" + broadcastRadius +
+			",option=" + option +
+			",payload=" + ByteUtils.toBase16(payload);
 	}
 
 	public int getMaxPayloadSize() {

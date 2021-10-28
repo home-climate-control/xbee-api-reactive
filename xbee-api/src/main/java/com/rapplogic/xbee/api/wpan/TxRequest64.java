@@ -66,10 +66,10 @@ public class TxRequest64 extends TxRequestBase {
 	 * Note: if option is DISABLE_ACK_OPTION you will not get a ack response and you must use the asynchronous send method
 	 */
 	public TxRequest64(XBeeAddress64 remoteAddr64, int frameId, Option option, int[] payload) {
+        super(frameId);
 		this.remoteAddr64 = remoteAddr64;
-		this.setFrameId(frameId);
-		this.setOption(option);
-		this.setPayload(payload);
+		setOption(option);
+		setPayload(payload);
 	}
 
 	@Override
@@ -80,17 +80,17 @@ public class TxRequest64 extends TxRequestBase {
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(this.getApiId().getValue());
+		out.write(getApiId().getValue());
 		// frame id (arbitrary byte that will be sent back with ack)
-		out.write(this.getFrameId());
+		out.write(getFrameId());
 		// destination high (broadcast is 0xFFFF)
 
 		// add 64-bit dest address
 		out.write(remoteAddr64.getAddress());
 
 		// options byte disable ack = 1, send pan id = 4
-		out.write(this.getOption().getValue());
-		out.write(this.getPayload());
+		out.write(getOption().getValue());
+		out.write(getPayload());
 
 		return out.getIntArray();
 	}
@@ -103,7 +103,7 @@ public class TxRequest64 extends TxRequestBase {
     @Override
 	public String toString() {
 		return super.toString() +
-			",remoteAddress64=" + this.remoteAddr64.toString();
+			",remoteAddress64=" + remoteAddr64.toString();
 	}
 
 }
