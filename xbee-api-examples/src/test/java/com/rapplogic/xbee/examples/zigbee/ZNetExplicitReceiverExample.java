@@ -28,6 +28,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Set AO=1 for to enable explicit frames for this example
  *
@@ -45,8 +47,7 @@ class ZNetExplicitReceiverExample {
 
 		try {
 			// replace with the com port or your receiving XBee
-			// this is the com port of my end device on my mac
-			xbee.open("/dev/tty.usbserial-A6005uRz", 9600);
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 

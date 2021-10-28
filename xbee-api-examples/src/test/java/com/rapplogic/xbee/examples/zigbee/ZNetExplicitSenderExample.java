@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Set AO=1 for to enable explicit frames for this example.
  * Once set, you should use explicit tx/rx packets instead of plain vanilla tx requests (ZNetTxRequest).
@@ -51,9 +53,8 @@ class ZNetExplicitSenderExample {
 		XBee xbee = new XBee();
 
 		try {
-			// replace with your com port and baud rate. this is the com port of my coordinator
-			//xbee.open("COM5", 9600);
-			xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
+            // An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 
 			// replace with end device's 64-bit address (SH + SL)
 			XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x0a, 0x3e, 0x02);

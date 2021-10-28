@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * This class contains AtCommand examples that are specific to ZNet radios
  *
@@ -49,7 +51,7 @@ class ZNetApiAtExample {
 		try {
 
 			// replace with port and baud rate of your XBee
-			xbee.open("COM6", 9600);
+			xbee.open(getTestPort(), 9600);
 
 			// get the 8 byte SH/SL address
 			log.debug("SH is " + ByteUtils.toBase16(((AtCommandResponse)xbee.sendSynchronousAT(new AtCommand("SH"))).getValue()));

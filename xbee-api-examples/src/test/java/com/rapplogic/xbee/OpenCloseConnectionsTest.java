@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -24,8 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class OpenCloseConnectionsTest {
 
-	private final static Logger logger = LogManager.getLogger(OpenCloseConnectionsTest.class);
-
+	private final Logger logger = LogManager.getLogger();
 	private final XBee xbee = new XBee();
 
 	/**
@@ -36,11 +36,7 @@ class OpenCloseConnectionsTest {
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
 	void testSerial() throws XBeeException, IOException {
-
-		// x86
-		String port = "/dev/ttyUSB0";
-
-		testOpenCloseConnections(port);
+		testOpenCloseConnections(getTestPort());
 	}
 
 	private void testOpenCloseConnections(String port) throws XBeeException, IOException {

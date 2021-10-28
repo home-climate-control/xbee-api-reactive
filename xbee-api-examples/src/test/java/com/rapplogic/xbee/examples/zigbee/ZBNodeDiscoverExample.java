@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.List;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Example of performing a node discover for Series 2 XBees.
  * You must connect to the coordinator to run this example and
@@ -53,9 +55,7 @@ class ZBNodeDiscoverExample {
 	void testZBNodeDiscoverExample() throws XBeeException, InterruptedException {
 
 		try {
-			// replace with your serial port
-			xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
-
+			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
 			xbee.sendAsynchronous(new AtCommand("NT"));

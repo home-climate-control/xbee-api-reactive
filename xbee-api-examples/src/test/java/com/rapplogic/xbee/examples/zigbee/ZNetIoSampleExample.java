@@ -29,6 +29,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Series 2 XBees -- Example of receiving I/O samples.  To configure your radio for this example, connect
  * your end device to your serial connection and run the configureIOSamples() method
@@ -48,12 +50,12 @@ class ZNetIoSampleExample implements PacketListener {
 		XBee xbee = new XBee();
 
 		try {
-			// replace with the com port of your XBee coordinator
-			xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
+            // An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 			xbee.addPacketListener(this);
 
 			// wait forever
-			synchronized(this) { this.wait(); }
+			synchronized(this) { wait(); }
 		} finally {
 			if (xbee != null && xbee.isConnected()) {
 				xbee.close();

@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * This class is the companion to ZNetSenderTest.java, and as such, it receives packets sent by ZNetSenderTest.java
  * See the ZNetSenderTest.java for information on how to configure your XBee for this demo
@@ -53,7 +55,7 @@ class ZNetReceiverExample {
 		try {
 			// replace with the com port of your receiving XBee (typically your end device)
 			// router
-			xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 

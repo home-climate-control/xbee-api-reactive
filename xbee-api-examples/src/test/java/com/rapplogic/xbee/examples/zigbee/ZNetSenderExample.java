@@ -35,6 +35,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.Arrays;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * To run this example you need to have at least two ZNet XBees powered up and configured to the same PAN ID (ATID) in API mode (2).
  * This software requires the XBee to be configured in API mode; if your ZNet radios are flashed with the transparent (AT) firmware,
@@ -120,9 +122,8 @@ class ZNetSenderExample {
 
 		var xbee = new XBee();
 
-		// replace with port and baud rate of your XBee. this is the com port of my coordinator
-		//coord
-		xbee.open("/dev/tty.usbserial-A6005uRz", 9600);
+        // An XBee with Coordinator firmware must be connected to this port
+		xbee.open(getTestPort(), 9600);
 		// coord (21A7)
 		//XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xfe);
 

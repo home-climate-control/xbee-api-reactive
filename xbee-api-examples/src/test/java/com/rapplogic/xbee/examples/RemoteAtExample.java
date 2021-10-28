@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -56,10 +57,8 @@ class RemoteAtExample {
 		var xbee = new XBee();
 
 		try {
-			// replace with your coordinator com/baud
-			// xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
-			// xbee.open("COM5", 9600);
-			xbee.open("/dev/ttyUSB0", 9600);
+            // An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 
 			// replace with SH + SL of your end device
             var addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x0a, 0x3e, 0x02);

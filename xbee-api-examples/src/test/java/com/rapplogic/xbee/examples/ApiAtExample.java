@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -54,9 +55,7 @@ class ApiAtExample {
 	void testApiAtExample() throws XBeeException {
 
 		try {
-			// replace with port and baud rate of your XBee
-			// xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
-			xbee.open("/dev/ttyUSB0", 9600);
+			xbee.open(getTestPort(), 9600);
 
 //			// set D1 analog input
 //			this.sendCommand(new AtCommand("D1", 2));

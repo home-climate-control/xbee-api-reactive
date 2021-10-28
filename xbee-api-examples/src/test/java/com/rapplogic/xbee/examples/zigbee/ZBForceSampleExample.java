@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * To run this sample you will need to configure pin 19 (D1) to Analog input on the remote XBee: D1=2.
  * To do this you can use X-CTU, the AtCommand [new AtCommand("D1", 2)] with your remote XBee connected to the serial port
@@ -53,8 +55,8 @@ class ZBForceSampleExample {
 		XBee xbee = new XBee();
 
 		try {
-			// replace with the com port of your XBee coordinator
-			xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
+            // An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 				// All XBees allow you to request an I/O sample on a local XBee (serial connected), however this is not very interesting.

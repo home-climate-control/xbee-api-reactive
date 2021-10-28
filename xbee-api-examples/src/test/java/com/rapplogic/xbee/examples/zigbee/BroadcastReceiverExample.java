@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * @author andrew
  */
@@ -41,8 +43,8 @@ class BroadcastReceiverExample {
 		XBee xbee = new XBee();
 
 		try {
-			// replace with your com port and baud rate. this is the com port of my coordinator
-			xbee.open("/dev/tty.usbserial-A6005uPi", 9600);
+			// An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 				XBeeResponse response = xbee.getResponse();

@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * The premise of this example is we have a end device configured in cyclic sleep. We'll send a command
  * to the coordinator to turn on/off a pin. Periodically when the end device wakes up, it will poll the
@@ -28,8 +30,8 @@ public class SleepTestCoordinator {
 
 		XBee xbee = new XBee(new XBeeConfiguration().withStartupChecks(false));
 
-		//coord
-		xbee.open("/dev/tty.usbserial-A6005uRz", 9600);
+        // An XBee with Coordinator firmware must be connected to this port
+		xbee.open(getTestPort(), 9600);
 
 		// replace with end device's 64-bit address (SH + SL)
 		// router (firmware 23A7)
