@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -72,7 +71,7 @@ class OpenCloseConnectionsTest {
 		xbee.initProviderConnection(connection);
 
         assertThat(xbee.isConnected()).isTrue();
-        assertThatIllegalArgumentException()
+        assertThatIllegalStateException()
                 .isThrownBy(() -> {
                     // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
                     log.info("attempting duplicate open");
