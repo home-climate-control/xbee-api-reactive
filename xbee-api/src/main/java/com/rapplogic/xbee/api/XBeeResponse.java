@@ -22,7 +22,6 @@ package com.rapplogic.xbee.api;
 import com.rapplogic.xbee.util.ByteUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -31,11 +30,9 @@ import java.util.Arrays;
  * @author andrew
  *
  */
-public abstract class XBeeResponse implements Serializable {
+public abstract class XBeeResponse {
 
 	// TODO consider adding UUID to each response
-
-	private static final long serialVersionUID = -7038123612643874495L;
 
 	// the raw (escaped) bytes of this packet (minus start byte)
 	// this is the most compact representation of the packet;
@@ -109,8 +106,8 @@ public abstract class XBeeResponse implements Serializable {
 	}
 
 	public void setRawPacketBytes(int[] packetBytes) {
-		this.rawPacketBytes = packetBytes;
-		this.processedPacketBytes = XBeePacket.unEscapePacket(packetBytes);
+		rawPacketBytes = packetBytes;
+		processedPacketBytes = XBeePacket.unEscapePacket(packetBytes);
 	}
 
 	/**
@@ -182,9 +179,9 @@ public abstract class XBeeResponse implements Serializable {
 
     @Override
     public String toString() {
-		return "apiId=" + this.apiId +
+		return "apiId=" + apiId +
 			",length=" + (length == null ? "null" : length.get16BitValue()) +
 			",checksum=" + ByteUtils.toBase16(checksum) +
-			",error=" + this.error;
+			",error=" + error;
 	}
 }
