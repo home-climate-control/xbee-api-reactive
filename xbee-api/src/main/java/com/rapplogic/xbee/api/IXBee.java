@@ -53,8 +53,6 @@ public interface IXBee extends AutoCloseable {
 
 	int getNextFrameId();
 
-	void updateFrameId(int val);
-
 	boolean isConnected();
 
 	void clearResponseQueue();

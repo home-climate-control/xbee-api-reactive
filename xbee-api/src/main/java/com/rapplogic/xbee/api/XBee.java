@@ -561,18 +561,6 @@ public class XBee implements IXBee {
 	}
 
 	/**
-	 * Updates the frame id.  Any value between 1 and ff is valid
-	 */
-	@Override
-    public void updateFrameId(int val) {
-		if (val <=0 || val > 0xff) {
-			throw new IllegalArgumentException("invalid frame id " + val);
-		}
-
-		sequentialFrameId = val;
-	}
-
-	/**
 	 * Removes all packets off of the response queue
 	 */
 	@Override
