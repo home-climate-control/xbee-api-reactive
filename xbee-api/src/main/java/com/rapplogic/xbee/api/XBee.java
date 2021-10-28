@@ -70,7 +70,7 @@ public class XBee implements IXBee {
 	private void doStartupChecks() throws XBeeException {
 		// Perform startup checks
 		try {
-			var ap = this.sendSynchronousAT(new AtCommand("AP"));
+			var ap = sendSynchronousAT(new AtCommand("AP"));
 
 			if (!ap.isOk()) {
 				throw new XBeeException("Attempt to query AP parameter failed: " + ap);
@@ -81,7 +81,7 @@ public class XBee implements IXBee {
 				logger.warn("XBee radio is in API mode without escape characters (AP=1).  The radio must be configured in API mode with escape bytes (AP=2) for use with this library.");
 				logger.info("Attempting to set AP to 2");
 
-				ap = this.sendSynchronousAT(new AtCommand("AP", 2));
+				ap = sendSynchronousAT(new AtCommand("AP", 2));
 
 				if (ap.isOk()) {
 					logger.info("Successfully set AP mode to 2.  This setting will not persist a power cycle without the WR (write) command");
@@ -92,7 +92,7 @@ public class XBee implements IXBee {
 				logger.info("Radio is in correct AP mode (AP=2)");
 			}
 
-			ap = this.sendSynchronousAT(new AtCommand("HV"));
+			ap = sendSynchronousAT(new AtCommand("HV"));
 
             var radioType = HardwareVersion.parse(ap);
 
@@ -102,13 +102,13 @@ public class XBee implements IXBee {
 				logger.warn("Unknown radio type (HV): {}", ap.getValue()[0]);
 			}
 
-            var vr = this.sendSynchronousAT(new AtCommand("VR"));
+            var vr = sendSynchronousAT(new AtCommand("VR"));
 
 			if (vr.isOk()) {
 				logger.info("Firmware version is {}", ByteUtils.toBase16(vr.getValue()));
 			}
 
-			this.clearResponseQueue();
+			clearResponseQueue();
 		} catch (XBeeTimeoutException ex) {
 			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  Check that the XBee radio is in API mode (AP=2); it will not function propertly in AP=1", ex);
 		}
@@ -122,16 +122,16 @@ public class XBee implements IXBee {
 	@Override
     public void open(String port, int baudRate) throws XBeeException {
 		try {
-			if (this.isConnected()) {
+			if (isConnected()) {
 				throw new IllegalStateException("Cannot open new connection -- existing connection is still open.  Please close first");
 			}
 
-			this.type = null;
+			type = null;
 
 			SerialPortConnection serial = new SerialPortConnection(); // NOSONAR False positive, this connection is closed in close()
 			serial.openSerialPort(port, baudRate);
 
-			this.initConnection(serial);
+			initConnection(serial);
 
 		} catch (XBeeException e) {
 			throw e;
@@ -153,7 +153,7 @@ public class XBee implements IXBee {
 	 * The connection must already be established as the interface has no means to do so.
 	 */
 	public void initProviderConnection(XBeeConnection connection) throws XBeeException {
-		if (this.isConnected()) {
+		if (isConnected()) {
 			throw new IllegalStateException("Cannot open new connection -- existing connection is still open.  Please close first");
 		}
 
@@ -162,13 +162,13 @@ public class XBee implements IXBee {
 
 	private void initConnection(XBeeConnection conn) throws XBeeException {
 		try {
-			this.xbeeConnection = conn;
+			xbeeConnection = conn;
 
-			parser = new InputStreamThread(this.xbeeConnection, conf);
+			parser = new InputStreamThread(xbeeConnection, conf);
 
 			// startup heuristics
 			if (conf.isStartupChecks()) {
-				this.doStartupChecks();
+				doStartupChecks();
 			}
 		} catch (XBeeException e) {
 			throw e;
@@ -184,7 +184,7 @@ public class XBee implements IXBee {
 		}
 
 		synchronized (parser.getPacketListenerList()) {
-			this.parser.getPacketListenerList().add(packetListener);
+			parser.getPacketListenerList().add(packetListener);
 		}
 	}
 
@@ -195,12 +195,12 @@ public class XBee implements IXBee {
 		}
 
 		synchronized (parser.getPacketListenerList()) {
-			this.parser.getPacketListenerList().remove(packetListener);
+			parser.getPacketListenerList().remove(packetListener);
 		}
 	}
 
 	public void sendRequest(XBeeRequest request) throws IOException {
-		if (this.type != null) {
+		if (type != null) {
 			// TODO use interface to mark series type
 			if (type == RadioType.SERIES1 && request.getClass().getPackage().getName().indexOf("api.zigbee") > -1) {
 				throw new IllegalArgumentException("You are connected to a Series 1 radio but attempting to send Series 2 requests");
@@ -210,7 +210,7 @@ public class XBee implements IXBee {
 		}
 
 		logger.info("Sending request to XBee: {}", request);
-		this.sendPacket(request.getXBeePacket());
+		sendPacket(request.getXBeePacket());
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class XBee implements IXBee {
 	 */
 	@Override
     public void sendPacket(XBeePacket packet) throws IOException {
-		this.sendPacket(packet.getByteArray());
+		sendPacket(packet.getByteArray());
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class XBee implements IXBee {
 		// TODO should we synchronize on read lock so we are sending/recv. simultaneously?
 		// TODO call request listener with byte array
 
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
@@ -267,7 +267,7 @@ public class XBee implements IXBee {
     public void sendAsynchronous(XBeeRequest request) throws XBeeException {
 
 		try {
-			this.sendRequest(request);
+			sendRequest(request);
 		} catch (Exception e) {
 			throw new XBeeException(e);
 		}
@@ -277,7 +277,7 @@ public class XBee implements IXBee {
      * Syntax sugar for {@link #sendSynchronous} returning {@link AtCommandResponse}.
      */
 	public AtCommandResponse sendSynchronousAT(AtCommand command) throws XBeeException {
-		return (AtCommandResponse) this.sendSynchronous(command);
+		return (AtCommandResponse) sendSynchronous(command);
 	}
 
     /**
@@ -315,7 +315,7 @@ public class XBee implements IXBee {
 
 			// this makes it thread safe -- prevents multiple threads from writing to output stream simultaneously
 			synchronized (sendPacketBlock) {
-				this.sendRequest(xbeeRequest);
+				sendRequest(xbeeRequest);
 			}
 
             // TODO handle error response as well
@@ -330,7 +330,7 @@ public class XBee implements IXBee {
                 }
             };
 
-			this.addPacketListener(pl);
+			addPacketListener(pl);
 
 			synchronized (container) {
 				try {
@@ -351,7 +351,7 @@ public class XBee implements IXBee {
 			throw new XBeeException(io);
 		} finally {
 			if (pl != null) {
-				this.removePacketListener(pl);
+				removePacketListener(pl);
 			}
 		}
 	}
@@ -360,7 +360,7 @@ public class XBee implements IXBee {
 	 * Uses sendSynchronous timeout defined in XBeeConfiguration (default is 5000ms)
 	 */
 	public XBeeResponse sendSynchronous(XBeeRequest request) throws XBeeException {
-		return this.sendSynchronous(request, conf.getSendSynchronousTimeout());
+		return sendSynchronous(request, conf.getSendSynchronousTimeout());
 	}
 
 	/**
@@ -391,13 +391,13 @@ public class XBee implements IXBee {
 	 */
 	@Override
     public XBeeResponse getResponse(Duration timeout) throws XBeeException {
-		return this.getResponseTimeout(timeout);
+		return getResponseTimeout(timeout);
 	}
 
 	private XBeeResponse getResponseTimeout(Duration timeout) throws XBeeException {
 
 		// seeing this with xmpp
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
@@ -427,7 +427,7 @@ public class XBee implements IXBee {
     public List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException {
 
 		// seeing this with xmpp
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
@@ -447,7 +447,7 @@ public class XBee implements IXBee {
 				logger.debug("calling getResponse with waitTime: {}", waitTime);
 
                 var callStart = System.currentTimeMillis();
-				var response = this.getResponse(waitTime);
+				var response = getResponse(waitTime);
 
                 logger.debug("Got response in {}", (System.currentTimeMillis() - callStart));
 
@@ -473,7 +473,7 @@ public class XBee implements IXBee {
 	 * Collects responses for wait milliseconds and returns responses as List
 	 */
 	public List<? extends XBeeResponse> collectResponses(Duration wait) throws XBeeException {
-		return this.collectResponses(wait, null);
+		return collectResponses(wait, null);
 	}
 
 	/**
@@ -481,7 +481,7 @@ public class XBee implements IXBee {
 	 */
 	public int getResponseQueueSize() {
 		// seeing this with xmpp
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
@@ -494,7 +494,7 @@ public class XBee implements IXBee {
 	@Override
     public void close() {
 
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new IllegalStateException("XBee is not connected");
 		}
 
@@ -513,7 +513,7 @@ public class XBee implements IXBee {
 			logger.warn("Failed to close connection", e);
 		}
 
-		this.type = null;
+		type = null;
 		parser = null;
 		xbeeConnection = null;
 	}
@@ -572,7 +572,7 @@ public class XBee implements IXBee {
 			throw new IllegalArgumentException("invalid frame id " + val);
 		}
 
-		this.sequentialFrameId = val;
+		sequentialFrameId = val;
 	}
 
 	/**
@@ -581,7 +581,7 @@ public class XBee implements IXBee {
 	@Override
     public void clearResponseQueue() {
 		// seeing this with xmpp
-		if (!this.isConnected()) {
+		if (!isConnected()) {
 			throw new XBeeNotConnectedException();
 		}
 
