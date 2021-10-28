@@ -535,8 +535,7 @@ public class XBee implements IXBee {
 		}
 	}
 
-	// TODO move to its own class
-	private int sequentialFrameId = 0xff;
+	private int sequentialFrameId = 0xFF;
 
 	@Override
     public int getCurrentFrameId() {
@@ -545,22 +544,20 @@ public class XBee implements IXBee {
 	}
 
 	/**
-	 * This is useful for obtaining a frame id when composing your XBeeRequest.
-	 * It will return frame ids in a sequential manner until the maximum is reached (0xff)
-	 * and it flips to 1 and starts over.
-	 *
-	 * Not Thread-safe
+	 * Obtain the next valid frame ID.
+     *
+	 * @return  Frame IDs in a sequential manner until the maximum is reached {@code 0xFF}, then
+	 * it flips to {@code 1} (not {@code 0}, that is {@link XBeeRequest#NO_RESPONSE_FRAME_ID}) and starts over.
 	 */
 	@Override
-    public int getNextFrameId() {
-		if (sequentialFrameId == 0xff) {
+    public synchronized int getNextFrameId() {
+
+		if (sequentialFrameId == 0xFF) {
 			// flip
-			sequentialFrameId = 1;
-		} else {
-			sequentialFrameId++;
+			sequentialFrameId = 0;
 		}
 
-		return sequentialFrameId;
+		return ++sequentialFrameId;
 	}
 
 	/**
