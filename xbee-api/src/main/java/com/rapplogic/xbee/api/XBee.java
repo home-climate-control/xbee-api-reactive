@@ -32,6 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.rapplogic.xbee.api.AtCommand.Command.AP;
+import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.VR;
+
 /**
  * This is an API for communicating with Digi XBee 802.15.4 and ZigBee radios
  * via the serial port
@@ -70,7 +74,7 @@ public class XBee implements IXBee {
 	private void doStartupChecks() throws XBeeException {
 		// Perform startup checks
 		try {
-			var ap = sendSynchronousAT(new AtCommand("AP"));
+			var ap = sendSynchronousAT(new AtCommand(AP));
 
 			if (!ap.isOk()) {
 				throw new XBeeException("Attempt to query AP parameter failed: " + ap);
@@ -81,7 +85,7 @@ public class XBee implements IXBee {
 				logger.warn("XBee radio is in API mode without escape characters (AP=1).  The radio must be configured in API mode with escape bytes (AP=2) for use with this library.");
 				logger.info("Attempting to set AP to 2");
 
-				ap = sendSynchronousAT(new AtCommand("AP", 2));
+				ap = sendSynchronousAT(new AtCommand(AP, 2));
 
 				if (ap.isOk()) {
 					logger.info("Successfully set AP mode to 2.  This setting will not persist a power cycle without the WR (write) command");
@@ -92,7 +96,7 @@ public class XBee implements IXBee {
 				logger.info("Radio is in correct AP mode (AP=2)");
 			}
 
-			ap = sendSynchronousAT(new AtCommand("HV"));
+			ap = sendSynchronousAT(new AtCommand(HV));
 
             var radioType = HardwareVersion.parse(ap);
 
@@ -102,7 +106,7 @@ public class XBee implements IXBee {
 				logger.warn("Unknown radio type (HV): {}", ap.getValue()[0]);
 			}
 
-            var vr = sendSynchronousAT(new AtCommand("VR"));
+            var vr = sendSynchronousAT(new AtCommand(VR));
 
 			if (vr.isOk()) {
 				logger.info("Firmware version is {}", ByteUtils.toBase16(vr.getValue()));

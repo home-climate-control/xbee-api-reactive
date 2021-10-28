@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.CH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -70,7 +71,7 @@ class OpenCloseConnectionsTest {
 
 		logger.info("sending channel command");
 
-		assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
+		assertThat(xbee.sendSynchronous(new AtCommand(CH)).isError()).isFalse();
 
 		logger.info("closing connection");
 		xbee.close();
@@ -80,13 +81,13 @@ class OpenCloseConnectionsTest {
         assertThatExceptionOfType(XBeeNotConnectedException.class).isThrownBy(() -> {
             // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
             logger.info("sending at command, but we're disconnected");
-            xbee.sendSynchronous(new AtCommand("CH"));
+            xbee.sendSynchronous(new AtCommand(CH));
         });
 
 		logger.info("reconnecting");
 		xbee.initProviderConnection(connectionWrapper.reopen());
 
-        assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
+        assertThat(xbee.sendSynchronous(new AtCommand(CH)).isError()).isFalse();
 
 		logger.info("closing conn");
 		xbee.close();

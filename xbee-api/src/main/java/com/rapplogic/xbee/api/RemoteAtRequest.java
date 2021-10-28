@@ -51,21 +51,21 @@ public class RemoteAtRequest extends AtCommand {
 	 * @param command two character AT command to set or query
 	 * @param value if null then the current setting will be queried
 	 */
-	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int[] value) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, Command command, int[] value) {
 		super(command, value, frameId);
 		remoteAddr64 = remoteAddress64;
 		remoteAddr16 = remoteAddress16;
 		this.applyChanges = applyChanges;
 	}
 
-	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int value) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, Command command, int value) {
 		this(frameId, remoteAddress64, remoteAddress16, applyChanges, command, new int[] {value});
 	}
 
 	/**
 	 * Creates a Remote AT request for querying the current value of an AT command on a remote XBee
 	 */
-	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, Command command) {
 		this(frameId, remoteAddress64, remoteAddress16, applyChanges, command, null);
 	}
 
@@ -73,12 +73,12 @@ public class RemoteAtRequest extends AtCommand {
 	 * Abbreviated Constructor for setting an AT command on a remote XBee.
 	 * This defaults to the DEFAULT_FRAME_ID, and true for apply changes
 	 */
-	public RemoteAtRequest(XBeeAddress64 dest64, String command, int[] value) {
+	public RemoteAtRequest(XBeeAddress64 dest64, Command command, int[] value) {
 		// Note: the ZNET broadcast also works for series 1.  We could also use ffff but then that wouldn't work for series 2
 		this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
 	}
 
-	public RemoteAtRequest(XBeeAddress64 dest64, String command, int value) {
+	public RemoteAtRequest(XBeeAddress64 dest64, Command command, int value) {
 		this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[] {value});
 	}
 
@@ -86,7 +86,7 @@ public class RemoteAtRequest extends AtCommand {
 	 * Abbreviated Constructor for querying the value of an AT command on a remote XBee.
 	 * This defaults to the DEFAULT_FRAME_ID, and false for apply changes
 	 */
-	public RemoteAtRequest(XBeeAddress64 dest64, String command) {
+	public RemoteAtRequest(XBeeAddress64 dest64, Command command) {
 		this(dest64, command, null);
 		// apply changes doesn't make sense for a query
 		setApplyChanges(false);
@@ -98,7 +98,7 @@ public class RemoteAtRequest extends AtCommand {
 	 * <p/>
 	 * Defaults are: frame id: 1, applyChanges: false
 	 */
-	public RemoteAtRequest(XBeeAddress16 dest16, String command) {
+	public RemoteAtRequest(XBeeAddress16 dest16, Command command) {
 		this(dest16, command, null);
 		// apply changes doesn't make sense for a query
 		setApplyChanges(false);
@@ -110,11 +110,11 @@ public class RemoteAtRequest extends AtCommand {
 	 * <p/>
 	 * Defaults are: frame id: 1, applyChanges: true
 	 */
-	public RemoteAtRequest(XBeeAddress16 remoteAddress16, String command, int[] value) {
+	public RemoteAtRequest(XBeeAddress16 remoteAddress16, Command command, int[] value) {
 		this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, value);
 	}
 
-	public RemoteAtRequest(XBeeAddress16 remoteAddress16, String command, int value) {
+	public RemoteAtRequest(XBeeAddress16 remoteAddress16, Command command, int value) {
 		this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, new int[] {value});
 	}
 
@@ -147,9 +147,9 @@ public class RemoteAtRequest extends AtCommand {
 		}
 
 		// command name ascii [1]
-		out.write(getCommand().substring(0, 1).toCharArray()[0]);
+		out.write(getCommand().code.substring(0, 1).toCharArray()[0]);
 		// command name ascii [2]
-		out.write(getCommand().substring(1, 2).toCharArray()[0]);
+		out.write(getCommand().code.substring(1, 2).toCharArray()[0]);
 
 		if (getValue() != null) {
 			out.write(getValue());

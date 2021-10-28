@@ -29,11 +29,11 @@ package com.rapplogic.xbee.api;
  */
 public class AtCommandQueue extends AtCommand {
 	//TODO test
-	public AtCommandQueue(String command) {
+	public AtCommandQueue(Command command) {
 		this(command, null, DEFAULT_FRAME_ID);
 	}
 
-	public AtCommandQueue(String command, int[] value, byte frameId) {
+	public AtCommandQueue(Command command, int[] value, byte frameId) {
 		super(command, value, frameId);
 	}
 

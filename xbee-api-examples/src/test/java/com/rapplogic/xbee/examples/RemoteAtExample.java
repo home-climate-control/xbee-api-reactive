@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 
 import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.P0;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -69,7 +70,7 @@ class RemoteAtExample {
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "D5", new int[] {3});
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "D0", new int[] {2});
 			//RemoteAtRequest request = new RemoteAtRequest(addr64, "P2", new int[] {3});
-            var request1 = new RemoteAtRequest(addr64, "P0", new int[] {1});
+            var request1 = new RemoteAtRequest(addr64, P0, new int[] {1});
 
             var response1 = (RemoteAtResponse) xbee.sendSynchronous(request1, Duration.ofSeconds(10));
 
@@ -85,7 +86,7 @@ class RemoteAtExample {
 			Thread.sleep(5000);
 //
 //			// now turn off end device D0
-            var request2 = new RemoteAtRequest(addr64, "P0", new int[] {4});
+            var request2 = new RemoteAtRequest(addr64, P0, new int[] {4});
 
 			var response2 = (RemoteAtResponse) xbee.sendSynchronous(request2, Duration.ofSeconds(10));
 

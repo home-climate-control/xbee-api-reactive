@@ -43,7 +43,55 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class AtCommand extends XBeeRequest {
 
-	private final String command;
+    /**
+     * See <a href="https://www.digi.com/resources/documentation/digidocs/pdfs/90000976.pdf">Zigbee RF Modules</a>
+     * for more details.
+     *
+     */
+    public enum Command {
+        AI("AI", "Association Status"),
+        AO("AO", "API Options"),
+        AP("AP", "API Enable"),
+        CH("CH", "Operating Channel"),
+        D0("D0", "AD0/DIO0 Configuration"),
+        D1("D1", "AD1/DIO1 Configuration"),
+        D2("D2", "AD2/DIO2 Configuration"),
+        D3("D3", "AD3/DIO3 Configuration"),
+        D4("D4", "DIO4 Configuration"),
+        D5("D5", "DIO5 Configuration"),
+        D6("D6", "DIO6 Configuration"),
+        D7("D7", "DIO7 Configuration"),
+        D8("D8", "DIO8 Configuration"),
+        DB("DB", "Received Signal Strength"),
+        FR("FR", "Software Reset"),
+        HV("HV", "Hardware Version"),
+        ID("ID", "Extended PAN ID"),
+        IR("IR", "IO Sample Rate"),
+        IS("IS", "Force Sample"),
+        MY("MY", "16-bit Network Address"),
+        ND("ND", "Node Discover"),
+        NI("NI", "Node Identifier"),
+        NT("NT", "Node Discovery Timeout"),
+        P0("P0", "PWM0 Configuration"),
+        P1("P1", "DIO11 Configuration"),
+        P2("P2", "DIO12 Configuration"),
+        P3("P3", "DIO13 Configuration"),
+        RE("RE", "Restore Defaults"),
+        SH("SH", "Serial Number High"),
+        SL("SL", "Serial Number Low"),
+        VR("VR", "Firmware Version"),
+        WR("WR", "Write");
+
+        public final String code;
+        public final String description;
+
+        Command(String code, String description) {
+            this.code = code;
+            this.description = description;
+        }
+    }
+
+	public final Command command;
 	private final int[] value;
 
 //	// common i/o pin settings.  it is up to the developer to ensure the setting is applicable to the pin (e.g. not all pins support analog input)
@@ -61,22 +109,22 @@ public class AtCommand extends XBeeRequest {
 //	    }
 //	}
 
-	public AtCommand(String command) {
+	public AtCommand(Command command) {
 		this(command, null, DEFAULT_FRAME_ID);
 	}
 
-	public AtCommand(String command, int value) {
+	public AtCommand(Command command, int value) {
 		this(command, new int[] {value}, DEFAULT_FRAME_ID);
 	}
 
-	public AtCommand(String command, int[] value) {
+	public AtCommand(Command command, int[] value) {
 		this(command, value, DEFAULT_FRAME_ID);
 	}
 
 	/**
 	 * Warning: frameId must be > 0 for a response
 	 */
-	public AtCommand(String command, int[] value, byte frameId) {
+	public AtCommand(Command command, int[] value, byte frameId) {
         super(frameId);
         this.command = command;
 		this.value = value;
@@ -84,9 +132,6 @@ public class AtCommand extends XBeeRequest {
 
 	@Override
     public int[] getFrameData() {
-		if (command.length() > 2) {
-			throw new IllegalArgumentException("Command should be two characters.  Do not include AT prefix");
-		}
 
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
@@ -95,9 +140,9 @@ public class AtCommand extends XBeeRequest {
 		// frame id
 		out.write(getFrameId());
 		// at command byte 1
-		out.write(command.substring(0, 1).toCharArray()[0]);
+		out.write(command.code.substring(0, 1).toCharArray()[0]);
 		// at command byte 2
-		out.write(command.substring(1, 2).toCharArray()[0]);
+		out.write(command.code.substring(1, 2).toCharArray()[0]);
 
 		// int value is up to four bytes to represent command value
 		if (value != null) {
@@ -112,7 +157,7 @@ public class AtCommand extends XBeeRequest {
 		return ApiId.AT_COMMAND;
 	}
 
-	public String getCommand() {
+	public Command getCommand() {
 		return command;
 	}
 

@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.DB;
 
 /**
  * This class is the companion to ZNetSenderTest.java, and as such, it receives packets sent by ZNetSenderTest.java
@@ -73,7 +74,7 @@ class ZNetReceiverExample {
 
 						// optionally we may want to get the signal strength (RSSI) of the last hop.
 						// keep in mind if you have routers in your network, this will be the signal of the last hop.
-						AtCommand at = new AtCommand("DB");
+						AtCommand at = new AtCommand(DB);
 						xbee.sendAsynchronous(at);
 						XBeeResponse atResponse = xbee.getResponse();
 

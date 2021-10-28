@@ -36,6 +36,8 @@ import java.time.Duration;
 import java.util.List;
 
 import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.ND;
+import static com.rapplogic.xbee.api.AtCommand.Command.NT;
 
 /**
  * Example of performing a node discover for Series 1 XBees.
@@ -60,14 +62,14 @@ class WpanNodeDiscoverExample {
 			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
-			xbee.sendAsynchronous(new AtCommand("NT"));
-			AtCommandResponse nodeTimeout = (AtCommandResponse) xbee.getResponse();
+			xbee.sendAsynchronous(new AtCommand(NT));
+			var nodeTimeout = (AtCommandResponse) xbee.getResponse();
 
 			// default is 2.5 seconds for series 1
 			int nodeDiscoveryTimeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
 			log.info("Node discovery timeout is " + nodeDiscoveryTimeout + " milliseconds");
 
-			xbee.sendAsynchronous(new AtCommand("ND"));
+			xbee.sendAsynchronous(new AtCommand(ND));
 
 			// collect responses up to the timeout or until the terminating response is received, whichever occurs first
 			List<? extends XBeeResponse> responses = xbee.collectResponses(Duration.ofSeconds(10), new CollectTerminator() {

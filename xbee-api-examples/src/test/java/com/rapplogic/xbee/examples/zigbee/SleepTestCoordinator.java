@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 
 import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.D0;
 
 /**
  * The premise of this example is we have a end device configured in cyclic sleep. We'll send a command
@@ -41,7 +42,7 @@ public class SleepTestCoordinator {
 
 			log.info("Turning D0 " + args[0]);
 
-			RemoteAtRequest request = new RemoteAtRequest(addr64, "D0", new int[] {args[0].equals("on") ? 5 : 4});
+			RemoteAtRequest request = new RemoteAtRequest(addr64, D0, new int[] {args[0].equals("on") ? 5 : 4});
 
 			RemoteAtResponse response = (RemoteAtResponse) xbee.sendSynchronous(request, Duration.ofSeconds(15));
 
