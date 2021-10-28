@@ -19,107 +19,75 @@
 
 package com.rapplogic.xbee.api;
 
+import com.rapplogic.xbee.XBeeFrameDirection;
 import com.rapplogic.xbee.util.ByteUtils;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * XBee frame directions.
+ *
+ * See <a href="https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_supported_frames_zigbee.htm">Supported Frames</a>.
+ *
+ * @author andrew
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2021
+ */
 public enum ApiId {
-	/**
-	 * API ID: 0x0
-	 */
-	TX_REQUEST_64 (0x0),
-	/**
-	 * API ID: 0x1
-	 */
-	TX_REQUEST_16 (0x1),
-	/**
-	 * API ID: 0x08
-	 */
-	AT_COMMAND (0x08),
-	/**
-	 * API ID: 0x09
-	 */
-	AT_COMMAND_QUEUE (0x09),
-	/**
-	 * API ID: 0x17
-	 */
-	REMOTE_AT_REQUEST (0x17),
-	/**
-	 * API ID: 0x10
-	 */
-	ZNET_TX_REQUEST (0x10),
-	/**
-	 * API ID: 0x11
-	 */
-	ZNET_EXPLICIT_TX_REQUEST (0x11),
-	/**
-	 * API ID: 0x80
-	 */
-	RX_64_RESPONSE (0x80),
-	/**
-	 * API ID: 0x81
-	 */
-	RX_16_RESPONSE (0x81),
-	/**
-	 * API ID: 0x82
-	 */
-	RX_64_IO_RESPONSE (0x82),
-	/**
-	 * API ID: 0x83
-	 */
-	RX_16_IO_RESPONSE (0x83),
-	/**
-	 * API ID: 0x88
-	 */
-	AT_RESPONSE (0x88),
-	/**
-	 * API ID: 0x89
-	 */
-	TX_STATUS_RESPONSE (0x89),
-	/**
-	 * API ID: 0x8a
-	 */
-	MODEM_STATUS_RESPONSE (0x8a),
-	/**
-	 * API ID: 0x90
-	 */
-	ZNET_RX_RESPONSE (0x90),
-	/**
-	 * API ID: 0x91
-	 */
-	ZNET_EXPLICIT_RX_RESPONSE (0x91),
-	/**
-	 * API ID: 0x8b
-	 */
-	ZNET_TX_STATUS_RESPONSE (0x8b),
-	/**
-	 * API ID: 0x97
-	 */
-	REMOTE_AT_RESPONSE (0x97),
-	/**
-	 * API ID: 0x92
-	 */
-	ZNET_IO_SAMPLE_RESPONSE (0x92),
-	/**
-	 * API ID: 0x95
-	 */
-	ZNET_IO_NODE_IDENTIFIER_RESPONSE (0x95),
+
+    // VT: FIXME: Who are these guys? Do they belong here?
+	TX_REQUEST_64 (0x0, null),
+	TX_REQUEST_16 (0x1, null),
+    RX_64_RESPONSE (0x80, null),
+    RX_16_RESPONSE (0x81, null),
+    RX_64_IO_RESPONSE (0x82, null),
+    RX_16_IO_RESPONSE (0x83, null),
+    TX_STATUS_RESPONSE (0x89, null),
+
+	AT_COMMAND (0x08, XBeeFrameDirection.TRANSMIT),
+	AT_COMMAND_QUEUE (0x09, XBeeFrameDirection.TRANSMIT),
+    ZNET_TX_REQUEST (0x10, XBeeFrameDirection.TRANSMIT),
+    ZNET_EXPLICIT_TX_REQUEST (0x11, XBeeFrameDirection.TRANSMIT),
+	REMOTE_AT_REQUEST (0x17, XBeeFrameDirection.TRANSMIT),
+
+
+	AT_RESPONSE (0x88, XBeeFrameDirection.RECEIVE),
+	MODEM_STATUS_RESPONSE (0x8A, XBeeFrameDirection.RECEIVE),
+    ZNET_TX_STATUS_RESPONSE (0x8B, XBeeFrameDirection.RECEIVE),
+	ZNET_RX_RESPONSE (0x90, XBeeFrameDirection.RECEIVE),
+	ZNET_EXPLICIT_RX_RESPONSE (0x91, XBeeFrameDirection.RECEIVE),
+    ZNET_IO_SAMPLE_RESPONSE (0x92, XBeeFrameDirection.RECEIVE),
+    ZNET_IO_NODE_IDENTIFIER_RESPONSE (0x95, XBeeFrameDirection.RECEIVE),
+	REMOTE_AT_RESPONSE (0x97, XBeeFrameDirection.RECEIVE),
+
 	/**
 	 * Indicates that we've parsed a packet for which we didn't know how to handle the API type.  This will be parsed into a GenericResponse
 	 */
-	UNKNOWN (0xff),
+	UNKNOWN (0xFF, null),
+
 	/**
 	 * This is returned if an error occurs during packet parsing and does not correspond to a XBee API ID.
 	 */
-	ERROR_RESPONSE (-1);
+	ERROR_RESPONSE (-1, null);
+
+    public final int id;
+
+    /**
+     * Frame direction; {@code null} value indicates unknown.
+     */
+    public final XBeeFrameDirection direction;
 
 	private static final Map<Integer, ApiId> lookup = new HashMap<>();
 
+    ApiId(int id, XBeeFrameDirection direction) {
+        this.id = id;
+        this.direction = direction;
+    }
+
 	static {
 		for(ApiId s : EnumSet.allOf(ApiId.class)) {
-			lookup.put(s.getValue(), s);
+			lookup.put(s.getId(), s);
 		}
 	}
 
@@ -127,18 +95,14 @@ public enum ApiId {
 		return lookup.get(value);
 	}
 
-    private final int value;
 
-    ApiId(int value) {
-        this.value = value;
-    }
 
-	public int getValue() {
-		return value;
+	public int getId() {
+		return id;
 	}
 
     @Override
 	public String toString() {
-		return this.name() + " (" + ByteUtils.toBase16(this.getValue()) + ")";
+		return name() + " (" + ByteUtils.toBase16(getId()) + "," + direction + ")";
 	}
 }

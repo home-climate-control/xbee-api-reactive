@@ -91,7 +91,7 @@ public class AtCommand extends XBeeRequest {
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(getApiId().getValue());
+		out.write(getApiId().getId());
 		// frame id
 		out.write(getFrameId());
 		// at command byte 1

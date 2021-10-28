@@ -79,19 +79,19 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 	static {
 		// TODO put all response handlers in specific packet and load all.  implement static handlesApi method
-		handlerMap.put(ApiId.AT_RESPONSE.getValue(), AtCommandResponse.class);
-		handlerMap.put(ApiId.MODEM_STATUS_RESPONSE.getValue(), ModemStatusResponse.class);
-		handlerMap.put(ApiId.REMOTE_AT_RESPONSE.getValue(), RemoteAtResponse.class);
-		handlerMap.put(ApiId.RX_16_IO_RESPONSE.getValue(), RxResponseIoSample.class);
-		handlerMap.put(ApiId.RX_64_IO_RESPONSE.getValue(), RxResponseIoSample.class);
-		handlerMap.put(ApiId.RX_16_RESPONSE.getValue(), RxResponse16.class);
-		handlerMap.put(ApiId.RX_64_RESPONSE.getValue(), RxResponse64.class);
-		handlerMap.put(ApiId.TX_STATUS_RESPONSE.getValue(), TxStatusResponse.class);
-		handlerMap.put(ApiId.ZNET_EXPLICIT_RX_RESPONSE.getValue(), ZNetExplicitRxResponse.class);
-		handlerMap.put(ApiId.ZNET_IO_NODE_IDENTIFIER_RESPONSE.getValue(), ZNetNodeIdentificationResponse.class);
-		handlerMap.put(ApiId.ZNET_IO_SAMPLE_RESPONSE.getValue(), ZNetRxIoSampleResponse.class);
-		handlerMap.put(ApiId.ZNET_RX_RESPONSE.getValue(), ZNetRxResponse.class);
-		handlerMap.put(ApiId.ZNET_TX_STATUS_RESPONSE.getValue(), ZNetTxStatusResponse.class);
+		handlerMap.put(ApiId.AT_RESPONSE.getId(), AtCommandResponse.class);
+		handlerMap.put(ApiId.MODEM_STATUS_RESPONSE.getId(), ModemStatusResponse.class);
+		handlerMap.put(ApiId.REMOTE_AT_RESPONSE.getId(), RemoteAtResponse.class);
+		handlerMap.put(ApiId.RX_16_IO_RESPONSE.getId(), RxResponseIoSample.class);
+		handlerMap.put(ApiId.RX_64_IO_RESPONSE.getId(), RxResponseIoSample.class);
+		handlerMap.put(ApiId.RX_16_RESPONSE.getId(), RxResponse16.class);
+		handlerMap.put(ApiId.RX_64_RESPONSE.getId(), RxResponse64.class);
+		handlerMap.put(ApiId.TX_STATUS_RESPONSE.getId(), TxStatusResponse.class);
+		handlerMap.put(ApiId.ZNET_EXPLICIT_RX_RESPONSE.getId(), ZNetExplicitRxResponse.class);
+		handlerMap.put(ApiId.ZNET_IO_NODE_IDENTIFIER_RESPONSE.getId(), ZNetNodeIdentificationResponse.class);
+		handlerMap.put(ApiId.ZNET_IO_SAMPLE_RESPONSE.getId(), ZNetRxIoSampleResponse.class);
+		handlerMap.put(ApiId.ZNET_RX_RESPONSE.getId(), ZNetRxResponse.class);
+		handlerMap.put(ApiId.ZNET_TX_STATUS_RESPONSE.getId(), ZNetTxStatusResponse.class);
 	}
 
 	static void registerResponseHandler(int apiId, Class<? extends XBeeResponse> clazz) {
@@ -130,21 +130,21 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 		try {
 			// BTW, length doesn't account for escaped bytes
-            var msbLength = this.read("Length MSB");
-            var lsbLength = this.read("Length LSB");
+            var msbLength = read("Length MSB");
+            var lsbLength = read("Length LSB");
 
 			// length of api structure, starting here (not including start byte or length bytes, or checksum)
-			this.length = new XBeePacketLength(msbLength, lsbLength);
+			length = new XBeePacketLength(msbLength, lsbLength);
 
 			logger.debug("packet length is {}", () -> String.format("[0x%03X]", length.getLength()));
 
 			// total packet length = stated length + 1 start byte + 1 checksum byte + 2 length bytes
 
-			intApiId = this.read("API ID");
-			this.apiId = ApiId.get(intApiId);
+			intApiId = read("API ID");
+			apiId = ApiId.get(intApiId);
 
 			if (apiId == null) {
-				this.apiId = ApiId.UNKNOWN;
+				apiId = ApiId.UNKNOWN;
 			}
 
 			logger.info("Handling ApiId: {}", apiId);
@@ -166,9 +166,9 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 				response.parse(this);
 			}
 
-			response.setChecksum(this.read("Checksum"));
+			response.setChecksum(read("Checksum"));
 
-			if (!this.isDone()) {
+			if (!isDone()) {
 				throw new XBeeParseException("There are remaining bytes according to stated packet length but we have read all the bytes we thought were required for this packet (if that makes sense)");
 			}
 
@@ -200,7 +200,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	 */
 	@Override
     public int read(String context) throws IOException {
-		int b = this.read();
+		int b = read();
 		logger.debug("Read {} byte, val is {}", context, ByteUtils.formatByte(b));
 		return b;
 	}
@@ -228,7 +228,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			throw new XBeeParseException("Packet has read all of its bytes");
 		}
 
-		int b = this.readFromStream();
+		int b = readFromStream();
 
 
 		if (b == -1) {
@@ -241,7 +241,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			if (b == XBeePacket.SpecialByte.ESCAPE.getValue()) {
 				logger.debug("found escape byte");
 				// read next byte
-				b = this.readFromStream();
+				b = readFromStream();
 
 				logger.debug("next byte is {}", ByteUtils.formatByte(b));
 				b = 0x20 ^ b;
@@ -265,10 +265,10 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			// when computing checksum, do not include start byte, length, or checksum; when verifying, include checksum
 			checksum.addByte(b);
 
-            logger.debug("Read byte {} at position {}, packet length is {}, #escapeBytes is {}, remaining bytes is {}", ByteUtils.formatByte(b), bytesRead, this.length.get16BitValue(), escapeBytes, this.getRemainingBytes());
+            logger.debug("Read byte {} at position {}, packet length is {}, #escapeBytes is {}, remaining bytes is {}", ByteUtils.formatByte(b), bytesRead, length.get16BitValue(), escapeBytes, getRemainingBytes());
 
 			// escape bytes are not included in the stated packet length
-			if (this.getFrameDataBytesRead() >= (length.get16BitValue() + 1)) {
+			if (getFrameDataBytesRead() >= (length.get16BitValue() + 1)) {
 				// this is checksum and final byte of packet
 				done = true;
 
@@ -290,12 +290,12 @@ public class PacketParser implements IIntInputStream, IPacketParser {
     public int[] readRemainingBytes() throws IOException {
 
 		// minus one since we don't read the checksum
-		int[] value = new int[this.getRemainingBytes() - 1];
+		int[] value = new int[getRemainingBytes() - 1];
 
 		logger.debug("There are {} remaining bytes", value.length);
 
 		for (int i = 0; i < value.length; i++) {
-			value[i] = this.read("Remaining bytes " + i);
+			value[i] = read("Remaining bytes " + i);
 		}
 
 		return value;
@@ -306,7 +306,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 		XBeeAddress64 addr = new XBeeAddress64();
 
 		for (int i = 0; i < 8; i++) {
-			addr.getAddress()[i] = this.read("64-bit Address byte " + i);
+			addr.getAddress()[i] = read("64-bit Address byte " + i);
 		}
 
 		return addr;
@@ -316,8 +316,8 @@ public class PacketParser implements IIntInputStream, IPacketParser {
     public XBeeAddress16 parseAddress16() throws IOException {
 		XBeeAddress16 addr16 = new XBeeAddress16();
 
-		addr16.setMsb(this.read("Address 16 MSB"));
-		addr16.setLsb(this.read("Address 16 LSB"));
+		addr16.setMsb(read("Address 16 MSB"));
+		addr16.setLsb(read("Address 16 LSB"));
 
 		return addr16;
 	}
@@ -328,7 +328,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	@Override
     public int getFrameDataBytesRead() {
 		// subtract out the 2 length bytes
-		return this.getBytesRead() - 2;
+		return getBytesRead() - 2;
 	}
 
 	/**
@@ -337,7 +337,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	@Override
     public int getRemainingBytes() {
 		// add one for checksum byte (not included) in packet length
-		return this.length.get16BitValue() - this.getFrameDataBytesRead() + 1;
+		return length.get16BitValue() - getFrameDataBytesRead() + 1;
 	}
 
 	// get unescaped packet length
@@ -379,6 +379,6 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 	@Override
     public int getIntApiId() {
-		return this.intApiId;
+		return intApiId;
 	}
 }

@@ -103,7 +103,7 @@ public class ZNetExplicitTxRequest extends ZNetTxRequest {
 		}
 
 		public Endpoint getEndpoint() {
-			return this.endpoint;
+			return endpoint;
 		}
 	}
 
@@ -132,24 +132,24 @@ public class ZNetExplicitTxRequest extends ZNetTxRequest {
 	public int[] getFrameData() {
 
 		// get frame id from tx request
-		IntArrayOutputStream frameData = this.getFrameDataAsIntArrayOutputStream();
+		IntArrayOutputStream frameData = getFrameDataAsIntArrayOutputStream();
 
 		// overwrite api id
-		frameData.getInternalList().set(0, this.getApiId().getValue());
+		frameData.getInternalList().set(0, getApiId().getId());
 
 		// insert explicit bytes
 
 		// source endpoint
-		frameData.getInternalList().add(12, this.getSourceEndpoint());
+		frameData.getInternalList().add(12, getSourceEndpoint());
 		// dest endpoint
-		frameData.getInternalList().add(13, this.getDestinationEndpoint());
+		frameData.getInternalList().add(13, getDestinationEndpoint());
 		// cluster id msb
-		frameData.getInternalList().add(14, this.getClusterId().getMsb());
+		frameData.getInternalList().add(14, getClusterId().getMsb());
 		// cluster id lsb
-		frameData.getInternalList().add(15, this.getClusterId().getLsb());
+		frameData.getInternalList().add(15, getClusterId().getLsb());
 		// profile id
-		frameData.getInternalList().add(16, this.getProfileId().getMsb());
-		frameData.getInternalList().add(17, this.getProfileId().getLsb());
+		frameData.getInternalList().add(16, getProfileId().getMsb());
+		frameData.getInternalList().add(17, getProfileId().getLsb());
 
 		return frameData.getIntArray();
 	}
@@ -178,11 +178,11 @@ public class ZNetExplicitTxRequest extends ZNetTxRequest {
     @Override
     public String toString() {
 		return super.toString() +
-			",sourceEndpoint=" + ByteUtils.toBase16(this.getSourceEndpoint()) +
-			",destinationEndpoint=" + ByteUtils.toBase16(this.getDestinationEndpoint()) +
-			",clusterId(msb)=" + ByteUtils.toBase16(this.getClusterId().getMsb()) +
-			",clusterId(lsb)=" + ByteUtils.toBase16(this.getClusterId().getLsb()) +
-			",profileId(msb)=" + ByteUtils.toBase16(this.getProfileId().getMsb()) +
-			",profileId(lsb)=" + ByteUtils.toBase16(this.getProfileId().getLsb());
+			",sourceEndpoint=" + ByteUtils.toBase16(getSourceEndpoint()) +
+			",destinationEndpoint=" + ByteUtils.toBase16(getDestinationEndpoint()) +
+			",clusterId(msb)=" + ByteUtils.toBase16(getClusterId().getMsb()) +
+			",clusterId(lsb)=" + ByteUtils.toBase16(getClusterId().getLsb()) +
+			",profileId(msb)=" + ByteUtils.toBase16(getProfileId().getMsb()) +
+			",profileId(lsb)=" + ByteUtils.toBase16(getProfileId().getLsb());
 	}
 }

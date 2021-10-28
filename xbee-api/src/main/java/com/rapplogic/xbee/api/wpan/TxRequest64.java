@@ -80,7 +80,7 @@ public class TxRequest64 extends TxRequestBase {
 		IntArrayOutputStream out = new IntArrayOutputStream();
 
 		// api id
-		out.write(getApiId().getValue());
+		out.write(getApiId().getId());
 		// frame id (arbitrary byte that will be sent back with ack)
 		out.write(getFrameId());
 		// destination high (broadcast is 0xFFFF)
