@@ -153,7 +153,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 			for (Integer handlerApiId : handlerMap.keySet()) {
 				if (intApiId == handlerApiId) {
-					logger.debug("Found response handler for apiId [{}]: {}", ByteUtils.toBase16(intApiId), handlerMap.get(handlerApiId).getCanonicalName());
+					logger.debug("Found response handler for apiId={}: {}", ByteUtils.toBase16(intApiId), handlerMap.get(handlerApiId).getCanonicalName());
 					response = handlerMap.get(handlerApiId).newInstance();
 					response.parse(this);
 					break;

@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class OpenCloseConnectionsTest {
 
-	private final static Logger log = LogManager.getLogger(OpenCloseConnectionsTest.class);
+	private final static Logger logger = LogManager.getLogger(OpenCloseConnectionsTest.class);
 
 	private final XBee xbee = new XBee();
 
@@ -36,12 +36,6 @@ class OpenCloseConnectionsTest {
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
 	void testSerial() throws XBeeException, IOException {
-
-		// series 1 (VT: FIXME: series of what?)
-		// String port = "/dev/tty.usbserial-A4004Rim";
-
-		// series 2 (VT: FIXME: series of what?)
-		// String port = "/dev/tty.usbserial-A6005v5M";
 
 		// x86
 		String port = "/dev/ttyUSB0";
@@ -63,7 +57,7 @@ class OpenCloseConnectionsTest {
 
 	private void testConnection(XBeeSerialConnectionWrapper connectionWrapper) throws XBeeException, IOException {
 
-		log.info("opening connection");
+		logger.info("opening connection");
 
 		XBeeConnection connection = connectionWrapper.open();
 
@@ -74,37 +68,37 @@ class OpenCloseConnectionsTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> {
                     // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-                    log.info("attempting duplicate open");
+                    logger.info("attempting duplicate open");
                     xbee.initProviderConnection(connection);
                 }).withMessage("Cannot open new connection -- existing connection is still open.  Please close first");
 
-		log.info("sending channel command");
+		logger.info("sending channel command");
 
 		assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
 
-		log.info("closing connection");
+		logger.info("closing connection");
 		xbee.close();
 
 		assertThat(xbee.isConnected()).isFalse();
 
         assertThatExceptionOfType(XBeeNotConnectedException.class).isThrownBy(() -> {
             // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-            log.info("sending at command, but we're disconnected");
+            logger.info("sending at command, but we're disconnected");
             xbee.sendSynchronous(new AtCommand("CH"));
         });
 
-		log.info("reconnecting");
+		logger.info("reconnecting");
 		xbee.initProviderConnection(connectionWrapper.reopen());
 
         assertThat(xbee.sendSynchronous(new AtCommand("CH")).isError()).isFalse();
 
-		log.info("closing conn");
+		logger.info("closing conn");
 		xbee.close();
 
         assertThatIllegalStateException()
                 .isThrownBy(() -> {
                     // VT: FIXME: https://github.com/home-climate-control/xbee-api/issues/1
-                    log.info("try duplicate close");
+                    logger.info("try duplicate close");
                     xbee.close();
                 }).withMessage("XBee is not connected");
 	}

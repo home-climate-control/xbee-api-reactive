@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * XBee frame directions.
+ * XBee frame types.
  *
  * See <a href="https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_supported_frames_zigbee.htm">Supported Frames</a>.
  *
@@ -95,14 +95,12 @@ public enum ApiId {
 		return lookup.get(value);
 	}
 
-
-
 	public int getId() {
 		return id;
 	}
 
     @Override
 	public String toString() {
-		return name() + " (" + ByteUtils.toBase16(getId()) + "," + direction + ")";
+		return name() + "(" + ByteUtils.toBase16(getId()) + "," + direction + ")";
 	}
 }
