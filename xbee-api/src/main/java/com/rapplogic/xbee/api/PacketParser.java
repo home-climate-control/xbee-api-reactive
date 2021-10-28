@@ -151,17 +151,16 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 			// TODO parse I/O data page 12. 82 API Identifier Byte for 64 bit address A/D data (83 is for 16bit A/D data)
 
-			for (Integer handlerApiId : handlerMap.keySet()) {
-				if (intApiId == handlerApiId) {
-					logger.debug("Found response handler for apiId={}: {}", ByteUtils.toBase16(intApiId), handlerMap.get(handlerApiId).getCanonicalName());
-					response = handlerMap.get(handlerApiId).newInstance();
-					response.parse(this);
-					break;
-				}
-			}
+            var handlerClass = handlerMap.get(intApiId);
+
+            if (handlerClass != null) {
+                logger.debug("Found response handler for apiId={}: {}", ByteUtils.toBase16(intApiId), handlerClass.getCanonicalName());
+                response = handlerClass.newInstance();
+                response.parse(this);
+            }
 
 			if (response == null) {
-				logger.info("Did not find a response handler for ApiId [{}].  Returning GenericResponse", ByteUtils.toBase16(intApiId));
+				logger.info("Did not find a response handler for apiId={}.  Returning GenericResponse", ByteUtils.toBase16(intApiId));
 				response = new GenericResponse();
 				response.parse(this);
 			}
