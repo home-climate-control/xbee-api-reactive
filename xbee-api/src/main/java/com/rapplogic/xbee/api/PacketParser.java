@@ -199,7 +199,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	 */
 	@Override
     public int read(String context) throws IOException {
-		int b = read();
+		var b = read();
 		logger.debug("Read {} byte, val is {}", context, ByteUtils.formatByte(b));
 		return b;
 	}
@@ -208,7 +208,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 	 * This method should only be called by read()
 	 */
 	private int readFromStream() throws IOException {
-		int b = in.read();
+		var b = in.read();
 		// save raw bytes to transfer via network
 		rawBytes.write(b);
 
@@ -227,7 +227,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			throw new XBeeParseException("Packet has read all of its bytes");
 		}
 
-		int b = readFromStream();
+		var b = readFromStream();
 
 
 		if (b == -1) {
@@ -289,11 +289,11 @@ public class PacketParser implements IIntInputStream, IPacketParser {
     public int[] readRemainingBytes() throws IOException {
 
 		// minus one since we don't read the checksum
-		int[] value = new int[getRemainingBytes() - 1];
+		var value = new int[getRemainingBytes() - 1];
 
 		logger.debug("There are {} remaining bytes", value.length);
 
-		for (int i = 0; i < value.length; i++) {
+		for (var i = 0; i < value.length; i++) {
 			value[i] = read("Remaining bytes " + i);
 		}
 
@@ -302,7 +302,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 	@Override
     public XBeeAddress64 parseAddress64() throws IOException {
-		XBeeAddress64 addr = new XBeeAddress64();
+		var addr = new XBeeAddress64();
 
 		for (int i = 0; i < 8; i++) {
 			addr.getAddress()[i] = read("64-bit Address byte " + i);
@@ -313,7 +313,7 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 
 	@Override
     public XBeeAddress16 parseAddress16() throws IOException {
-		XBeeAddress16 addr16 = new XBeeAddress16();
+		var addr16 = new XBeeAddress16();
 
 		addr16.setMsb(read("Address 16 MSB"));
 		addr16.setLsb(read("Address 16 LSB"));
@@ -350,20 +350,8 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 		return bytesRead;
 	}
 
-	public void setBytesRead(int bytesRead) {
-		this.bytesRead = bytesRead;
-	}
-
 	public boolean isDone() {
 		return done;
-	}
-
-	public void setDone(boolean done) {
-		this.done = done;
-	}
-
-	public int getChecksum() {
-		return checksum.getChecksum();
 	}
 
 	@Override
