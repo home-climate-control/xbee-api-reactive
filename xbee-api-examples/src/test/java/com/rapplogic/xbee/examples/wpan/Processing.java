@@ -8,6 +8,8 @@ import com.rapplogic.xbee.api.wpan.RxResponseIoSample;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 public class Processing {
 	XBee xbee;
 	Queue<XBeeResponse> queue = new ConcurrentLinkedQueue<>();
@@ -18,8 +20,7 @@ public class Processing {
 	  try {
 
 	    xbee = new XBee();
-	    // replace with your COM port
-	    xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
+	    xbee.open(getTestPort(), 9600);
 
 	    xbee.addPacketListener(new PacketListener() {
 	      @Override

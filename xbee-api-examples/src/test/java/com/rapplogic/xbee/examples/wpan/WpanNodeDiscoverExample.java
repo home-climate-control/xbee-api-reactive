@@ -35,6 +35,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.List;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Example of performing a node discover for Series 1 XBees.
  * You must connect to the coordinator to run this example and
@@ -54,8 +56,8 @@ class WpanNodeDiscoverExample {
 	void testWpanNodeDiscoverExample() throws XBeeException, InterruptedException {
 
 		try {
-			// my coordinator com/baud
-			xbee.open("/dev/tty.usbserial-A4004Rim", 9600);
+            // An XBee with Coordinator firmware must be connected to this port
+			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
 			xbee.sendAsynchronous(new AtCommand("NT"));

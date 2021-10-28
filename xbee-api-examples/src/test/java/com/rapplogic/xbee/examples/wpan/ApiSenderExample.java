@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Sends a TX Request every 5000 ms and waits for TX status packet.
  * If the radio is sending samples it will continue to wait for tx status.
@@ -60,7 +62,7 @@ class ApiSenderExample {
 
 		try {
 			// replace with port and baud rate of your XBee
-			xbee.open("/dev/ttyUSB0", 9600);
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 

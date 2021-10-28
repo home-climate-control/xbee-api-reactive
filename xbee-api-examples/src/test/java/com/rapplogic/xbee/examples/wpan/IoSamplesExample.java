@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Series 1 XBee -- receive IO samples from remote radio
  * In this example we are going to set pin 20 to analog input, pins 11 and 12 to digital input, and configure change detect for pin 12.
@@ -85,7 +87,7 @@ class IoSamplesExample {
 		XBee xbee = new XBee();
 
 		try {
-			xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
+			xbee.open(getTestPort(), 9600);
 
 			while (true) {
 

@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static com.rapplogic.xbee.TestPortProvider.getTestPort;
+
 /**
  * Receives IO samples from remote radio
  * I have a photoresistor connected to analog0 and a thermistor is connected to analog1
@@ -53,8 +55,7 @@ class ApiReceiverExample {
 
 		try {
 			// my end device
-			// xbee.open("/dev/tty.usbserial-A6005v5M", 9600);
-			xbee.open("/dev/ttyUSB0", 9600);
+			xbee.open(getTestPort(), 9600);
 			// my coordinator
 			//xbee.open("/dev/tty.usbserial-A4004Rim", 9600);
 
