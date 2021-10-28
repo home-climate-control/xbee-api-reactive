@@ -117,7 +117,7 @@ public class ZNetExplicitTxRequest extends ZNetTxRequest {
     public static final DoubleByte znetProfileId = new DoubleByte(0xc1, 0x05);
     public static final DoubleByte zdoProfileId = new DoubleByte(0, 0);
 
-	public ZNetExplicitTxRequest(int frameId, XBeeAddress64 dest64, XBeeAddress16 dest16, int broadcastRadius, ZNetTxRequest.Option option, int[] payload, 	int sourceEndpoint, int destinationEndpoint, DoubleByte clusterId, DoubleByte profileId) {
+	public ZNetExplicitTxRequest(byte frameId, XBeeAddress64 dest64, XBeeAddress16 dest16, int broadcastRadius, ZNetTxRequest.Option option, int[] payload, 	int sourceEndpoint, int destinationEndpoint, DoubleByte clusterId, DoubleByte profileId) {
 		super(frameId, dest64, dest16, broadcastRadius, option, payload);
 		this.sourceEndpoint = sourceEndpoint;
 		this.destinationEndpoint = destinationEndpoint;

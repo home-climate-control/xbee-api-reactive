@@ -58,14 +58,14 @@ public class TxRequest64 extends TxRequestBase {
 	 *
 	 * Payload size is limited to 100 bytes, according to MaxStream documentation.
 	 */
-	public TxRequest64(XBeeAddress64 destination, int frameId, int[] payload) {
+	public TxRequest64(XBeeAddress64 destination, byte frameId, int[] payload) {
 		this(destination, frameId, Option.UNICAST, payload);
 	}
 
 	/**
 	 * Note: if option is DISABLE_ACK_OPTION you will not get a ack response and you must use the asynchronous send method
 	 */
-	public TxRequest64(XBeeAddress64 remoteAddr64, int frameId, Option option, int[] payload) {
+	public TxRequest64(XBeeAddress64 remoteAddr64, byte frameId, Option option, int[] payload) {
         super(frameId);
 		this.remoteAddr64 = remoteAddr64;
 		setOption(option);

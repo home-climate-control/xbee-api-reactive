@@ -33,7 +33,7 @@ public class AtCommandQueue extends AtCommand {
 		this(command, null, DEFAULT_FRAME_ID);
 	}
 
-	public AtCommandQueue(String command, int[] value, int frameId) {
+	public AtCommandQueue(String command, int[] value, byte frameId) {
 		super(command, value, frameId);
 	}
 

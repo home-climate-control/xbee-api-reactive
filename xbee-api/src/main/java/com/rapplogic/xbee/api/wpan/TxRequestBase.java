@@ -42,7 +42,7 @@ public abstract class TxRequestBase extends XBeeRequest {
 
 	private int maxPayloadSize;
 
-    public TxRequestBase(int frameId) {
+    public TxRequestBase(byte frameId) {
         super(frameId);
     }
 

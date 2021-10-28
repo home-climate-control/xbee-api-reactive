@@ -51,21 +51,21 @@ public class RemoteAtRequest extends AtCommand {
 	 * @param command two character AT command to set or query
 	 * @param value if null then the current setting will be queried
 	 */
-	public RemoteAtRequest(int frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int[] value) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int[] value) {
 		super(command, value, frameId);
 		remoteAddr64 = remoteAddress64;
 		remoteAddr16 = remoteAddress16;
 		this.applyChanges = applyChanges;
 	}
 
-	public RemoteAtRequest(int frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int value) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command, int value) {
 		this(frameId, remoteAddress64, remoteAddress16, applyChanges, command, new int[] {value});
 	}
 
 	/**
 	 * Creates a Remote AT request for querying the current value of an AT command on a remote XBee
 	 */
-	public RemoteAtRequest(int frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command) {
+	public RemoteAtRequest(byte frameId, XBeeAddress64 remoteAddress64, XBeeAddress16 remoteAddress16, boolean applyChanges, String command) {
 		this(frameId, remoteAddress64, remoteAddress16, applyChanges, command, null);
 	}
 

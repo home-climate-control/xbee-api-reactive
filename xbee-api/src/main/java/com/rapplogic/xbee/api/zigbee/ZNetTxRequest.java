@@ -116,7 +116,7 @@ public class ZNetTxRequest extends XBeeRequest {
 	 *  - check the 16-bit address of the tx status response frame as it may change.
 	 *  - keep a hash table mapping of 64-bit address to 16-bit network address.
 	 */
-	public ZNetTxRequest(int frameId, XBeeAddress64 dest64, XBeeAddress16 dest16, int broadcastRadius, Option option, int[] payload) {
+	public ZNetTxRequest(byte frameId, XBeeAddress64 dest64, XBeeAddress16 dest16, int broadcastRadius, Option option, int[] payload) {
         super(frameId);
 		destAddr64 = dest64;
 		destAddr16 = dest16;
@@ -135,7 +135,7 @@ public class ZNetTxRequest extends XBeeRequest {
     /**
      * Abbreviated constructor for sending a unicast TX packet with a specified frame ID.
      */
-    public ZNetTxRequest(int frameId, XBeeAddress64 dest64, int[] payload) {
+    public ZNetTxRequest(byte frameId, XBeeAddress64 dest64, int[] payload) {
         this(frameId, dest64, XBeeAddress16.ZNET_BROADCAST, ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, Option.UNICAST, payload);
     }
 

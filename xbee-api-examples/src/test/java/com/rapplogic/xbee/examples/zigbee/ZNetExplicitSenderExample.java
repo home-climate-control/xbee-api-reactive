@@ -70,10 +70,10 @@ class ZNetExplicitSenderExample {
 			//DoubleByte clusterId = new DoubleByte(0x0, ZNetExplicitTxRequest.ClusterId.TRANSPARENT_SERIAL.getValue());
 
 			// first request we just send 64-bit address.  we get 16-bit network address with status response
-			ZNetExplicitTxRequest request = new ZNetExplicitTxRequest(0xff, addr64, XBeeAddress16.ZNET_BROADCAST,
+			ZNetExplicitTxRequest request = new ZNetExplicitTxRequest((byte) 0xFF, addr64, XBeeAddress16.ZNET_BROADCAST,
 						ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, ZNetTxRequest.Option.UNICAST, payload, sourceEndpoint, destinationEndpoint, clusterId, ZNetExplicitTxRequest.znetProfileId);
 
-			log.info("sending explicit " + request.toString());
+			log.info("sending explicit " + request);
 
 			while (true) {
 				xbee.sendAsynchronous(request);

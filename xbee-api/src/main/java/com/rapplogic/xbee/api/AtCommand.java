@@ -76,7 +76,7 @@ public class AtCommand extends XBeeRequest {
 	/**
 	 * Warning: frameId must be > 0 for a response
 	 */
-	public AtCommand(String command, int[] value, int frameId) {
+	public AtCommand(String command, int[] value, byte frameId) {
         super(frameId);
         this.command = command;
 		this.value = value;

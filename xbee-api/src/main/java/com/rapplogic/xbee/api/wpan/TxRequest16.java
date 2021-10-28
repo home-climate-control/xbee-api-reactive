@@ -52,14 +52,14 @@ public class TxRequest16 extends TxRequestBase {
 	 *
 	 * Payload size is limited to 100 bytes, according to MaxStream documentation.
 	 */
-	public TxRequest16(XBeeAddress16 remoteAddr16, int frameId, int[] payload) {
+	public TxRequest16(XBeeAddress16 remoteAddr16, byte frameId, int[] payload) {
 		this(remoteAddr16, frameId, Option.UNICAST, payload);
 	}
 
 	/**
 	 * Note: if option is DISABLE_ACK_OPTION you will not get a ack response and you must use the asynchronous send method
 	 */
-	public TxRequest16(XBeeAddress16 remoteAddr16, int frameId, Option option, int[] payload) {
+	public TxRequest16(XBeeAddress16 remoteAddr16, byte frameId, Option option, int[] payload) {
         super(frameId);
 		this.remoteAddr16 = remoteAddr16;
 		setOption(option);

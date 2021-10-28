@@ -535,7 +535,7 @@ public class XBee implements IXBee {
 		}
 	}
 
-	private int sequentialFrameId = 0xFF;
+	private byte sequentialFrameId = (byte) 0xFF;
 
 	@Override
     public int getCurrentFrameId() {
@@ -550,9 +550,9 @@ public class XBee implements IXBee {
 	 * it flips to {@code 1} (not {@code 0}, that is {@link XBeeRequest#NO_RESPONSE_FRAME_ID}) and starts over.
 	 */
 	@Override
-    public synchronized int getNextFrameId() {
+    public synchronized byte getNextFrameId() {
 
-		if (sequentialFrameId == 0xFF) {
+		if (sequentialFrameId == (byte) 0xFF) {
 			// flip
 			sequentialFrameId = 0;
 		}

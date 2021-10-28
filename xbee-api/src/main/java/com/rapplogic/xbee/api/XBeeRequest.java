@@ -26,16 +26,20 @@ package com.rapplogic.xbee.api;
  * @author andrew
  *
  */
-
 public abstract class XBeeRequest {
 
-	public static final int DEFAULT_FRAME_ID = 1;
-	// XBee will not generate a TX Status Packet if this frame id sent
-	public static final int NO_RESPONSE_FRAME_ID = 0;
+    /**
+     * No response frame ID.
+     *
+     * XBee will not generate a TX Status Packet if this frame ID is sent.
+     */
+    public static final byte NO_RESPONSE_FRAME_ID = 0;
 
-	private final int frameId;
+	public static final byte DEFAULT_FRAME_ID = 1;
 
-    protected XBeeRequest(int frameId) {
+	private final byte frameId;
+
+    protected XBeeRequest(byte frameId) {
         this.frameId = frameId;
     }
 
@@ -55,7 +59,7 @@ public abstract class XBeeRequest {
 
 	public abstract ApiId getApiId();
 
-	public int getFrameId() {
+	public byte getFrameId() {
 		return frameId;
 	}
 

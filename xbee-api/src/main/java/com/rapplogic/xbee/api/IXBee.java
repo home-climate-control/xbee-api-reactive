@@ -51,7 +51,7 @@ public interface IXBee extends AutoCloseable {
 
 	int getCurrentFrameId();
 
-	int getNextFrameId();
+    byte getNextFrameId();
 
 	boolean isConnected();
 
