@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
@@ -403,23 +404,23 @@ public class XBee implements IXBee {
 			throw new XBeeNotConnectedException();
 		}
 
-		XBeeResponse response;
-		try {
-			if (timeout != null && !timeout.isZero()) {
-				response = parser.getResponseQueue().poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
-			} else {
-				response = parser.getResponseQueue().take();
-			}
+        long timeoutMillis = Optional.ofNullable(timeout).map(Duration::toMillis).orElse(0L);
+
+        try {
+            var response = timeoutMillis > 0
+                    ? parser.getResponseQueue().poll(timeoutMillis, TimeUnit.MILLISECONDS)
+                    : parser.getResponseQueue().take();
+
+            if (response == null && timeoutMillis > 0) {
+                throw new XBeeTimeoutException(timeout.toString());
+            }
+
+            return response;
+
 		} catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
 			throw new XBeeException("Error while attempting to remove packet from queue", ex);
 		}
-
-		if (response == null && timeout != null && timeout.toMillis() > 0) {
-			throw new XBeeTimeoutException(timeout.toString());
-		}
-
-		return response;
 	}
 
 	/**
