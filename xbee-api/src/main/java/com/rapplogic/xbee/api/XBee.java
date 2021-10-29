@@ -114,7 +114,7 @@ public class XBee implements IXBee {
 
 			clearResponseQueue();
 		} catch (XBeeTimeoutException ex) {
-			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  Check that the XBee radio is in API mode (AP=2); it will not function propertly in AP=1", ex);
+			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  Check that the XBee radio is in API mode (AP=2); it will not function properly in AP=1", ex);
 		}
 	}
 
@@ -529,23 +529,13 @@ public class XBee implements IXBee {
 	@Override
     public boolean isConnected() {
 		try {
-			if (parser.getXBeeConnection().getInputStream() != null && parser.getXBeeConnection().getOutputStream() != null) {
-				return true;
-			}
-
-			return false;
-		} catch (Exception e) {
+            return parser.getXBeeConnection().getInputStream() != null && parser.getXBeeConnection().getOutputStream() != null;
+        } catch (Exception e) {
 			return false;
 		}
 	}
 
 	private byte sequentialFrameId = (byte) 0xFF;
-
-	@Override
-    public int getCurrentFrameId() {
-		// TODO move to separate class (e.g. FrameIdCounter)
-		return sequentialFrameId;
-	}
 
 	/**
 	 * Obtain the next valid frame ID.

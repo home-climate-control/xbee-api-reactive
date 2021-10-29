@@ -49,9 +49,7 @@ public interface IXBee extends AutoCloseable {
 
 	XBeeResponse getResponse(Duration timeout) throws XBeeException;
 
-	int getCurrentFrameId();
-
-    byte getNextFrameId();
+	byte getNextFrameId();
 
 	boolean isConnected();
 

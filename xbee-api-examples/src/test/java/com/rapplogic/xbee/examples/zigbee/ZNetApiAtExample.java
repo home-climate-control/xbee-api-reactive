@@ -61,7 +61,7 @@ class ZNetApiAtExample {
 
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
-	public void testZNetApiAtExample() throws XBeeException {
+	void testZNetApiAtExample() throws XBeeException {
 		try {
 
 			// replace with port and baud rate of your XBee
