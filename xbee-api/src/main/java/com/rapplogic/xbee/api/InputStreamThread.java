@@ -85,10 +85,10 @@ public class InputStreamThread implements Runnable {
 
 		if (conf.getResponseQueueFilter() != null) {
 			if (conf.getResponseQueueFilter().accept(response)) {
-				this.addToResponseQueue(response);
+				addToResponseQueue(response);
 			}
 		} else {
-			this.addToResponseQueue(response);
+			addToResponseQueue(response);
 		}
 
 		listenerPool.submit(() -> {
@@ -141,13 +141,11 @@ public class InputStreamThread implements Runnable {
                             var packetStream = new PacketParser(connection.getInputStream());
                             var response = packetStream.parsePacket();
 
-                            if (logger.isInfoEnabled()) {
-                                logger.info("Received packet from XBee: {}", response);
+                            logger.debug("Received packet from XBee: {}", response);
 //								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");
-                            }
 
                             // success
-                            this.addResponse(response);
+                            addResponse(response);
                         } else {
                             logger.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
                         }
@@ -155,14 +153,14 @@ public class InputStreamThread implements Runnable {
                         logger.debug("No data available.. waiting for new data event");
 
                         // we will wait here for RXTX to notify us of new data
-                        synchronized (this.connection) {
+                        synchronized (connection) {
                             // There's a chance that we got notified after the first in.available check
                             if (connection.getInputStream().available() > 0) {
                                 continue;
                             }
 
                             // wait until new data arrives
-                            this.connection.wait();
+                            connection.wait();
                         }
                     }
                 } catch (InterruptedException ex) {

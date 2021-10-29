@@ -248,9 +248,7 @@ public class XBee implements IXBee {
 			throw new XBeeNotConnectedException();
 		}
 
-		if (logger.isInfoEnabled()) {
-			logger.info("Sending packet to XBee {}", ByteUtils.toBase16(packet));
-		}
+        logger.debug("Sending packet to XBee {}", ByteUtils.toBase16(packet));
 
         for (int packetByte : packet) {
         	// if connection lost
@@ -456,7 +454,7 @@ public class XBee implements IXBee {
                     var callStart = System.currentTimeMillis();
                     var response = getResponse(waitTime);
 
-                    logger.debug("Got response in {}", (System.currentTimeMillis() - callStart));
+                    logger.debug("Got response in {}ms", (System.currentTimeMillis() - callStart));
 
                     responseList.add(response);
 
