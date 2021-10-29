@@ -493,13 +493,14 @@ public class XBee implements IXBee {
 	}
 
 	/**
-	 * Shuts down RXTX and packet parser thread
+	 * Shuts down RXTX and packet parser thread if connected, or just returns if not.
 	 */
 	@Override
     public void close() {
 
 		if (!isConnected()) {
-			throw new IllegalStateException("XBee is not connected");
+			logger.warn("redundant close(), ignored");
+            return;
 		}
 
 		// shutdown parser thread
@@ -511,7 +512,6 @@ public class XBee implements IXBee {
 		}
 
 		try {
-//			xbeeConnection.getOutputStream().close();
 			xbeeConnection.close();
 		} catch (Exception e) {
 			logger.warn("Failed to close connection", e);
