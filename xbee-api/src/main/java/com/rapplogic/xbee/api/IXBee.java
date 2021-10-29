@@ -55,5 +55,5 @@ public interface IXBee extends AutoCloseable {
 
 	void clearResponseQueue();
 
-	List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException;
+	List<XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException;
 }

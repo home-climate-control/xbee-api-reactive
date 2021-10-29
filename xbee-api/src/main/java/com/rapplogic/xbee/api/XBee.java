@@ -426,7 +426,7 @@ public class XBee implements IXBee {
 	 * Collects responses until the timeout is reached or the CollectTerminator returns true
 	 */
 	@Override
-    public List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException {
+    public List<XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException {
 
         ThreadContext.push("collectResponses");
 
