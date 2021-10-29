@@ -29,23 +29,28 @@ package com.rapplogic.xbee.api;
 public class HardwareVersion {
 
 	public enum RadioType {
-		SERIES1("Series 1"),
-		SERIES1_PRO("Series 1 Pro"),
-		SERIES2("Series 2"),
-		SERIES2_PRO("Series 2 Pro"),
-		SERIES2B_PRO("Series 2B Pro"),
-		UNKNOWN("Unknown");
+		SERIES1(0x17, "Series 1"),
+		SERIES1_PRO(0x18, "Series 1 Pro"),
+		SERIES2(0x19, "Series 2"),
+		SERIES2_PRO(0x1a, "Series 2 Pro"),
+		SERIES2B_PRO(0x1e, "Series 2B Pro");
 
-		private final String name;
+        public final int id;
+        public final String description;
 
-		RadioType(String name) {
-			this.name = name;
+		RadioType(int id, String description) {
+            this.id = id;
+			this.description = description;
 		}
 
-        @Override
-		public String toString() {
-			return name;
-		}
+        public static RadioType getById(int id) {
+            for (var type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return null;
+        }
 	}
 
 	public static RadioType parse(AtCommandResponse response) throws XBeeException {
@@ -58,21 +63,6 @@ public class HardwareVersion {
 			throw new XBeeException("Attempt to query HV parameter failed");
 		}
 
-        // VT: FIXME: Add the ID to the enum object
-
-		switch (response.getValue()[0]) {
-		case 0x17:
-			return RadioType.SERIES1;
-		case 0x18:
-			return RadioType.SERIES1_PRO;
-		case 0x19:
-			return RadioType.SERIES2;
-		case 0x1a:
-			return RadioType.SERIES2_PRO;
-		case 0x1e:
-			return RadioType.SERIES2B_PRO;
-		}
-
-		return RadioType.UNKNOWN;
+        return RadioType.getById(response.getValue()[0]);
 	}
 }

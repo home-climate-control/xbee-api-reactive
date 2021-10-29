@@ -104,7 +104,7 @@ public class XBee implements IXBee {
 
 			logger.info("XBee radio is {}", radioType);
 
-			if (radioType == RadioType.UNKNOWN) {
+			if (radioType == null) {
 				logger.warn("Unknown radio type (HV): {}", ap.getValue()[0]);
 			}
 
