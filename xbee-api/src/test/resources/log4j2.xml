@@ -6,6 +6,11 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="com.rapplogic.xbee.SerialPortConnection" level="warn" />
+        <Logger name="com.rapplogic.xbee.api.Checksum" level="warn" />
+        <Logger name="com.rapplogic.xbee.api.InputStreamThread" level="warn" />
+        <Logger name="com.rapplogic.xbee.api.PacketParser" level="warn" />
+        <Logger name="com.rapplogic.xbee.api.XBeePacket" level="warn" />
         <Root level="DEBUG">
             <AppenderRef ref="CONSOLE"/>
         </Root>
