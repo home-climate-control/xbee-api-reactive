@@ -77,8 +77,6 @@ public class InputStreamThread implements Runnable {
 		thread = new Thread(this);
 		thread.setName("InputStreamThread");
 		thread.start();
-
-		logger.debug("starting packet parser thread");
 	}
 
 	private void addResponse(XBeeResponse response) throws InterruptedException {
@@ -129,25 +127,27 @@ public class InputStreamThread implements Runnable {
 	@Override
     public void run() {
 
+        logger.info("Started");
+
 		try {
 			while (!done) {
 				try {
                     if (connection.getInputStream().available() > 0) {
                         logger.debug("About to read from input stream");
                         var val = connection.getInputStream().read();
-                        logger.debug("Read {} from input stream", ByteUtils.formatByte(val));
+                        logger.debug("Read {} from input stream", () -> ByteUtils.formatByte(val));
 
                         if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
                             var packetStream = new PacketParser(connection.getInputStream());
                             var response = packetStream.parsePacket();
 
                             logger.debug("Received packet from XBee: {}", response);
-//								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");
+                            logger.trace("Received packet: int[] packet = {{}};", () -> ByteUtils.toBase16(response.getRawPacketBytes(), ", "));
 
                             // success
                             addResponse(response);
                         } else {
-                            logger.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
+                            logger.warn("expected start byte but got this {}, discarding", () -> ByteUtils.toBase16(val));
                         }
                     } else {
                         logger.debug("No data available.. waiting for new data event");
