@@ -62,8 +62,7 @@ class WpanNodeDiscoverExample {
 			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
-			xbee.sendAsynchronous(new AtCommand(NT));
-			var nodeTimeout = (AtCommandResponse) xbee.getResponse();
+            var nodeTimeout = xbee.sendSynchronousAT(new AtCommand(NT));
 
 			// default is 2.5 seconds for series 1
 			int nodeDiscoveryTimeout = ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100;
@@ -96,7 +95,7 @@ class WpanNodeDiscoverExample {
 
 					if (atResponse.getCommand().equals("ND") && atResponse.getValue() != null && atResponse.getValue().length > 0) {
 						WpanNodeDiscover nd = WpanNodeDiscover.parse((AtCommandResponse)response);
-						log.info("Node Discover is " + nd);
+						log.warn("Node Discover is " + nd);
 					}
 				}
 			}

@@ -25,6 +25,7 @@ import com.rapplogic.xbee.api.HardwareVersion.RadioType;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -429,47 +430,53 @@ public class XBee implements IXBee {
 	@Override
     public List<? extends XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException {
 
-		// seeing this with xmpp
-		if (!isConnected()) {
-			throw new XBeeNotConnectedException();
-		}
+        ThreadContext.push("collectResponses");
 
-		var start = System.currentTimeMillis();
-		var responseList = new ArrayList<XBeeResponse>();
+        try {
+            // seeing this with xmpp
+            if (!isConnected()) {
+                throw new XBeeNotConnectedException();
+            }
 
-		try {
-			while (true) {
-				// compute the remaining wait time
-                // VT: FIXME: Write a test case, and rewrite this with Duration.between()
-				var waitTime = Duration.ofMillis(wait.toMillis() - (int)(System.currentTimeMillis() - start));
+            var start = System.currentTimeMillis();
+            var responseList = new ArrayList<XBeeResponse>();
 
-				if (waitTime.isNegative()) {
-					break;
-				}
+            try {
+                while (true) {
+                    // compute the remaining wait time
+                    // VT: FIXME: Write a test case, and rewrite this with Duration.between()
+                    var waitTime = Duration.ofMillis(wait.toMillis() - (int) (System.currentTimeMillis() - start));
 
-				logger.debug("calling getResponse with waitTime: {}", waitTime);
+                    if (waitTime.isNegative()) {
+                        break;
+                    }
 
-                var callStart = System.currentTimeMillis();
-				var response = getResponse(waitTime);
+                    logger.debug("calling getResponse with waitTime: {}", waitTime);
 
-                logger.debug("Got response in {}", (System.currentTimeMillis() - callStart));
+                    var callStart = System.currentTimeMillis();
+                    var response = getResponse(waitTime);
 
-				responseList.add(response);
+                    logger.debug("Got response in {}", (System.currentTimeMillis() - callStart));
 
-				if (terminator != null && terminator.stop(response)) {
-					logger.debug("Found terminating response.. exiting");
-					break;
-				}
-			}
-		} catch (XBeeTimeoutException ex) {
-			logger.debug("Timeout reached, returning {} packets", responseList.size(), ex);
+                    responseList.add(response);
+
+                    if (terminator != null && terminator.stop(response)) {
+                        logger.debug("Found terminating response.. exiting");
+                        break;
+                    }
+                }
+            } catch (XBeeTimeoutException ex) {
+                logger.debug("Timeout reached, returning {} packets", responseList.size(), ex);
+                return responseList;
+            }
+
+            // VT: FIXME: How is this different from above? Where did the XBeeTimeoutException come from? Action item: rework the workflow for early returns
+            logger.debug("Time is up... returning {} packets", responseList.size());
+
             return responseList;
-		}
-
-        // VT: FIXME: How is this different from above? Where did the XBeeTimeoutException come from? Action item: rework the workflow for early returns
-		logger.debug("Time is up... returning {} packets", responseList.size());
-
-		return responseList;
+        } finally {
+            ThreadContext.pop();
+        }
 	}
 
 	/**

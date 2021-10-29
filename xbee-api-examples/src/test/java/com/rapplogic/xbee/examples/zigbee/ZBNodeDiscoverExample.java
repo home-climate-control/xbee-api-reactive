@@ -60,8 +60,7 @@ class ZBNodeDiscoverExample {
 			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
-			xbee.sendAsynchronous(new AtCommand(NT));
-			AtCommandResponse nodeTimeout = (AtCommandResponse) xbee.getResponse();
+            var nodeTimeout = xbee.sendSynchronousAT(new AtCommand(NT));
 
 			// default is 6 seconds
 			var nodeDiscoveryTimeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(nodeTimeout.getValue()) * 100L);
@@ -82,7 +81,7 @@ class ZBNodeDiscoverExample {
 
 					if (atResponse.getCommand().equals("ND") && atResponse.getValue() != null && atResponse.getValue().length > 0) {
 						ZBNodeDiscover nd = ZBNodeDiscover.parse((AtCommandResponse)response);
-						log.info("Node Discover is " + nd);
+						log.warn("Node Discover is " + nd);
 					}
 				}
 			}
