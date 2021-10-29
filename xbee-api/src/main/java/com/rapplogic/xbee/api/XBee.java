@@ -372,11 +372,13 @@ public class XBee implements IXBee {
 	 * It's highly recommend that you always use a timeout because
 	 * if the serial connection dies under certain conditions, you will end up waiting forever!
 	 * <p/>
-	 * Consider using the PacketListener for asynchronous (non-blocking) behavior
+	 * Consider using the {@link PacketListener} for asynchronous (non-blocking) behavior
+     *
+     * @see #getResponse(Duration)
 	 */
 	@Override
     public XBeeResponse getResponse() throws XBeeException {
-		return getResponseTimeout(null);
+		return getResponse(null);
 	}
 
 	/**
@@ -395,10 +397,6 @@ public class XBee implements IXBee {
 	 */
 	@Override
     public XBeeResponse getResponse(Duration timeout) throws XBeeException {
-		return getResponseTimeout(timeout);
-	}
-
-	private XBeeResponse getResponseTimeout(Duration timeout) throws XBeeException {
 
 		// seeing this with xmpp
 		if (!isConnected()) {
