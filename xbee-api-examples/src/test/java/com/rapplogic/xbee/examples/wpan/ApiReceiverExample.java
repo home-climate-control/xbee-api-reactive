@@ -48,18 +48,18 @@ class ApiReceiverExample {
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
 	void testApiReceiverExample() throws Exception {
-		XBee xbee = new XBee();
 
-		int count = 0;
-		int errors = 0;
+		try (var xbee = new XBee()) {
 
-		try {
-			// my end device
+            // my end device
 			xbee.open(getTestPort(), 9600);
 			// my coordinator
 			//xbee.open("/dev/tty.usbserial-A4004Rim", 9600);
 
-			while (true) {
+            int count = 0;
+            int errors = 0;
+
+            while (true) {
 
 				try {
 					XBeeResponse response = xbee.getResponse();
@@ -75,22 +75,20 @@ class ApiReceiverExample {
 					}
 
  					if (response.getApiId() == ApiId.RX_16_RESPONSE) {
-						log.info("Received RX 16 packet " + ((RxResponse16)response));
+                        assert response instanceof RxResponse16;
+                        log.info("Received RX 16 packet " + ((RxResponse16)response));
  					} else if (response.getApiId() == ApiId.RX_64_RESPONSE) {
- 						log.info("Received RX 64 packet " + ((RxResponse64)response));
+                        assert response instanceof RxResponse64;
+                        log.info("Received RX 64 packet " + ((RxResponse64)response));
 					} else {
-						log.info("Ignoring mystery packet " + response.toString());
+						log.info("Ignoring mystery packet " + response);
 					}
 
-					log.debug("Received response: " + response.toString() + ", count is " + count + ", errors is " + errors);
+					log.debug("Received response: " + response + ", count is " + count + ", errors is " + errors);
 
 				} catch (Throwable t) {
 					log.error("Unexpected exception", t);
 				}
-			}
-		} finally {
-			if (xbee != null && xbee.isConnected()) {
-				xbee.close();
 			}
 		}
 	}
