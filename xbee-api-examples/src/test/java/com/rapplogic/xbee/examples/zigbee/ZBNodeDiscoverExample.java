@@ -50,13 +50,11 @@ class ZBNodeDiscoverExample {
 
 	private final Logger log = LogManager.getLogger(getClass());
 
-	private final XBee xbee = new XBee();
-
 	@Test
     @Disabled("Enable only if safe to use hardware is connected")
 	void testZBNodeDiscoverExample() throws XBeeException, InterruptedException {
 
-		try {
+		try (var xbee = new XBee()){
 			xbee.open(getTestPort(), 9600);
 
 			// get the Node discovery timeout
@@ -84,10 +82,6 @@ class ZBNodeDiscoverExample {
 						log.warn("Node Discover is " + nd);
 					}
 				}
-			}
-		} finally {
-			if (xbee != null && xbee.isConnected()) {
-				xbee.close();
 			}
 		}
 	}
