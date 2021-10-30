@@ -92,7 +92,7 @@ public class XBeeReactive implements AutoCloseable {
     /**
      * Send a request and expect a response.
      *
-     * The response to this call will also be emitted in the flux returned by {@link #receive(Duration)} call.
+     * The response to this call will also be emitted in the flux returned by {@link #receive} call.
      *
      * @param rq Request to send.
      * @param timeout Timeout to wait for response, {@code null} to wait indefinitely (be careful with it, eh?).
@@ -109,17 +109,15 @@ public class XBeeReactive implements AutoCloseable {
      *
      * This flux will contain the packets returned as a result of a {@link #send(XBeeRequest, Duration)} call as well.
      *
-     * @param timeout Timeout to wait for response, {@code null} to wait indefinitely (be careful with it, eh?).
-     *
-     * @return Mono with a response, or empty Mono if the response didn't come within timeout, or error Mono if
-     * there was a hardware problem.
+     * @return Flux of all incoming XBee packets. It will error out if there was a hardware problem.
      */
-    public Flux<XBeeResponse> receive(Duration timeout) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    public Flux<XBeeResponse> receive() {
+        return reader.receive();
     }
 
     @Override
     public void close() throws Exception {
-        logger.warn("close(): not implemented");
+        reader.close();
+        writer.close();
     }
 }

@@ -138,14 +138,7 @@ public class InputStreamThread implements Runnable {
                         logger.debug("Read {} from input stream", () -> ByteUtils.formatByte(val));
 
                         if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
-                            var packetStream = new PacketParser(connection.getInputStream());
-                            var response = packetStream.parsePacket();
-
-                            logger.debug("Received packet from XBee: {}", response);
-                            logger.trace("Received packet: int[] packet = {{}};", () -> ByteUtils.toBase16(response.getRawPacketBytes(), ", "));
-
-                            // success
-                            addResponse(response);
+                            readPacket();
                         } else {
                             logger.warn("expected start byte but got this {}, discarding", () -> ByteUtils.toBase16(val));
                         }
@@ -204,7 +197,18 @@ public class InputStreamThread implements Runnable {
 		logger.info("InputStreamThread is exiting");
 	}
 
-	public void setDone(boolean done) {
+    private void readPacket() throws InterruptedException {
+        var packetStream = new PacketParser(connection.getInputStream());
+        var response = packetStream.parsePacket();
+
+        logger.debug("Received packet from XBee: {}", response);
+        logger.trace("Received packet: int[] packet = {{}};", () -> ByteUtils.toBase16(response.getRawPacketBytes(), ", "));
+
+        // success
+        addResponse(response);
+    }
+
+    public void setDone(boolean done) {
 		this.done = done;
 	}
 

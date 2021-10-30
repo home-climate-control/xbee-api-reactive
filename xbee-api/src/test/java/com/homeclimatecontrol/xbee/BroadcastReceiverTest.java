@@ -18,8 +18,8 @@ class BroadcastReceiverTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
                 xbee
-                        .receive(null)
-                        .take(10)
+                        .receive()
+                        .take(5)
                         .doOnNext(p -> logger.info("received: {}", p))
                         .blockLast();
             }
