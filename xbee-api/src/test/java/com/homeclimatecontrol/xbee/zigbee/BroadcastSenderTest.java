@@ -6,8 +6,10 @@ import com.rapplogic.xbee.api.zigbee.ZNetTxRequest;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import reactor.tools.agent.ReactorDebugAgent;
 
 import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -15,6 +17,11 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class BroadcastSenderTest {
 
     private final Logger logger = LogManager.getLogger();
+
+    @BeforeAll
+    static void init() {
+        ReactorDebugAgent.init();
+    }
 
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
