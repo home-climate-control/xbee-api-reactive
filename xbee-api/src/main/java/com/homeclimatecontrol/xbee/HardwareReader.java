@@ -20,7 +20,7 @@ public class HardwareReader implements AutoCloseable {
     private final Logger logger = LogManager.getLogger();
     private final InputStream in;
     private final Flux<XBeeResponse> inFlux;
-    private FluxSink<XBeeResponse> sink;
+    private FluxSink<XBeeResponse> receiveSink;
     private Thread reader;
 
     public HardwareReader(InputStream in) {
@@ -49,16 +49,16 @@ public class HardwareReader implements AutoCloseable {
 
             while (!Thread.currentThread().isInterrupted()) {
                 var packet = readPacket(in);
-                if (sink == null) {
+                if (receiveSink == null) {
                     logger.debug("No subscriptions yet, packet dropped: {}", packet);
                     continue;
                 }
-                sink.next(packet);
+                receiveSink.next(packet);
             }
 
         } catch (IOException ex) {
             logger.error("Unexpected I/O problem, stopping the reader", ex);
-            sink.error(ex);
+            receiveSink.error(ex);
         } finally {
             logger.warn("done");
             ThreadContext.pop();
@@ -69,8 +69,7 @@ public class HardwareReader implements AutoCloseable {
         ThreadContext.push("readPacket");
         try {
             syncOnStartByte(in);
-            var packetStream = new PacketParser(in);
-            return packetStream.parsePacket();
+            return new PacketParser(in).parsePacket();
         } finally {
             ThreadContext.pop();
         }
@@ -109,7 +108,7 @@ public class HardwareReader implements AutoCloseable {
     }
 
     private void connect(FluxSink<XBeeResponse> sink) {
-        this.sink = sink;
+        receiveSink = sink;
     }
 
     public Flux<XBeeResponse> receive() {
@@ -118,6 +117,15 @@ public class HardwareReader implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        sink.complete();
+        ThreadContext.push("close");
+        try {
+            if (receiveSink == null) {
+                logger.debug("null sink, no readers yet?");
+                return;
+            }
+            receiveSink.complete();
+        } finally {
+            ThreadContext.pop();
+        }
     }
 }

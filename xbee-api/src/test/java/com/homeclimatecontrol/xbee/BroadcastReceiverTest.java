@@ -24,6 +24,5 @@ class BroadcastReceiverTest {
                         .blockLast();
             }
         }).doesNotThrowAnyException();
-
     }
 }

@@ -208,9 +208,9 @@ public class XBee implements IXBee {
 	public void sendRequest(XBeeRequest request) throws IOException {
 		if (type != null) {
 			// TODO use interface to mark series type
-			if (type == RadioType.SERIES1 && request.getClass().getPackage().getName().indexOf("api.zigbee") > -1) {
+			if (type == RadioType.SERIES1 && request.getClass().getPackage().getName().contains("api.zigbee")) {
 				throw new IllegalArgumentException("You are connected to a Series 1 radio but attempting to send Series 2 requests");
-			} else if (type == RadioType.SERIES2 && request.getClass().getPackage().getName().indexOf("api.wpan") > -1) {
+			} else if (type == RadioType.SERIES2 && request.getClass().getPackage().getName().contains("api.wpan")) {
 				throw new IllegalArgumentException("You are connected to a Series 2 radio but attempting to send Series 1 requests");
 			}
 		}

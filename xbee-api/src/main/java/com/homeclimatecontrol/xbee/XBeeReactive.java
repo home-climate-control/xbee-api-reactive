@@ -8,12 +8,18 @@ import gnu.io.PortInUseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Reactive implementation of XBee serial port driver.
@@ -29,6 +35,8 @@ public class XBeeReactive implements AutoCloseable {
 
     private final HardwareReader reader;
     private final HardwareWriter writer;
+
+    private FluxSink<Map.Entry<XBeeRequest, CompletableFuture<Void>>> sendSink;
 
     /**
      * Create an instance.
@@ -47,7 +55,7 @@ public class XBeeReactive implements AutoCloseable {
             logger.debug("{}: open", port);
 
             reader = new HardwareReader(serialPort.getInputStream());
-            writer = new HardwareWriter(serialPort.getOutputStream());
+            writer = new HardwareWriter(serialPort.getOutputStream(), getSendFlux());
 
         } catch (IllegalArgumentException ex) {
             // Pass it on
@@ -86,7 +94,11 @@ public class XBeeReactive implements AutoCloseable {
      * there was a hardware problem.
      */
     public Mono<Void> sendAsync(XBeeRequest rq) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+
+        var written = new CompletableFuture<Void>();
+        getSendSink().next(new AbstractMap.SimpleEntry<>(rq, written));
+
+        return Mono.fromFuture(written);
     }
 
     /**
@@ -115,8 +127,42 @@ public class XBeeReactive implements AutoCloseable {
         return reader.receive();
     }
 
+    private Flux<Map.Entry<XBeeRequest, CompletableFuture<Void>>> getSendFlux() {
+        return Flux
+                .create(this::connect)
+                .doOnSubscribe(ignored -> logger.debug("Subscribed:flux"))
+                .subscribeOn(Schedulers.newSingle("XbeeWriter", true));
+    }
+
+    private synchronized void connect(FluxSink<Map.Entry<XBeeRequest, CompletableFuture<Void>>> sink) {
+        logger.debug("Sink connected");
+        sendSink = sink;
+        notifyAll();
+    }
+
+    private synchronized FluxSink<Map.Entry<XBeeRequest, CompletableFuture<Void>>> getSendSink() {
+
+        var start = Instant.now();
+
+        while (sendSink == null) {
+            logger.debug("Waiting for sendSink...");
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting for sendSink", ex);
+            }
+        }
+
+        logger.debug("Got sendSink {}ms later", Duration.between(start, Instant.now()).toMillis());
+        return sendSink;
+    }
+
     @Override
     public void close() throws Exception {
+
+        sendSink.complete();
+
         reader.close();
         writer.close();
     }
