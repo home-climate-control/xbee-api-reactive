@@ -1,6 +1,8 @@
 package com.homeclimatecontrol.xbee;
 
 import com.rapplogic.xbee.api.AtCommand;
+import com.rapplogic.xbee.api.AtCommandResponse;
+import com.rapplogic.xbee.api.HardwareVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,6 +13,7 @@ import reactor.tools.agent.ReactorDebugAgent;
 import java.time.Duration;
 import java.time.Instant;
 
+import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -26,7 +29,6 @@ class XBeeReactiveTest {
     }
 
     @Test
-    @Disabled("Enable only if safe to use hardware is connected")
     void invalidPort() {
         assertThatIllegalArgumentException().isThrownBy(() -> {
             try (var ignored = new XBeeReactive("/this/cant/be")) {
@@ -47,7 +49,7 @@ class XBeeReactiveTest {
 
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
-    void write() {
+    void sendAsync() {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getTestPort())) {
                 logger.info("Sending the command");
@@ -56,6 +58,46 @@ class XBeeReactiveTest {
                 logger.info("Waiting for the command to be sent...");
                 hv.block();
                 logger.info("Command sent {}ms later", Duration.between(start, Instant.now()).toMillis());
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void sendInvalidFrameId() {
+        assertThatIllegalArgumentException().isThrownBy(() -> {
+            try (var xbee = new XBeeReactive(getTestPort())) {
+                xbee.send(new AtCommand(HV, new int[] {}, (byte) 0), null);
+            }
+        }).withMessageStartingWith("Invalid FrameID of zero for synchronous request, see https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_zigbee_frame_examples.htm");
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void send() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getTestPort())) {
+                logger.info("Sending the command");
+                var start = Instant.now();
+                var hvMono = xbee.send(new AtCommand(HV), null);
+                logger.info("Waiting for the response...");
+                var hvResponse = hvMono.block();
+                logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
+                logger.info("Hardware: {}", HardwareVersion.parse((AtCommandResponse) hvResponse));
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void receive() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+                xbee
+                        .receive()
+                        .take(1)
+                        .doOnNext(p -> logger.info("received: {}", p))
+                        .blockLast();
             }
         }).doesNotThrowAnyException();
     }

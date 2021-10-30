@@ -1,12 +1,15 @@
 package com.homeclimatecontrol.xbee;
 
+import com.rapplogic.xbee.api.XBeeFrameIdResponse;
 import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.api.XBeeResponse;
+import com.rapplogic.xbee.util.ByteUtils;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
@@ -113,7 +116,36 @@ public class XBeeReactive implements AutoCloseable {
      * there was a hardware problem.
      */
     public Mono<XBeeResponse> send(XBeeRequest rq, Duration timeout) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+
+        if (rq.getFrameId() == XBeeRequest.NO_RESPONSE_FRAME_ID) {
+            throw new IllegalArgumentException("Invalid FrameID of zero for synchronous request, see https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_zigbee_frame_examples.htm");
+        }
+
+        ThreadContext.push("send");
+        try {
+
+            var frameId = rq.getFrameId();
+            logger.debug("Expecting frameId={}", () -> ByteUtils.toBase16(frameId));
+            return Mono.create(sink -> {
+                try {
+
+                    // Make sure that the request was indeed sent before waiting
+                    sendAsync(rq).block();
+
+                    var response = receive()
+                            .filter(XBeeFrameIdResponse.class::isInstance)
+                            .map(XBeeFrameIdResponse.class::cast)
+                            .filter(rsp -> rsp.getFrameId() == frameId)
+                            .blockFirst();
+
+                    sink.success(response);
+                } catch (Exception ex) {
+                    sink.error(ex);
+                }
+            });
+        } finally {
+            ThreadContext.pop();
+        }
     }
 
     /**
