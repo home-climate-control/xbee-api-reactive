@@ -18,6 +18,7 @@ import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class XBeeReactiveTest {
 
@@ -88,6 +89,42 @@ class XBeeReactiveTest {
         }).doesNotThrowAnyException();
     }
 
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void sendTimeoutPass() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getTestPort())) {
+
+                var start = Instant.now();
+
+                // This should give enough time for the response
+                var hvMono = xbee.send(new AtCommand(HV), Duration.ofMillis(200));
+                var hvResponse = hvMono.block();
+
+                logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
+                assertThat(hvResponse).isNotNull();
+            }
+        }).doesNotThrowAnyException();
+    }
+
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void sendTimeoutFail() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getTestPort())) {
+
+                var start = Instant.now();
+
+                // Unlikely the XBee will be able to respond within this time
+                var hvMono = xbee.send(new AtCommand(HV), Duration.ofMillis(5));
+                var hvResponse = hvMono.block();
+
+                logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
+                assertThat(hvResponse).isNull();
+            }
+        }).doesNotThrowAnyException();
+    }
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
     void receive() {

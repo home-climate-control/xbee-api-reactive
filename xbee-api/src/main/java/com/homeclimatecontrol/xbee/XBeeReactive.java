@@ -132,7 +132,12 @@ public class XBeeReactive implements AutoCloseable {
                     // Make sure that the request was indeed sent before waiting
                     sendAsync(rq).block();
 
-                    var response = receive()
+                    var rawResponse = receive();
+                    var timedResponse = timeout == null
+                            ? rawResponse
+                            : rawResponse.take(timeout).doOnComplete(() -> logger.debug("timed: done"));
+
+                    var response = timedResponse
                             .filter(XBeeFrameIdResponse.class::isInstance)
                             .map(XBeeFrameIdResponse.class::cast)
                             .filter(rsp -> rsp.getFrameId() == frameId)
