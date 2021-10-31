@@ -7,5 +7,6 @@ pluginManagement {
 
 include 'xbee-api'
 include 'xbee-api-examples'
+include 'xbee-node-discover'
 
 rootProject.name = 'xbee-api'

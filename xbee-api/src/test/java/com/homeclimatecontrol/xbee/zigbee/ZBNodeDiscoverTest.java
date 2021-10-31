@@ -1,9 +1,6 @@
 package com.homeclimatecontrol.xbee.zigbee;
 
 import com.homeclimatecontrol.xbee.XBeeReactive;
-import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,11 +8,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.tools.agent.ReactorDebugAgent;
 
-import java.time.Duration;
-
 import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
-import static com.rapplogic.xbee.api.AtCommand.Command.ND;
-import static com.rapplogic.xbee.api.AtCommand.Command.NT;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ZBNodeDiscoverTest {
@@ -38,31 +31,15 @@ class ZBNodeDiscoverTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var ntResponse = (AtCommandResponse) xbee.send(new AtCommand(NT), null).block();
-                var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(ntResponse.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
+                var result = new NetworkBrowser().browse(xbee);
 
-                xbee.sendAsync(new AtCommand(ND));
+                logger.info("{} node{} discovered within {}{}", result.discovered.size(), // NOSONAR False positive for this specific case
+                        result.discovered.size() == 1 ? "" : "s", result.timeout, result.discovered.isEmpty() ? "" : ":");
 
-                logger.info("Collecting responses for NT={}", timeout);
+                result.discovered.forEach(n -> logger.info("  {}", n));
 
-                var discovered = xbee
-                        .receive()
-                        .take(timeout)
-                        .doOnNext(incoming -> logger.debug("Incoming packet: {}", incoming))
-                        .filter(AtCommandResponse.class::isInstance)
-                        .map(AtCommandResponse.class::cast)
-                        .filter(rsp -> rsp.getCommand().equals("ND"))
-                        .doOnNext(nd -> logger.info("ND response: {}", nd))
-                        .collectList()
-                        .block();
-
-                logger.info("{} node{} discovered within {}{}", discovered.size(), // NOSONAR False positive for this specific case
-                        discovered.size() == 1 ? "" : "s", timeout, discovered.isEmpty() ? "" : ":");
-
-                discovered.forEach(n -> logger.info("  {}", n));
-
-                if (discovered.isEmpty()) {
-                    logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", timeout);
+                if (result.discovered.isEmpty()) {
+                    logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", result.timeout);
                 }
             }
         }).doesNotThrowAnyException();

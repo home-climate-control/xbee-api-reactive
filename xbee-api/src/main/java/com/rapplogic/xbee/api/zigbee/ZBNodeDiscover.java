@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api.zigbee;
 
+import com.homeclimatecontrol.xbee.AddressParser;
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -38,9 +39,9 @@ import java.util.Map;
 public class ZBNodeDiscover {
 
 	public enum DeviceType {
-		DEV_TYPE_COORDINATOR (0),
-		DEV_TYPE_ROUTER (1),
-		DEV_TYPE_END_DEVICE (2);
+		COORDINATOR(0),
+		ROUTER(1),
+		END_DEVICE(2);
 
 		private static final Map<Integer,DeviceType> lookup = new HashMap<>();
 
@@ -69,18 +70,18 @@ public class ZBNodeDiscover {
 	private XBeeAddress64 nodeAddress64;
 	private String nodeIdentifier;
 	private XBeeAddress16 parent;
-	private DeviceType deviceType;
+	private DeviceType type;
 	private int status;
 	private int[] profileId;
 	private int[] mfgId;
 
-	public DeviceType getDeviceType() {
-		return deviceType;
+	public DeviceType getType() {
+		return type;
 	}
 
 
-	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
+	public void setType(DeviceType type) {
+		this.type = type;
 	}
 
 
@@ -117,7 +118,7 @@ public class ZBNodeDiscover {
 	public static ZBNodeDiscover parse(AtCommandResponse response) {
 
 		if (!response.getCommand().equals("ND")) {
-			throw new RuntimeException("This method is only applicable for the ND command");
+			throw new IllegalArgumentException("This method is only applicable for the ND command, given: " + response);
 		}
 
 		int[] data = response.getValue();
@@ -137,7 +138,7 @@ public class ZBNodeDiscover {
 		// NI is terminated with 0
 		while ((ch = in.read()) != 0) {
 			if (ch < 32 || ch > 126) {
-				throw new RuntimeException("Node Identifier " + ch + " is non-ascii");
+				throw new IllegalArgumentException("Node Identifier '" + ch + "' is non-ASCII in: " + response);
 			}
 
 			ni.append((char)ch);
@@ -146,7 +147,7 @@ public class ZBNodeDiscover {
 		nd.setNodeIdentifier(ni.toString());
 
 		nd.setParent(new XBeeAddress16(in.read(2)));
-		nd.setDeviceType(DeviceType.get(in.read()));
+		nd.setType(DeviceType.get(in.read()));
 		// TODO this is being reported as 1 (router) for my end device
 		nd.setStatus(in.read());
 		nd.setProfileId(in.read(2));
@@ -157,14 +158,14 @@ public class ZBNodeDiscover {
 
 	@Override
     public String toString() {
-		return "nodeAddress16=" + this.nodeAddress16 +
-		", nodeAddress64=" + this.nodeAddress64 +
-		", nodeIdentifier=" + this.nodeIdentifier +
-		", parentAddress=" + this.getParent() +
-		", deviceType=" + this.deviceType +
-		", status=" + this.status +
-		", profileId=" + ByteUtils.toBase16(this.profileId) +
-		", mfgId=" + ByteUtils.toBase16(this.mfgId);
+		return "nodeAddress16=" + nodeAddress16 +
+		", nodeAddress64=" + AddressParser.render4x4(nodeAddress64) +
+		", nodeIdentifier=" + nodeIdentifier +
+		", parentAddress=" + getParent() +
+		", deviceType=" + type +
+		", status=" + status +
+		", profileId=" + ByteUtils.toBase16(profileId) +
+		", mfgId=" + ByteUtils.toBase16(mfgId);
 	}
 
 
@@ -174,7 +175,7 @@ public class ZBNodeDiscover {
 
 
 	public void setNodeAddress16(XBeeAddress16 my) {
-		this.nodeAddress16 = my;
+		nodeAddress16 = my;
 	}
 
 
@@ -184,7 +185,7 @@ public class ZBNodeDiscover {
 
 
 	public void setNodeAddress64(XBeeAddress64 serial) {
-		this.nodeAddress64 = serial;
+		nodeAddress64 = serial;
 	}
 
 
