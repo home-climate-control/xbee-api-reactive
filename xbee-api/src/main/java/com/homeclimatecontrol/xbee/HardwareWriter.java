@@ -23,6 +23,7 @@ public class HardwareWriter implements AutoCloseable {
 
         sourceSubscription = packetSource
                 .doOnSubscribe(ignored -> logger.debug("Subscribed:writer"))
+                .doOnComplete(() -> logger.debug("completed"))
                 .subscribe(this::write);
     }
 

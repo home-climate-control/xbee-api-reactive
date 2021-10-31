@@ -47,12 +47,22 @@ public class HardwareReader implements AutoCloseable {
         try {
             logger.info("started");
 
-            while (!Thread.currentThread().isInterrupted()) {
+            while (true) {
+
+                // VT: FIXME: blocking read will not get interrupted by Thread.interrupt(), need to look for alternatives.
+
                 var packet = readPacket(in);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    logger.info("Interrupted, terminating");
+                    return;
+                }
+
                 if (receiveSink == null) {
                     logger.debug("No subscriptions yet, packet dropped: {}", packet);
                     continue;
                 }
+
                 receiveSink.next(packet);
             }
 
@@ -60,7 +70,7 @@ public class HardwareReader implements AutoCloseable {
             logger.error("Unexpected I/O problem, stopping the reader", ex);
             receiveSink.error(ex);
         } finally {
-            logger.warn("done");
+            logger.debug("completed");
             ThreadContext.pop();
         }
     }
