@@ -36,6 +36,7 @@ public class XBeeReactive implements AutoCloseable {
     public static final String NOT_IMPLEMENTED = "Not Implemented";
     private final Logger logger = LogManager.getLogger();
 
+    private final CommPort serialPort;
     private final HardwareReader reader;
     private final HardwareWriter writer;
 
@@ -53,7 +54,7 @@ public class XBeeReactive implements AutoCloseable {
     public XBeeReactive(String port) throws IOException {
 
         try {
-            var serialPort = open(port);
+            serialPort = open(port);
 
             logger.debug("{}: open", port);
 
@@ -202,5 +203,7 @@ public class XBeeReactive implements AutoCloseable {
 
         reader.close();
         writer.close();
+
+        serialPort.close();
     }
 }
