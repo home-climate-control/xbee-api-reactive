@@ -47,16 +47,9 @@ public class HardwareReader implements AutoCloseable {
         try {
             logger.info("started");
 
-            while (true) {
-
-                // VT: FIXME: blocking read will not get interrupted by Thread.interrupt(), need to look for alternatives.
+            while (!Thread.currentThread().isInterrupted()) {
 
                 var packet = readPacket(in);
-
-                if (Thread.currentThread().isInterrupted()) {
-                    logger.info("Interrupted, terminating");
-                    return;
-                }
 
                 if (receiveSink == null) {
                     logger.debug("No subscriptions yet, packet dropped: {}", packet);
@@ -69,13 +62,16 @@ public class HardwareReader implements AutoCloseable {
         } catch (IOException ex) {
             logger.error("Unexpected I/O problem, stopping the reader", ex);
             receiveSink.error(ex);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.info("Interrupted, stopping the reader");
         } finally {
             logger.debug("completed");
             ThreadContext.pop();
         }
     }
 
-    private XBeeResponse readPacket(InputStream in) throws IOException {
+    private XBeeResponse readPacket(InputStream in) throws IOException, InterruptedException {
         ThreadContext.push("readPacket");
         try {
             syncOnStartByte(in);
@@ -85,12 +81,21 @@ public class HardwareReader implements AutoCloseable {
         }
     }
 
-    private void syncOnStartByte(InputStream in) throws IOException {
+    private void syncOnStartByte(InputStream in) throws IOException, InterruptedException {
         ThreadContext.push("syncOnStartByte");
         try {
             while (true) {
-                if (in.available() == 0) {
+                while (in.available() == 0) {
                     logger.debug("Awaiting start byte...");
+                    synchronized (this) {
+
+                        // VT: NOTE: SerialEventPortNotification doesn't work reliably with RxTx.
+                        // This is a half assed measure that will waste a O(1 second) on application exit,
+                        // considering it good enough until https://github.com/home-climate-control/xbee-api/issues/15
+                        // is closed.
+
+                        wait(1000);
+                    }
                 }
                 var read = in.read();
 
