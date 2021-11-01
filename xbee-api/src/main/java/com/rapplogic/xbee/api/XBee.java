@@ -44,7 +44,9 @@ import static com.rapplogic.xbee.api.AtCommand.Command.VR;
  * <p/>
  * @author Andrew Rapp <andrew.rapp at gmail>
  *
+ * @deprecated Use {@link com.homeclimatecontrol.xbee.XBeeReactive} instead.
  */
+@Deprecated(since = "2021-11-01", forRemoval = true)
 public class XBee implements IXBee {
 
     private final Logger logger = LogManager.getLogger(XBee.class);
