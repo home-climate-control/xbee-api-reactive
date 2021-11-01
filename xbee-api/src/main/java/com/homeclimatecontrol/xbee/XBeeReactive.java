@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap;
-import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +33,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public class XBeeReactive implements AutoCloseable {
 
-    public static final String NOT_IMPLEMENTED = "Not Implemented";
     private final Logger logger = LogManager.getLogger();
 
     private final CommPort serialPort;
@@ -71,10 +70,10 @@ public class XBeeReactive implements AutoCloseable {
 
     private CommPort open(String port) throws PortInUseException {
 
-        var portsAvailable = CommPortIdentifier.getPortIdentifiers();
+        var portsAvailable = (Enumeration<CommPortIdentifier>) CommPortIdentifier.getPortIdentifiers(); // NOSONAR Unavoidable
         var portsFound = new TreeMap<String, CommPortIdentifier>();
 
-        for (var i = (Iterator<CommPortIdentifier>)portsAvailable.asIterator(); i.hasNext(); ) {
+        for (var i = portsAvailable.asIterator(); i.hasNext(); ) {
             var found = i.next();
             logger.debug("port found: {}", found.getName());
             portsFound.put(found.getName(), found);

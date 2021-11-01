@@ -45,7 +45,7 @@ public class NetworkBrowser {
                 .filter(AtCommandResponse.class::isInstance)
                 .map(AtCommandResponse.class::cast)
                 .filter(rsp -> rsp.getCommand().equals("ND"))
-                .map(rsp -> ZBNodeDiscover.parse(rsp))
+                .map(ZBNodeDiscover::parse)
                 .doOnNext(nd -> logger.info("ND response: {}", nd))
                 .collectList()
                 .block();

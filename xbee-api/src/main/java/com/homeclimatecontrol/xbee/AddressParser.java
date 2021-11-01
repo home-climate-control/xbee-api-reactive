@@ -8,6 +8,7 @@ import org.apache.logging.log4j.ThreadContext;
 import java.util.StringTokenizer;
 
 /**
+ * XBee address parser.
  *
  * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko 2010-2021
  */
