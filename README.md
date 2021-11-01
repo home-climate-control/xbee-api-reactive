@@ -12,6 +12,6 @@ The primary driver behind this project is the [Home Climate Control](https://git
 
 ## Future plans?
 
-Not many, except to port it to Reactive Streams to stay in sync with Home Climate Control's [Reactive Streams overhaul](https://github.com/home-climate-control/dz/milestone/12) - the work is starting right now, see [the /reactive branch](https://github.com/home-climate-control/xbee-api/tree/reactive).
+None for this branch - it is kept here for reference and critical bugfixes for obsolete, but important downstreams only.
 
-To elaborate a bit, XBee occupies an interesting niche - as of the moment of writing, it is an overcomplicated overpriced solution to a pretty small subset of what [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and [ESP32](https://en.wikipedia.org/wiki/ESP32) offer for a fraction of a price. However, it has an enormous advantage of not belonging to the WiFi monoculture susceptible to common problems - if your WiFi network goes down (and all your ESP* with it), it will stay up, hence its value for fault tolerant systems. And, therefore, this code base will be maintained until there is a viable alternative to XBee as an ecosystem.
+Please refer to the current master branch at https://github.com/home-climate-control/xbee-api-reactive for up-to-date code.
