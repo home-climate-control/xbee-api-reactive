@@ -53,7 +53,7 @@ public class NetworkBrowser {
         return new Result(timeout, discovered);
     }
 
-    static class Result {
+    public static class Result {
 
         /**
          * Timeout returned by NT command.
