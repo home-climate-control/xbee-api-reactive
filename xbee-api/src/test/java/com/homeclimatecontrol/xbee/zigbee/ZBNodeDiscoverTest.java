@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.tools.agent.ReactorDebugAgent;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -32,13 +34,17 @@ class ZBNodeDiscoverTest {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
                 var result = new NetworkBrowser().browse(xbee);
+                var count = new AtomicInteger();
+                result.discovered
+                        .doOnNext(n -> logger.info("Node discovered: {}", n))
+                        .doOnNext(ignored -> count.incrementAndGet())
+                        .blockLast();
 
-                logger.info("{} node{} discovered within {}{}", result.discovered.size(), // NOSONAR False positive for this specific case
-                        result.discovered.size() == 1 ? "" : "s", result.timeout, result.discovered.isEmpty() ? "" : ":");
 
-                result.discovered.forEach(n -> logger.info("  {}", n));
+                logger.info("{} node{} discovered within {}", count.get(), // NOSONAR False positive for this specific case
+                        count.get() == 1 ? "" : "s", result.timeout);
 
-                if (result.discovered.isEmpty()) {
+                if (count.get() == 0) {
                     logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", result.timeout);
                 }
             }

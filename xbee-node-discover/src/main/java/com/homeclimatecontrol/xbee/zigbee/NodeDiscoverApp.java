@@ -33,15 +33,19 @@ public class NodeDiscoverApp {
 
             logger.info("XBee is configured with node discovery timeout of {} seconds", timeout.getSeconds());
 
-            var result = new NetworkBrowser().browse(xbee);
+            var result = new NetworkBrowser()
+                    .browse(xbee)
+                    .discovered
+                    .collectList()
+                    .block();
 
-            logger.info("{} node{} discovered within {}{}", result.discovered.size(), // NOSONAR False positive for this specific case
-                    result.discovered.size() == 1 ? "" : "s", result.timeout, result.discovered.isEmpty() ? "" : ":");
+            logger.info("{} node{} discovered within {}{}", result.size(), // NOSONAR False positive for this specific case
+                    result.size() == 1 ? "" : "s", timeout, result.isEmpty() ? "" : ":");
 
-            result.discovered.forEach(n -> logger.info("  {}", n));
+            result.forEach(n -> logger.info("  {}", n));
 
-            if (result.discovered.isEmpty()) {
-                logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", result.timeout);
+            if (result.isEmpty()) {
+                logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", timeout);
             }
 
         } catch (Exception ex) {

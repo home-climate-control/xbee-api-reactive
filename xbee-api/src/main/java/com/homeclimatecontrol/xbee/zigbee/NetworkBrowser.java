@@ -7,9 +7,9 @@ import com.rapplogic.xbee.api.zigbee.ZBNodeDiscover;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.List;
 
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
@@ -46,9 +46,7 @@ public class NetworkBrowser {
                 .map(AtCommandResponse.class::cast)
                 .filter(rsp -> rsp.getCommand().equals("ND"))
                 .map(ZBNodeDiscover::parse)
-                .doOnNext(nd -> logger.info("ND response: {}", nd))
-                .collectList()
-                .block();
+                .doOnNext(nd -> logger.debug("ND response: {}", nd));
 
         return new Result(timeout, discovered);
     }
@@ -60,9 +58,12 @@ public class NetworkBrowser {
          */
         public final Duration timeout;
 
-        public final List<ZBNodeDiscover> discovered;
+        /**
+         * Flux of discovered nodes.
+         */
+        public final Flux<ZBNodeDiscover> discovered;
 
-        Result(Duration timeout, List<ZBNodeDiscover> discovered) {
+        Result(Duration timeout, Flux<ZBNodeDiscover> discovered) {
             this.timeout = timeout;
             this.discovered = discovered;
         }
