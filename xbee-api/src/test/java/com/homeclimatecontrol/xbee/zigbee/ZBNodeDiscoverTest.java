@@ -33,7 +33,9 @@ class ZBNodeDiscoverTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var result = new NetworkBrowser().browse(xbee);
+                var result = new NetworkBrowser()
+                        .browse(xbee)
+                        .block();
                 var count = new AtomicInteger();
                 result.discovered
                         .doOnNext(n -> logger.info("Node discovered: {}", n))

@@ -34,8 +34,7 @@ public class NodeDiscoverApp {
             logger.info("XBee is configured with node discovery timeout of {} seconds", timeout.getSeconds());
 
             var result = new NetworkBrowser()
-                    .browse(xbee)
-                    .discovered
+                    .browse(xbee, timeout)
                     .collectList()
                     .block();
 

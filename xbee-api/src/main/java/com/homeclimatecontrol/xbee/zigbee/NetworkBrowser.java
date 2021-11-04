@@ -8,6 +8,7 @@ import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -20,25 +21,38 @@ public class NetworkBrowser {
 
     /**
      * Find out the timeout and browse the network.
+     *
+     * @param xbee Adapter to use.
+     *
+     * @return Mono with the composite of the timeout discovered, and the flux of discovered nodes.
      */
-    public Result browse(XBeeReactive xbee) {
+    public Mono<Result> browse(XBeeReactive xbee) {
 
-        var ntResponse = (AtCommandResponse) xbee.send(new AtCommand(NT), null).block();
-        var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(ntResponse.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
-
-        return browse(xbee, timeout);
+        return xbee
+                .send(new AtCommand(NT), null)
+                .doOnNext(nt -> logger.debug("NT: {}", nt))
+                .map(AtCommandResponse.class::cast)
+                .map(nt -> {
+                    var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(nt.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
+                    return new Result(timeout, browse(xbee, timeout));
+                });
     }
 
     /**
      * Browse the network with the given timeout.
+     *
+     * @param xbee Adapter to use.
+     * @param timeout Timeout to wait for responses for.
+     *
+     * @return Flux of discovered nodes (we know the timeout already, we've set it up ourselves).
      */
-    public Result browse(XBeeReactive xbee, Duration timeout) {
+    public Flux<ZBNodeDiscover> browse(XBeeReactive xbee, Duration timeout) {
 
         xbee.sendAsync(new AtCommand(ND));
 
         logger.info("Collecting responses for NT={}", timeout);
 
-        var discovered = xbee
+        return xbee
                 .receive()
                 .take(timeout)
                 .doOnNext(incoming -> logger.debug("Incoming packet: {}", incoming))
@@ -47,8 +61,6 @@ public class NetworkBrowser {
                 .filter(rsp -> rsp.getCommand().equals("ND"))
                 .map(ZBNodeDiscover::parse)
                 .doOnNext(nd -> logger.debug("ND response: {}", nd));
-
-        return new Result(timeout, discovered);
     }
 
     public static class Result {
