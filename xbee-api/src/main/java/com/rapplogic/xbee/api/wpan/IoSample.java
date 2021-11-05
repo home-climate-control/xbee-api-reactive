@@ -21,6 +21,8 @@ package com.rapplogic.xbee.api.wpan;
 
 import com.rapplogic.xbee.util.ByteUtils;
 
+import java.util.Optional;
+
 /**
  * Series 1 XBee.  Represents an I/O Sample, sent from a remote radio.
  * Each I/O packet (RxResponseIoSample) may contain one for more IoSample instances.
@@ -35,11 +37,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class IoSample {
 
-	private RxResponseIoSample parent;
+	private final RxResponseIoSample parent;
 
 	private Integer dioMsb;
 	private Integer dioLsb;
-	private Integer[] analog = new Integer[6];
+	private final Integer[] analog = new Integer[6];
 
 	public IoSample(RxResponseIoSample parent) {
 		this.parent = parent;
@@ -62,174 +64,56 @@ public class IoSample {
 	}
 
 	/**
-	 * Returns the 10-bit analog value of the specified pin.
-	 * Returns null if pin is not configured for Analog input.
+     * Get the pin analog value.
+     *
+	 * @return 10-bit analog value of the specified pin, or empty if the pin is not configured for analog input.
 	 */
-	public Integer getAnalog(int pin) {
-		if (parent.isAnalogEnabled(pin)) {
-			return analog[pin];
-		}
+	public Optional<Integer> getAnalog(int pin) {
 
-		return null;
-	}
+		if (!parent.isAnalogEnabled(pin)) {
+            return Optional.empty();
+        }
 
-	public Integer getAnalog0() {
-		return this.getAnalog(0);
+        return Optional.of(analog[pin]);
 	}
 
 	public void setAnalog0(Integer analog0) {
 		analog[0] = analog0;
 	}
-
-	/**
-	 * Returns the 10-bit analog value of pin 19 (D1), when this pin configured for Analog Input (D1=2)
-	 * Returns null if pin 19 is not configured for Analog input.
-	 */
-	public Integer getAnalog1() {
-		return this.getAnalog(1);
-	}
-
 	public void setAnalog1(Integer analog1) {
 		analog[1] = analog1;
 	}
-
-	/**
-	 * Returns the 10-bit analog value of pin 18 (D2), when this pin configured for Analog Input (D2=2)
-	 * Returns null if pin 18 is not configured for Analog input.
-	 */
-	public Integer getAnalog2() {
-		return this.getAnalog(2);
-	}
-
 	public void setAnalog2(Integer analog2) {
 		analog[2] = analog2;
 	}
-
-	/**
-	 * Returns the 10-bit analog value of pin 17 (D3), when this pin configured for Analog Input (D3=2)
-	 * Returns null if pin 17 is not configured for Analog input.
-	 */
-	public Integer getAnalog3() {
-		return this.getAnalog(3);
-	}
-
 	public void setAnalog3(Integer analog3) {
 		analog[3] = analog3;
 	}
-
-	/**
-	 * Returns the 10-bit analog value of pin 11 (D4), when this pin configured for Analog Input (D4=2)
-	 * Returns null if pin 11 is not configured for Analog input.
-	 */
-	public Integer getAnalog4() {
-		return this.getAnalog(4);
-	}
-
 	public void setAnalog4(Integer analog4) {
 		analog[4] = analog4;
 	}
-
-	/**
-	 * Returns the 10-bit analog value of pin 15 (D5), when this pin configured for Analog Input (D5=2)
-	 * Returns null if pin 15 is not configured for Analog input.
-	 */
-	public Integer getAnalog5() {
-		return this.getAnalog(5);
-	}
-
 	public void setAnalog5(Integer analog5) {
 		analog[5] = analog5;
 	}
 
 	/**
-	 * Returns the digital value of the specified pin.
-	 * Returns null if pin is not configured for Digital input
+     * Get te pin digital value.
+     *
+	 * @return Digital value of the specified pin, or empty if the pin is not configured for digital input.
 	 */
-	public Boolean isDigitalOn(int pin) {
+	public Optional<Boolean> isDigitalOn(int pin) {
 
 		if (!parent.isDigitalEnabled(pin)) {
-			return null;
+			return Optional.empty();
 		}
 
 		if (pin >= 0 && pin <= 7) {
-			return ByteUtils.getBit(dioLsb, pin + 1);
+			return Optional.of(ByteUtils.getBit(dioLsb, pin + 1));
 		} else {
 			// pin 8
-			return ByteUtils.getBit(dioMsb, 1);
+			return Optional.of(ByteUtils.getBit(dioMsb, 1));
 		}
 	}
-
-	/**
-	 * Returns the digital value of pin 20 (D0) when this pin is configured for Digital input (D0=3)
-	 * Returns null if pin 20 is not configured for Digital input
-	 */
-	public Boolean isD0On() {
-		return this.isDigitalOn(0);
-	}
-
-	/**
-	 * Returns the digital value of pin 19 (D1) when this pin is configured for Digital input (D1=3)
-	 * Returns null if pin 19 is not configured for Digital input
-	 */
-	public Boolean isD1On() {
-		return this.isDigitalOn(1);
-	}
-
-	/**
-	 * Returns the digital value of pin 18 (D2) when this pin is configured for Digital input (D2=3)
-	 * Returns null if pin 18 is not configured for Digital input
-	 */
-	public Boolean isD2On() {
-		return this.isDigitalOn(2);
-	}
-
-	/**
-	 * Returns the digital value of pin 17 (D3) when this pin is configured for Digital input (D3=3)
-	 * Returns null if pin 17 is not configured for Digital input
-	 */
-	public Boolean isD3On() {
-		return this.isDigitalOn(3);	}
-
-	/**
-	 * Returns the digital value of pin 11 (D4) when this pin is configured for Digital input (D4=3)
-	 * Returns null if pin 11 is not configured for Digital input
-	 */
-	public Boolean isD4On() {
-		return this.isDigitalOn(4);
-	}
-
-	/**
-	 * Returns the digital value of pin 15 (D5) when this pin is configured for Digital input (D5=3)
-	 * Returns null if pin 15 is not configured for Digital input
-	 */
-	public Boolean isD5On() {
-		return this.isDigitalOn(5);
-	}
-
-	/**
-	 * Returns the digital value of pin 16 (D6) when this pin is configured for Digital input (D6=3)
-	 * Returns null if pin 16 is not configured for Digital input
-	 */
-	public Boolean isD6On() {
-		return this.isDigitalOn(6);
-	}
-
-	/**
-	 * Returns the digital value of pin 12 (D7) when this pin is configured for Digital input (D7=3)
-	 * Returns null if pin 12 is not configured for Digital input
-	 */
-	public Boolean isD7On() {
-		return this.isDigitalOn(7);
-	}
-
-	/**
-	 * Returns the digital value of pin 9 (D8) when this pin is configured for Digital input (D8=3)
-	 * Returns null if pin 9 is not configured for Digital input
-	 */
-	public Boolean isD8On() {
-		return this.isDigitalOn(8);
-	}
-
     @Override
 	public String toString() {
 		var builder = new StringBuilder();
@@ -237,20 +121,23 @@ public class IoSample {
 
 		if (parent.containsDigital()) {
 			for (int i = 0; i <= 8; i++) {
-				if (parent.isDigitalEnabled(i)) {
-					builder.append(",digital[" + i + "]=" + (this.isDigitalOn(i) ? "high" : "low"));
-				}
+                builder.append(i > 0 ? "," : "").append("digital[").append(i).append("]=").append((digital(isDigitalOn(i))));
 			}
 		}
 
 		if (parent.containsAnalog()) {
 			for (int i = 0; i <= 5; i++) {
-				if (parent.isAnalogEnabled(i)) {
-					builder.append(",analog[" + i + "]=" + this.getAnalog(i));
-				}
+                builder.append(i > 0 ? "," : "").append("analog[").append(i).append("]=").append(getAnalog(i).orElse(null));
 			}
 		}
 
 		return builder.toString();
 	}
+
+    private String digital(Optional<Boolean> value) { // NOSONAR This is intended
+        if (value.isEmpty()) {
+            return "off";
+        }
+        return value.get() ? "high" : "low"; // NOSONAR This is intended
+    }
 }

@@ -112,12 +112,12 @@ class IoSamplesExample {
 						// loops just once since IT = 1
 						for (IoSample sample: ioSample.getSamples()) {
 							if (ioSample.containsAnalog()) {
-								log.info("Analog pin 20 10-bit reading is " + sample.getAnalog0());
-								log.info("Digital pin 11 is " + (sample.isD4On() ? "on" : "off"));
-								log.info("Digital pin 12 is " + (sample.isD7On() ? "on" : "off"));
+								log.info("Analog pin 20 10-bit reading is " + sample.getAnalog(0));
+								log.info("Digital pin 11 is " + (sample.isDigitalOn(4).get() ? "on" : "off"));
+								log.info("Digital pin 12 is " + (sample.isDigitalOn(7).get() ? "on" : "off"));
 							} else {
 								// we know it's change detect since analog was not sent
-								log.info("Received change detect for Digital pin 12: " + (sample.isD7On() ? "on" : "off"));
+								log.info("Received change detect for Digital pin 12: " + (sample.isDigitalOn(7).get() ? "on" : "off"));
 							}
 						}
 					} else {
@@ -129,9 +129,7 @@ class IoSamplesExample {
 				}
 			}
 		} finally {
-			if (xbee != null && xbee.isConnected()) {
-				xbee.close();
-			}
+            xbee.close();
 		}
 	}
 }

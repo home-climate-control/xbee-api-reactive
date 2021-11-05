@@ -57,7 +57,7 @@ public class Processing {
 
 	      if (ioSample.containsAnalog()) {
 	        println("10-bit temp reading (pin 19) is " +
-	          ioSample.getSamples()[0].getAnalog1());
+	          ioSample.getSamples()[0].getAnalog(1).orElse(null));
 	      }
 	    }
 	    catch (ClassCastException e) {

@@ -77,7 +77,7 @@ class ZNetIoSampleExample implements PacketListener {
 			log.debug("received i/o sample packet.  contains analog is " + ioSample.containsAnalog() + ", contains digital is " + ioSample.containsDigital());
 
 			// check the value of the input pins
-			log.debug("pin 20 (DO) digital is " + ioSample.isD0On());
+			log.debug("pin 20 (DO) digital is " + ioSample.isDigitalOn(0).get());
 			log.debug("pin 19 (D1) analog is " + ioSample.getAnalog1());
 		}
 	}
