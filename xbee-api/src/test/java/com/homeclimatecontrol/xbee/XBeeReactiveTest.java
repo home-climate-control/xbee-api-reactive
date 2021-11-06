@@ -108,7 +108,6 @@ class XBeeReactiveTest {
         }).doesNotThrowAnyException();
     }
 
-
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
     void sendTimeoutFail() {
@@ -126,6 +125,7 @@ class XBeeReactiveTest {
             }
         }).doesNotThrowAnyException();
     }
+
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
     void receive() {

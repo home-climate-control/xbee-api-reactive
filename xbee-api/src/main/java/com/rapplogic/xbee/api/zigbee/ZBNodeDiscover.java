@@ -30,6 +30,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.rapplogic.xbee.api.AtCommand.Command.ND;
+
 /**
  * Series 2 XBee.  Parses a Node Discover (ND) AT Command Response
  * <p/>
@@ -117,7 +119,7 @@ public class ZBNodeDiscover {
 
 	public static ZBNodeDiscover parse(AtCommandResponse response) {
 
-		if (!response.getCommand().equals("ND")) {
+		if (!response.getCommand().equals(ND)) {
 			throw new IllegalArgumentException("This method is only applicable for the ND command, given: " + response);
 		}
 

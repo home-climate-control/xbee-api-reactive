@@ -121,28 +121,28 @@ public class AtCommandResponse extends XBeeFrameIdResponse {
 	}
 
 	public void setValue(int[] data) {
-		this.value = data;
+		value = data;
 	}
 
-	public String getCommand() {
-		return (char) this.char1 + String.valueOf((char)this.char2);
+	public AtCommand.Command getCommand() {
+		return AtCommand.Command.valueOf((char) char1 + String.valueOf((char) char2));
 	}
 
 	@Override
     public void parse(IPacketParser parser) throws IOException {
-		this.setFrameId(parser.read("AT Response Frame Id"));
-		this.setChar1(parser.read("AT Response Char 1"));
-		this.setChar2(parser.read("AT Response Char 2"));
-		this.setStatus(Status.get(parser.read("AT Response Status")));
+		setFrameId(parser.read("AT Response Frame Id"));
+		setChar1(parser.read("AT Response Char 1"));
+		setChar2(parser.read("AT Response Char 2"));
+		setStatus(Status.get(parser.read("AT Response Status")));
 
-		this.setValue(parser.readRemainingBytes());
+		setValue(parser.readRemainingBytes());
 	}
 
     @Override
 	public String toString() {
-		return "command=" + this.getCommand() +
-			",status=" + this.getStatus() + ",value=" +
-			(this.value == null ? "null" : ByteUtils.toBase16(this.getValue())) +
+		return "command=" + getCommand() +
+			",status=" + getStatus() + ",value=" +
+			(value == null ? "null" : ByteUtils.toBase16(getValue())) +
 			"," +
 			super.toString();
 	}

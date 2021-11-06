@@ -20,6 +20,8 @@
 package com.rapplogic.xbee.api;
 
 
+import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+
 /**
  * Represents a XBee Address.
  * <p/>
@@ -55,8 +57,8 @@ public class HardwareVersion {
 
 	public static RadioType parse(AtCommandResponse response) throws XBeeException {
 
-		if (!response.getCommand().equals("HV")) {
-			throw new IllegalArgumentException("This is only applicable to the HV command");
+		if (!response.getCommand().equals(HV)) {
+			throw new IllegalArgumentException("This is only applicable to the HV command, given: " + response);
 		}
 
 		if (!response.isOk()) {

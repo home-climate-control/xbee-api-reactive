@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.rapplogic.xbee.api.AtCommand.Command.IS;
+
 /**
  * Series 2 XBee.  Represents an I/O Sample response sent from a remote radio.
  * Provides access to the XBee's 4 Analog (0-4), 11 Digital (0-7,10-12), and 1 Supply Voltage pins
@@ -58,8 +60,8 @@ public class ZNetRxIoSampleResponse extends ZNetRxBaseResponse implements NoRequ
 
 	public static ZNetRxIoSampleResponse parseIsSample(AtCommandResponse response) throws IOException {
 
-		if (!response.getCommand().equals("IS")) {
-			throw new IllegalStateException("This is only applicable to the \"IS\" AT command");
+		if (!response.getCommand().equals(IS)) {
+			throw new IllegalStateException("This is only applicable to the \"IS\" AT command, given: " + response);
 		}
 
 		IntArrayInputStream in = new IntArrayInputStream(response.getValue());
@@ -310,7 +312,7 @@ public class ZNetRxIoSampleResponse extends ZNetRxBaseResponse implements NoRequ
     public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append(super.toString());
+		builder.append(super.toString()).append(",");
 
 		if (containsDigital()) {
 			for (int i = 0; i <= 7; i++) {

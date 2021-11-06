@@ -23,7 +23,7 @@ class HardwareVersionTest {
         for (var kv : versions.entrySet()) {
             var code = kv.getKey();
             var hv = mock(AtCommandResponse.class);
-            when(hv.getCommand()).thenReturn("HV");
+            when(hv.getCommand()).thenReturn(AtCommand.Command.HV);
             when(hv.isOk()).thenReturn(true);
             when(hv.getValue()).thenReturn(new int[] {code});
             assertThat(HardwareVersion.parse(hv)).isEqualTo(kv.getValue());

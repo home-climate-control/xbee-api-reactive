@@ -24,6 +24,8 @@ import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.util.IntArrayInputStream;
 
+import static com.rapplogic.xbee.api.AtCommand.Command.ND;
+
 // tested ok via xmpp on 4/13/09
 
 /**
@@ -38,7 +40,7 @@ public class WpanNodeDiscover {
 
 	public static WpanNodeDiscover parse(AtCommandResponse response) {
 
-		if (!response.getCommand().equals("ND")) {
+		if (!response.getCommand().equals(ND)) {
 			throw new IllegalArgumentException("This method is only applicable for the ND command");
 		}
 
@@ -78,14 +80,14 @@ public class WpanNodeDiscover {
 
 	@Override
     public String toString() {
-		return "nodeAddress16=" + this.nodeAddress16 +
-		", nodeAddress64=" + this.nodeAddress64 +
-		", rssi=" + this.rssi +
-		", nodeIdentifier=" + this.nodeIdentifier;
+		return "nodeAddress16=" + nodeAddress16 +
+		", nodeAddress64=" + nodeAddress64 +
+		", rssi=" + rssi +
+		", nodeIdentifier=" + nodeIdentifier;
 	}
 
 	public void setNodeAddress16(XBeeAddress16 my) {
-		this.nodeAddress16 = my;
+		nodeAddress16 = my;
 	}
 
 	public XBeeAddress64 getNodeAddress64() {
@@ -93,7 +95,7 @@ public class WpanNodeDiscover {
 	}
 
 	public void setNodeAddress64(XBeeAddress64 serial) {
-		this.nodeAddress64 = serial;
+		nodeAddress64 = serial;
 	}
 
 	public String getNodeIdentifier() {

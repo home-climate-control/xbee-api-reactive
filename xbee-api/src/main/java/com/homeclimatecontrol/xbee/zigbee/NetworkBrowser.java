@@ -58,7 +58,7 @@ public class NetworkBrowser {
                 .doOnNext(incoming -> logger.debug("Incoming packet: {}", incoming))
                 .filter(AtCommandResponse.class::isInstance)
                 .map(AtCommandResponse.class::cast)
-                .filter(rsp -> rsp.getCommand().equals("ND"))
+                .filter(rsp -> rsp.getCommand().equals(ND))
                 .map(ZBNodeDiscover::parse)
                 .doOnNext(nd -> logger.debug("ND response: {}", nd));
     }

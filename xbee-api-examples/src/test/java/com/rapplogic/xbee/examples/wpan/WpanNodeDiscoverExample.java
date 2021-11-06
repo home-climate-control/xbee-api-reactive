@@ -76,7 +76,7 @@ class WpanNodeDiscoverExample {
 				public boolean stop(XBeeResponse response) {
 					if (response instanceof AtCommandResponse) {
 						AtCommandResponse at = (AtCommandResponse) response;
-						if (at.getCommand().equals("ND") && at.getValue() != null && at.getValue().length == 0) {
+						if (at.getCommand().equals(ND) && at.getValue() != null && at.getValue().length == 0) {
 							log.debug("Found terminating response");
 							return true;
 						}
@@ -93,7 +93,7 @@ class WpanNodeDiscoverExample {
 				if (response instanceof AtCommandResponse) {
 					AtCommandResponse atResponse = (AtCommandResponse) response;
 
-					if (atResponse.getCommand().equals("ND") && atResponse.getValue() != null && atResponse.getValue().length > 0) {
+					if (atResponse.getCommand().equals(ND) && atResponse.getValue() != null && atResponse.getValue().length > 0) {
 						WpanNodeDiscover nd = WpanNodeDiscover.parse((AtCommandResponse)response);
 						log.warn("Node Discover is " + nd);
 					}
