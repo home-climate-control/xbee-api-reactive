@@ -1,5 +1,6 @@
 package com.homeclimatecontrol.xbee;
 
+import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.HardwareVersion;
@@ -86,6 +87,18 @@ class XBeeReactiveTest {
                 var hvResponse = hvMono.block();
                 logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
                 logger.info("Hardware: {}", HardwareVersion.parse((AtCommandResponse) hvResponse));
+
+                var sb = new StringBuilder();
+
+                for (var b : hvResponse.getRawPacketBytes()) {
+
+                    if (!(sb.toString().length() == 0)) {
+                        sb.append(", ");
+                    }
+                    sb.append(HexFormat.format((byte) b));
+                }
+
+                logger.info("raw response: {}", sb);
             }
         }).doesNotThrowAnyException();
     }

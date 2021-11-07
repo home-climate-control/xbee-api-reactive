@@ -1,5 +1,9 @@
 package com.homeclimatecontrol.xbee.response;
 
+import com.homeclimatecontrol.xbee.FrameType;
+import com.homeclimatecontrol.xbee.response.frame.FrameReader;
+import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponseReader;
+import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.homeclimatecontrol.xbee.util.XbeeChecksum;
 import com.rapplogic.xbee.api.XBeeResponse;
 import org.apache.logging.log4j.LogManager;
@@ -8,10 +12,17 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Map;
+
+import static com.homeclimatecontrol.xbee.FrameType.LOCAL_AT_COMMAND_RESPONSE;
 
 public class ResponseReader {
 
     private final Logger logger = LogManager.getLogger();
+
+    private static Map<FrameType, FrameReader> frame2reader = Map.of(
+            LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader()
+    );
 
     /**
      * Read the XBee response from the input stream.
@@ -32,26 +43,15 @@ public class ResponseReader {
 
         var frameSize = readLength(headerBuffer);
         var frameBuffer = in.readNBytes(frameSize + 1);
-        var frameData = ByteBuffer.wrap(frameBuffer, 0, frameBuffer.length - 1);
 
         verifyRead(frameSize + 1, frameBuffer.length, "payload");
-        verifyChecksum(
-                frameData,
-                frameBuffer[frameSize]);
+        verifyChecksum(frameBuffer);
+
+        var frame = getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 2));
+
+        logger.info("read: {}", frame);
 
         return null;
-    }
-
-    private void verifyChecksum(ByteBuffer payload, byte checksumExpected) {
-        var checksum = new XbeeChecksum();
-
-        checksum.update(payload);
-
-        var checksumActual = (byte) checksum.getValue();
-
-        if (checksumActual != checksumExpected) {
-            throw new IllegalArgumentException("Checksum mismatch, expected 0x" + Integer.toHexString(checksumExpected & 0xFF) + ", actual 0x0" + Long.toHexString(checksumActual));
-        }
     }
 
     private int readLength(byte[] buffer) {
@@ -62,5 +62,32 @@ public class ResponseReader {
         if (expected != actual) {
             throw new IOException("Read " + actual + " " + type + " bytes instead of " + expected + " expected");
         }
+    }
+
+    void verifyChecksum(byte[] frameBuffer) {
+
+        var payload = ByteBuffer.wrap(frameBuffer, 0, frameBuffer.length - 1);
+        var checksumExpected = frameBuffer[frameBuffer.length - 1];
+        var checksum = new XbeeChecksum();
+
+        checksum.update(payload);
+
+        var checksumActual = checksum.getValue();
+
+        if (checksumActual != checksumExpected) {
+            throw new IllegalArgumentException("Checksum mismatch, expected " + HexFormat.format(checksumExpected) + ", actual " + HexFormat.format(checksumActual));
+        }
+    }
+
+    private FrameReader getReader(byte type) {
+
+        var frameType = FrameType.getByType(type);
+        var result = frame2reader.get(frameType);
+
+        if (result == null) {
+            throw new IllegalArgumentException("No reader for " + frameType);
+        }
+
+        return result;
     }
 }

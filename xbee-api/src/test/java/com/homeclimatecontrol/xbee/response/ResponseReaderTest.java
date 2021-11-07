@@ -1,25 +1,99 @@
 package com.homeclimatecontrol.xbee.response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class ResponseReaderTest {
+
+    private final Logger logger = LogManager.getLogger();
 
     @ParameterizedTest
     @MethodSource("goodNonEscapedFrameProvider")
     void checksum(byte[] packet){
 
-        var buffer = new ByteArrayInputStream(packet, 1, packet.length - 1);
+        var buffer = Arrays.copyOfRange(packet, 3, packet.length);
         var rr = new ResponseReader();
 
         assertThatCode(() -> {
-            rr.read(buffer);
+            rr.verifyChecksum(buffer);
             // If we're made it this far, checksum is good
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void unknownType() throws IOException {
+
+        var packet = new byte[] {
+                0x7E, // Start delimiter
+                0x00, // Length MSB
+                0x05, // Length LSB
+
+                // Frame data start
+                0x03, // API Identifier - INVALID
+                0x01, // API Frame ID
+                0x4E, 0x4A, // AT Command (NJ)
+                (byte) 0xFF, // value to set command to
+                0x64 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 1, packet.length - 1);
+        var rr = new ResponseReader();
+
+        assertThatIllegalArgumentException().isThrownBy(() -> rr.read(buffer)).withMessage("Unknown frame type 0x03");
+    }
+
+    @Test
+    void noReader() throws IOException {
+
+        var packet = new byte[] {
+                0x7E, // Start delimiter
+                0x00, // Length MSB
+                0x05, // Length LSB
+
+                // Frame data start
+                (byte) 0xA3, // API Identifier - "Many-to-One Route Request Indicator", unlikely we'll deal with it
+                0x01, // API Frame ID
+                0x4E, 0x4A, // AT Command (NJ)
+                (byte) 0xFF, // value to set command to
+                (byte) 0xC4 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 1, packet.length - 1);
+        var rr = new ResponseReader();
+
+        assertThatIllegalArgumentException().isThrownBy(() -> rr.read(buffer)).withMessage("No reader for {Frame type=0xA3 Many-to-One Route Request Indicator}");
+    }
+
+    @Test
+    void localATCommandResponse() throws IOException {
+
+        var packet = new byte[] {
+                0x00, 0x07, // length
+                (byte) 0x88, // Local AT command response
+                0x01, // Frame ID
+                0x48, 0x56, // HV
+                0x00, // Status
+                0x1A, 0x46, // Raw data
+                0x78 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("AT response: {}", response);
         }).doesNotThrowAnyException();
     }
 
@@ -32,7 +106,7 @@ class ResponseReaderTest {
      */
     private static Stream<byte[]> goodNonEscapedFrameProvider() {
 
-        byte[] packet0 = new byte[] {
+        var packet0 = new byte[] {
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x0A, // Length LSB
@@ -46,7 +120,7 @@ class ResponseReaderTest {
                 (byte) 0xB8 // Checksum
         };
 
-        byte[] packet1 = new byte[] {
+        var packet1 = new byte[] {
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x05, // Length LSB
@@ -59,7 +133,7 @@ class ResponseReaderTest {
                 0x5F // Checksum
         };
 
-        byte[] packet2 = new byte[] {
+        var packet2 = new byte[] {
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x04, // Length LSB
@@ -71,7 +145,7 @@ class ResponseReaderTest {
                 0x64 // Checksum
         };
 
-        byte[] packet3 = new byte[] {
+        var packet3 = new byte[] {
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x10, // Length LSB
@@ -97,7 +171,7 @@ class ResponseReaderTest {
      */
     private static Stream<byte[]> goodEscapedFrameProvider() {
 
-        byte[] packet0 = new byte[] {
+        var packet0 = new byte[] {
                 (byte) 0x7E, // Start delimiter
                 (byte) 0x00, // Length MSB
                 (byte) 0x0F, // Length LSB
