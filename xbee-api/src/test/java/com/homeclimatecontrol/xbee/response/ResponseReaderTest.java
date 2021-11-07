@@ -97,6 +97,48 @@ class ResponseReaderTest {
         }).doesNotThrowAnyException();
     }
 
+    @Test
+    void api2CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x05, // length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x41, 0x50, // AP
+                0x00, // Status
+                (byte) 0xE5 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("AT response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void api3CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x05, // length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x41, 0x50, // AP
+                0x03, // Status
+                (byte) 0xE2 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("AT response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
     /**
      * Non-escaped frame provider.
      *

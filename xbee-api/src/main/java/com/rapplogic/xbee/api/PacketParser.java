@@ -189,6 +189,8 @@ public class PacketParser implements IIntInputStream, IPacketParser {
 			response.setApiId(apiId);
 			// preserve original byte array for transfer over networks
 			response.setRawPacketBytes(rawBytes.getIntArray());
+
+
 		}
 
 		return response;

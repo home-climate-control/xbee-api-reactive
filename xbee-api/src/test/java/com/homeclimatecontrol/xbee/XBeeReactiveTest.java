@@ -16,6 +16,7 @@ import java.time.Instant;
 
 import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
+import static com.rapplogic.xbee.api.AtCommand.Command.AP;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -88,17 +89,7 @@ class XBeeReactiveTest {
                 logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
                 logger.info("Hardware: {}", HardwareVersion.parse((AtCommandResponse) hvResponse));
 
-                var sb = new StringBuilder();
-
-                for (var b : hvResponse.getRawPacketBytes()) {
-
-                    if (!(sb.toString().length() == 0)) {
-                        sb.append(", ");
-                    }
-                    sb.append(HexFormat.format((byte) b));
-                }
-
-                logger.info("raw response: {}", sb);
+                dumpResponse(logger, hvResponse.getRawPacketBytes());
             }
         }).doesNotThrowAnyException();
     }
@@ -151,5 +142,50 @@ class XBeeReactiveTest {
                         .blockLast();
             }
         }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void ap2() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var response = xbee.send(new AtCommand(AP, 2), null).block();
+                logger.info("AP2 response: {}", response);
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void ap3() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                // Value of 3 is invalid
+                var response = xbee.send(new AtCommand(AP, 3), null).block();
+                logger.info("AP2 response: {}", response);
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    public static void dumpResponse(Logger logger, int[] source) {
+
+        var sb = new StringBuilder();
+
+        for (var b : source) {
+
+            if (!(sb.toString().length() == 0)) {
+                sb.append(", ");
+            }
+            sb.append(HexFormat.format((byte) b));
+        }
+
+        logger.debug("raw response: {}", sb);
     }
 }
