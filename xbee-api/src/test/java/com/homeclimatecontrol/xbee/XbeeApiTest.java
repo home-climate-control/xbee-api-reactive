@@ -67,7 +67,7 @@ class XbeeApiTest {
                 0x02, // 0x02 means 'apply changes'
                 0x44,
                 0x30,
-                0xD9
+                0xD9  // Checksum
         };
 
         ThreadContext.push("testPacketEscape");
