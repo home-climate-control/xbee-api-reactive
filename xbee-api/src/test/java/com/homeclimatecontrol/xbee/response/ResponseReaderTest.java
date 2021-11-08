@@ -103,6 +103,22 @@ class ResponseReaderTest {
     }
 
     @Test
+    void aiCommandResponse() {
+
+        var packet = new byte[] {
+                0x00,0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x41, 0x49, // AI
+                0x00, // Status
+                0x00, // Payload
+                (byte) 0xec
+        };
+
+        checkResponse(packet, AtCommand.Command.AI);
+    }
+
+    @Test
     void api2CommandResponse() {
 
         var packet = new byte[] {
