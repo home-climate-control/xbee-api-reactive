@@ -21,6 +21,8 @@ package com.rapplogic.xbee.api;
 
 import com.rapplogic.xbee.util.DoubleByte;
 
+import java.nio.ByteBuffer;
+
 /**
  * Represents a 16-bit XBee Address.
  * <p/>
@@ -38,33 +40,38 @@ public class XBeeAddress16 extends XBeeAddress {
 	 * Provide address as msb byte and lsb byte
 	 */
 	public XBeeAddress16(int msb, int lsb) {
-		this.doubleByte.setMsb(msb);
-		this.doubleByte.setLsb(lsb);
+		doubleByte.setMsb(msb);
+		doubleByte.setLsb(lsb);
 	}
 
 	public XBeeAddress16(int[] arr) {
-		this.doubleByte.setMsb(arr[0]);
-		this.doubleByte.setLsb(arr[1]);
+		doubleByte.setMsb(arr[0]);
+		doubleByte.setLsb(arr[1]);
 	}
 
 	public XBeeAddress16() {
 
 	}
 
-	public int getMsb() {
-		return this.doubleByte.getMsb();
+    public XBeeAddress16(ByteBuffer source) {
+        doubleByte.setMsb(source.get() & 0xFF);
+        doubleByte.setLsb(source.get() & 0xFF);
+    }
+
+    public int getMsb() {
+		return doubleByte.getMsb();
 	}
 
 	public void setMsb(int msb) {
-		this.doubleByte.setMsb(msb);
+		doubleByte.setMsb(msb);
 	}
 
 	public int getLsb() {
-		return this.doubleByte.getLsb();
+		return doubleByte.getLsb();
 	}
 
 	public void setLsb(int lsb) {
-		this.doubleByte.setLsb(lsb);
+		doubleByte.setLsb(lsb);
 	}
 
     @Override
@@ -90,6 +97,6 @@ public class XBeeAddress16 extends XBeeAddress {
 
     @Override
 	public int[] getAddress() {
-		return new int[] { this.doubleByte.getMsb(), this.doubleByte.getLsb() };
+		return new int[] { doubleByte.getMsb(), doubleByte.getLsb() };
 	}
 }

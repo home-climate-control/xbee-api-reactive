@@ -141,6 +141,55 @@ class ResponseReaderTest {
     }
 
     @Test
+    void isCommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x05, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x49, 0x53, // IS
+                0x01, // Status
+                (byte) 0xD9 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("IS response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void remoteIOSample() {
+
+        var packet = new byte[] {
+                0x00, 0x18, // Length
+                (byte) 0x92,
+                0x00, 0x7D, 0x33, (byte) 0xA2, 0x00, 0x40, 0x2D, 0x52, (byte) 0xDD, // Source address 64 (escaped)
+                0x46, 0x34, // Source address 16
+                0x01, // Receive options
+                0x01, // Sample count
+                0x18, 0x01, // Digital sample mask
+                0x0E,  // Analog sample mask 0b1110 - AD1, AD2, AD3
+                0x18, 0x01, // Digital samples
+                0x02, 0x0D, // AD1 sample
+                0x02, 0x0C, // AD2 sample
+                0x02, 0x0C, // AD3 sample
+                0x35 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("IS response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
     void ndCommandResponse() {
 
         var packet = new byte[] {

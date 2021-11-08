@@ -30,6 +30,7 @@ import static com.rapplogic.xbee.api.AtCommand.Command.D5;
 import static com.rapplogic.xbee.api.AtCommand.Command.D6;
 import static com.rapplogic.xbee.api.AtCommand.Command.D7;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.IS;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -149,11 +150,12 @@ class XBeeReactiveTest {
     void receive() {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
-                xbee
+                var response = xbee
                         .receive()
                         .take(1)
                         .doOnNext(p -> logger.info("received: {}", p))
                         .blockLast();
+                dumpResponse(logger, response.getRawPacketBytes());
             }
         }).doesNotThrowAnyException();
     }
@@ -181,6 +183,20 @@ class XBeeReactiveTest {
                 // Value of 3 is invalid
                 var response = xbee.send(new AtCommand(AP, 3), null).block();
                 logger.info("AP2 response: {}", response);
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void is() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var response = xbee.send(new AtCommand(IS), null).block();
+                logger.info("IS response: {}", response);
                 dumpResponse(logger, response.getRawPacketBytes());
 
             }

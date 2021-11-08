@@ -12,10 +12,10 @@ public class NDResponseReader extends CommandResponseReader {
     @Override
     public CommandResponse read(ByteBuffer commandData) {
 
-        var address16 = new XBeeAddress16(new int[] { commandData.get() & 0xFF, commandData.get() & 0xFF });
-        var address64 = new XBeeAddress64(new int[] { commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, commandData.get() & 0xFF, });
+        var address16 = new XBeeAddress16(commandData);
+        var address64 = new XBeeAddress64(commandData);
         var nodeIdentifier = readNI(commandData);
-        var parentAddress = new XBeeAddress16(new int[] { commandData.get() & 0xFF, commandData.get() & 0xFF });
+        var parentAddress = new XBeeAddress16(commandData);
         var deviceType = DeviceType.valueOf(commandData.get());
         var status = LocalATCommandResponse.Status.valueOf(commandData.get());
         var profileId = new int[] { commandData.get() & 0xFF, commandData.get() & 0xFF };

@@ -2,6 +2,7 @@ package com.homeclimatecontrol.xbee.response;
 
 import com.homeclimatecontrol.xbee.FrameType;
 import com.homeclimatecontrol.xbee.response.frame.FrameReader;
+import com.homeclimatecontrol.xbee.response.frame.IOSampleIndicatorReader;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponseReader;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.homeclimatecontrol.xbee.util.XbeeChecksum;
@@ -16,6 +17,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import static com.homeclimatecontrol.xbee.FrameType.IO_SAMPLE_INDICATOR;
 import static com.homeclimatecontrol.xbee.FrameType.LOCAL_AT_COMMAND_RESPONSE;
 
 public class ResponseReader {
@@ -25,7 +27,8 @@ public class ResponseReader {
     private static final byte ESCAPE = 0x7D;
 
     private static final Map<FrameType, FrameReader> frame2reader = Map.of(
-            LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader()
+            LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader(),
+            IO_SAMPLE_INDICATOR, new IOSampleIndicatorReader()
     );
 
     /**

@@ -11,6 +11,7 @@ import com.homeclimatecontrol.xbee.response.command.D5ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.D6ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.D7ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.HVResponseReader;
+import com.homeclimatecontrol.xbee.response.command.ISResponseReader;
 import com.homeclimatecontrol.xbee.response.command.NDResponseReader;
 import com.homeclimatecontrol.xbee.response.command.NTResponseReader;
 import com.rapplogic.xbee.api.AtCommand;
@@ -29,6 +30,7 @@ import static com.rapplogic.xbee.api.AtCommand.Command.D5;
 import static com.rapplogic.xbee.api.AtCommand.Command.D6;
 import static com.rapplogic.xbee.api.AtCommand.Command.D7;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.IS;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
 
@@ -48,6 +50,7 @@ public abstract class FrameReader {
             new AbstractMap.SimpleEntry<>(D7, new D7ResponseReader()),
 
             new AbstractMap.SimpleEntry<>(HV, new HVResponseReader()),
+            new AbstractMap.SimpleEntry<>(IS, new ISResponseReader()),
             new AbstractMap.SimpleEntry<>(ND, new NDResponseReader()),
             new AbstractMap.SimpleEntry<>(NT, new NTResponseReader())
     );
