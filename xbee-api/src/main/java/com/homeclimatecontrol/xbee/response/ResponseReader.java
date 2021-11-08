@@ -124,7 +124,7 @@ public class ResponseReader {
         var result = frame2reader.get(frameType);
 
         if (result == null) {
-            throw new IllegalArgumentException("No reader for " + frameType);
+            throw new UnsupportedOperationException("No reader for " + frameType);
         }
 
         return result;

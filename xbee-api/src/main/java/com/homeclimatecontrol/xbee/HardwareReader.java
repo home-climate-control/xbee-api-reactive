@@ -51,15 +51,23 @@ public class HardwareReader implements AutoCloseable {
 
             while (!Thread.currentThread().isInterrupted()) {
 
-                var packet = readPacket(in);
+                try {
 
-                if (receiveSink == null) {
-                    logger.debug("No subscriptions yet, packet dropped: {}", packet);
-                    continue;
+                    var packet = readPacket(in);
+
+                    if (receiveSink == null) {
+                        logger.debug("No subscriptions yet, packet dropped: {}", packet);
+                        continue;
+                    }
+
+                    receiveSink.next(packet);
+
+                } catch (UnsupportedOperationException ex) {
+                    // Most likely, the frame data was read in its entirety and we're going to land at the sync byte
+                    logger.error("Unsupported frame, dropped", ex);
                 }
-
-                receiveSink.next(packet);
             }
+
 
         } catch (IOException ex) {
             logger.error("Unexpected I/O problem, stopping the reader", ex);

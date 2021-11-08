@@ -59,7 +59,7 @@ public abstract class FrameReader {
         var result = command2reader.get(command);
 
         if (result == null) {
-            throw new IllegalArgumentException("No command response reader exists for command=" + command);
+            throw new UnsupportedOperationException("No command response reader exists for command=" + command);
         }
 
         return result;
