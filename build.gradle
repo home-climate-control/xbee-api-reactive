@@ -58,4 +58,8 @@ subprojects {
             html.enabled true
         }
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
