@@ -80,7 +80,7 @@ public class IOSampleIndicatorReader extends FrameReader {
         var result = new LinkedHashMap<Integer, Integer>();
 
         for (var bit = 0; bit < 8; bit++) {
-            if ((mask & (0x01 << bit)) > 0) {
+            if (((mask & 0xFF) & (0x01 << bit)) > 0) {
                 result.put(bit, (source.get() << 8) + (source.get() & 0xFF));
             }
         }
