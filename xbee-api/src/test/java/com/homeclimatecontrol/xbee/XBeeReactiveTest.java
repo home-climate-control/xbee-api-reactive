@@ -2,6 +2,7 @@ package com.homeclimatecontrol.xbee;
 
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.AtCommand;
+import com.rapplogic.xbee.api.RemoteAtRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,6 +31,7 @@ import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static com.rapplogic.xbee.api.AtCommand.Command.IS;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
+import static com.rapplogic.xbee.api.AtCommand.Command.P0;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -230,6 +232,20 @@ class XBeeReactiveTest {
 
                 var response = xbee.send(new AtCommand(command), null).block();
                 logger.info("{}} response: {}", command, response);
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void remoteP0() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var command = new RemoteAtRequest(AddressParser.parse("0013A200.402D52DD"), P0);
+                var response = xbee.send(command, null).block();
+                logger.info("{} response: {}", P0, response);
 
             }
         }).doesNotThrowAnyException();

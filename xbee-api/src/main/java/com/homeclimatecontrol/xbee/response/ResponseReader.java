@@ -4,11 +4,10 @@ import com.homeclimatecontrol.xbee.FrameType;
 import com.homeclimatecontrol.xbee.response.frame.FrameReader;
 import com.homeclimatecontrol.xbee.response.frame.IOSampleIndicatorReader;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.RemoteATCommandResponseReader;
 import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.homeclimatecontrol.xbee.util.XbeeChecksum;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -19,16 +18,16 @@ import java.util.Map;
 
 import static com.homeclimatecontrol.xbee.FrameType.IO_SAMPLE_INDICATOR;
 import static com.homeclimatecontrol.xbee.FrameType.LOCAL_AT_COMMAND_RESPONSE;
+import static com.homeclimatecontrol.xbee.FrameType.REMOTE_AT_COMMAND_RESPONSE;
 
 public class ResponseReader {
-
-    private final Logger logger = LogManager.getLogger();
 
     private static final byte ESCAPE = 0x7D;
 
     private static final Map<FrameType, FrameReader> frame2reader = Map.of(
             LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader(),
-            IO_SAMPLE_INDICATOR, new IOSampleIndicatorReader()
+            IO_SAMPLE_INDICATOR, new IOSampleIndicatorReader(),
+            REMOTE_AT_COMMAND_RESPONSE, new RemoteATCommandResponseReader()
     );
 
     /**
