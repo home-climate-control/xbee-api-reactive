@@ -10,14 +10,25 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import reactor.tools.agent.ReactorDebugAgent;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
+import static com.rapplogic.xbee.api.AtCommand.Command.D0;
+import static com.rapplogic.xbee.api.AtCommand.Command.D1;
+import static com.rapplogic.xbee.api.AtCommand.Command.D2;
+import static com.rapplogic.xbee.api.AtCommand.Command.D3;
+import static com.rapplogic.xbee.api.AtCommand.Command.D4;
+import static com.rapplogic.xbee.api.AtCommand.Command.D5;
+import static com.rapplogic.xbee.api.AtCommand.Command.D6;
+import static com.rapplogic.xbee.api.AtCommand.Command.D7;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
@@ -206,6 +217,21 @@ class XBeeReactiveTest {
         }).doesNotThrowAnyException();
     }
 
+    @ParameterizedTest
+    @MethodSource("dXCommandProvider")
+    @Disabled("Enable only if safe to use hardware is connected")
+    void dX(AtCommand.Command command) {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var response = xbee.send(new AtCommand(command), null).block();
+                logger.info("{}} response: {}", command, response);
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
     public static void dumpResponse(Logger logger, int[] source) {
 
         var sb = new StringBuilder();
@@ -219,5 +245,18 @@ class XBeeReactiveTest {
         }
 
         logger.debug("raw response: {}", sb);
+    }
+
+    private static Stream<AtCommand.Command> dXCommandProvider() {
+        return Stream.of(
+                D0,
+                D1,
+                D2,
+                D3,
+                D4,
+                D5,
+                D6,
+                D7
+        );
     }
 }

@@ -84,7 +84,7 @@ public class AtCommand extends XBeeRequest {
         P0("P0", "PWM0 Configuration"),
         P1("P1", "DIO11 Configuration"),
         P2("P2", "DIO12 Configuration"),
-        P3("P3", "DIO13 Configuration"),
+        P3("P3", "DIO13 Configuration"), // According to the docs, "not yet supported"
         RE("RE", "Restore Defaults"),
         RP("RP", "RSSI PWM Timer"),
         SD("SD", "Scan Duration"),

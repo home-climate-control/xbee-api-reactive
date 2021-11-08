@@ -190,6 +190,90 @@ class ResponseReaderTest {
         }).doesNotThrowAnyException();
     }
 
+    @Test
+    void d0CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x44, 0x30, // D0
+                0x00, 0x01,
+                0x01 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("D0 response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void d2CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x44, 0x32, // D2
+                0x00, 0x00,
+                0x00 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("D2 response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void d5CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x44, 0x35, // D5
+                0x00, 0x01,
+                (byte) 0xFC // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("D2 response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void d7CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x44, 0x37, // D5
+                0x00, 0x01,
+                (byte) 0xFA // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("D2 response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
     /**
      * Non-escaped frame provider.
      *
