@@ -1,7 +1,6 @@
 package com.homeclimatecontrol.xbee;
 
 import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.RemoteAtRequest;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeePacket;
@@ -163,15 +162,17 @@ class XbeeApiTest {
 //                        ZNetRemoteAtRequest request = new ZNetRemoteAtRequest(XBeeRequest.DEFAULT_FRAME_ID, addr64, addr16, true, target, new int[] {5});
                     var rsp = xbee.send(request, Duration.ofSeconds(5)).block();
 
-                    logger.info("{} response: {}", target, rsp);
+                    logger.info("{} response 1/2: {}", target, rsp);
 
-                    var response = (AtCommandResponse) xbee.receive().take(1).blockFirst();
+                    var response = xbee.receive().take(1).blockFirst();
 
-                    if (response.isOk()) {
-                        logger.info("Successfully turned {}", target);
-                    } else {
-                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-                    }
+                    logger.info("response 2/2: {}", response);
+
+//                    if (response.isOk()) {
+//                        logger.info("Successfully turned {}", target);
+//                    } else {
+//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
+//                    }
 
                 } finally {
                     ThreadContext.pop();
@@ -185,15 +186,17 @@ class XbeeApiTest {
                     var request = new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target));
                     var rsp = xbee.send(request, Duration.ofSeconds(10)).block();
 
-                    logger.info("{} response: {}", target, rsp);
+                    logger.info("{} response 1/2: {}", target, rsp);
 
-                    var response = (AtCommandResponse) xbee.receive().take(1).blockFirst();
+                    var response = xbee.receive().take(1).blockFirst();
 
-                    if (response.isOk()) {
-                        logger.info("Successfully turned {}", target);
-                    } else {
-                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-                    }
+                    logger.info("response 2/2: {}", response);
+
+//                    if (response.isOk()) {
+//                        logger.info("Successfully turned {}", target);
+//                    } else {
+//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
+//                    }
 
                 } finally {
                     ThreadContext.pop();
@@ -210,15 +213,17 @@ class XbeeApiTest {
 //                        ZNetRemoteAtRequest request = new ZNetRemoteAtRequest(XBeeRequest.DEFAULT_FRAME_ID, addr64, addr16, true, target, new int[] {5});
                     var rsp = xbee.send(request, Duration.ofSeconds(5)).block();
 
-                    logger.info(target + " response: " + rsp);
+                    logger.info(target + " response 1/2: " + rsp);
 
-                    var response = (AtCommandResponse) xbee.receive().take(1).blockFirst();
+                    var response = xbee.receive().take(1).blockFirst();
 
-                    if (response.isOk()) {
-                        logger.info("Successfully turned {}", target);
-                    } else {
-                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-                    }
+                    logger.info("response 2/2: {}", response);
+
+                    //                    if (response.isOk()) {
+//                        logger.info("Successfully turned {}", target);
+//                    } else {
+//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
+//                    }
 
                 } finally {
                     ThreadContext.pop();

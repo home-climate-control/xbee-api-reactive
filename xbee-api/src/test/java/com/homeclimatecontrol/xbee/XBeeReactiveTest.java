@@ -2,9 +2,6 @@ package com.homeclimatecontrol.xbee;
 
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.api.HardwareVersion;
-import com.rapplogic.xbee.api.zigbee.ZBNodeDiscover;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -102,9 +99,7 @@ class XBeeReactiveTest {
                 logger.info("Waiting for the response...");
                 var hvResponse = hvMono.block();
                 logger.info("Response received {}ms later: {}", Duration.between(start, Instant.now()).toMillis(), hvResponse);
-                logger.info("Hardware: {}", HardwareVersion.parse((AtCommandResponse) hvResponse));
-
-                dumpResponse(logger, hvResponse.getRawPacketBytes());
+                logger.info("Hardware: {}", hvResponse);
             }
         }).doesNotThrowAnyException();
     }
@@ -155,7 +150,6 @@ class XBeeReactiveTest {
                         .take(1)
                         .doOnNext(p -> logger.info("received: {}", p))
                         .blockLast();
-                dumpResponse(logger, response.getRawPacketBytes());
             }
         }).doesNotThrowAnyException();
     }
@@ -168,7 +162,6 @@ class XBeeReactiveTest {
 
                 var response = xbee.send(new AtCommand(AP, 2), null).block();
                 logger.info("AP2 response: {}", response);
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();
@@ -183,7 +176,6 @@ class XBeeReactiveTest {
                 // Value of 3 is invalid
                 var response = xbee.send(new AtCommand(AP, 3), null).block();
                 logger.info("AP2 response: {}", response);
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();
@@ -197,7 +189,6 @@ class XBeeReactiveTest {
 
                 var response = xbee.send(new AtCommand(IS), null).block();
                 logger.info("IS response: {}", response);
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();
@@ -212,8 +203,6 @@ class XBeeReactiveTest {
                 xbee.send(new AtCommand(AP, 2), null).block();
                 var response = xbee.send(new AtCommand(ND), null).block();
                 logger.info("ND response: {}", response);
-                logger.info("Parsed response: {}", ZBNodeDiscover.parse((AtCommandResponse) response));
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();
@@ -227,7 +216,6 @@ class XBeeReactiveTest {
 
                 var response = xbee.send(new AtCommand(NT), null).block();
                 logger.info("NT response: {}", response);
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();
@@ -242,7 +230,6 @@ class XBeeReactiveTest {
 
                 var response = xbee.send(new AtCommand(command), null).block();
                 logger.info("{}} response: {}", command, response);
-                dumpResponse(logger, response.getRawPacketBytes());
 
             }
         }).doesNotThrowAnyException();

@@ -1,9 +1,10 @@
 package com.homeclimatecontrol.xbee.zigbee;
 
 import com.homeclimatecontrol.xbee.XBeeReactive;
+import com.homeclimatecontrol.xbee.response.command.NDResponse;
+import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.api.zigbee.ZBNodeDiscover;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +47,7 @@ public class NetworkBrowser {
      *
      * @return Flux of discovered nodes (we know the timeout already, we've set it up ourselves).
      */
-    public Flux<ZBNodeDiscover> browse(XBeeReactive xbee, Duration timeout) {
+    public Flux<NDResponse> browse(XBeeReactive xbee, Duration timeout) {
 
         xbee.sendAsync(new AtCommand(ND));
 
@@ -56,10 +57,11 @@ public class NetworkBrowser {
                 .receive()
                 .take(timeout)
                 .doOnNext(incoming -> logger.debug("Incoming packet: {}", incoming))
-                .filter(AtCommandResponse.class::isInstance)
-                .map(AtCommandResponse.class::cast)
-                .filter(rsp -> rsp.getCommand().equals(ND))
-                .map(ZBNodeDiscover::parse)
+                .filter(LocalATCommandResponse.class::isInstance)
+                .map(LocalATCommandResponse.class::cast)
+                .filter(rsp -> rsp.command.equals(ND))
+                .map(rsp -> rsp.commandResponse)
+                .map(NDResponse.class::cast)
                 .doOnNext(nd -> logger.debug("ND response: {}", nd));
     }
 
@@ -73,9 +75,9 @@ public class NetworkBrowser {
         /**
          * Flux of discovered nodes.
          */
-        public final Flux<ZBNodeDiscover> discovered;
+        public final Flux<NDResponse> discovered;
 
-        Result(Duration timeout, Flux<ZBNodeDiscover> discovered) {
+        Result(Duration timeout, Flux<NDResponse> discovered) {
             this.timeout = timeout;
             this.discovered = discovered;
         }

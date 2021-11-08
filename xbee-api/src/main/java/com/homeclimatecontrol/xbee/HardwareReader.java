@@ -1,8 +1,8 @@
 package com.homeclimatecontrol.xbee;
 
-import com.rapplogic.xbee.api.PacketParser;
+import com.homeclimatecontrol.xbee.response.ResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.rapplogic.xbee.api.XBeePacket;
-import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +18,11 @@ import java.io.InputStream;
 public class HardwareReader implements AutoCloseable {
 
     private final Logger logger = LogManager.getLogger();
+    private final ResponseReader responseReader = new ResponseReader();
+
     private final InputStream in;
-    private final Flux<XBeeResponse> inFlux;
-    private FluxSink<XBeeResponse> receiveSink;
+    private final Flux<XBeeResponseFrame> inFlux;
+    private FluxSink<XBeeResponseFrame> receiveSink;
     private Thread reader;
 
     public HardwareReader(InputStream in) {
@@ -71,11 +73,11 @@ public class HardwareReader implements AutoCloseable {
         }
     }
 
-    private XBeeResponse readPacket(InputStream in) throws IOException, InterruptedException {
+    private XBeeResponseFrame readPacket(InputStream in) throws IOException, InterruptedException {
         ThreadContext.push("readPacket");
         try {
             syncOnStartByte(in);
-            return new PacketParser(in).parsePacket();
+            return responseReader.read(in);
         } finally {
             ThreadContext.pop();
         }
@@ -122,11 +124,11 @@ public class HardwareReader implements AutoCloseable {
         reader.interrupt();
     }
 
-    private void connect(FluxSink<XBeeResponse> sink) {
+    private void connect(FluxSink<XBeeResponseFrame> sink) {
         receiveSink = sink;
     }
 
-    public Flux<XBeeResponse> receive() {
+    public Flux<XBeeResponseFrame> receive() {
         return inFlux;
     }
 

@@ -4,9 +4,9 @@ import com.homeclimatecontrol.xbee.FrameType;
 import com.homeclimatecontrol.xbee.response.frame.FrameReader;
 import com.homeclimatecontrol.xbee.response.frame.IOSampleIndicatorReader;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.homeclimatecontrol.xbee.util.XbeeChecksum;
-import com.rapplogic.xbee.api.XBeeResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +38,7 @@ public class ResponseReader {
      *           start delimiter.
      * @return A newly instantiated response object.
      */
-    public XBeeResponse read(InputStream in) throws IOException {
+    public XBeeResponseFrame read(InputStream in) throws IOException {
 
         var headerBuffer = in.readNBytes(2);
 
@@ -50,11 +50,7 @@ public class ResponseReader {
 
         verifyChecksum(checksum, frameBuffer);
 
-        var frame = getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
-
-        logger.info("read: {}", frame);
-
-        return null;
+        return getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
     }
 
     /**

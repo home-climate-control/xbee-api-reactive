@@ -1,9 +1,10 @@
 package com.homeclimatecontrol.xbee.zigbee;
 
+import com.homeclimatecontrol.xbee.AddressParser;
 import com.homeclimatecontrol.xbee.XBeeReactive;
+import com.homeclimatecontrol.xbee.response.command.NTResponse;
+import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,8 +29,10 @@ public class NodeDiscoverApp {
 
         try (var xbee = new XBeeReactive(args[0])) {
 
-            var ntResponse = (AtCommandResponse) xbee.send(new AtCommand(NT), null).block();
-            var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(ntResponse.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
+            var response = (LocalATCommandResponse) xbee.send(new AtCommand(NT), null).block();
+            var ntResponse = (NTResponse) response.commandResponse; // NOSONAR Unlikely, this is a local command
+
+            var timeout = Duration.ofMillis((ntResponse.timeout * 100L));
 
             logger.info("XBee is configured with node discovery timeout of {} seconds", timeout.getSeconds());
 
@@ -41,7 +44,7 @@ public class NodeDiscoverApp {
             logger.info("{} node{} discovered within {}{}", result.size(), // NOSONAR False positive for this specific case
                     result.size() == 1 ? "" : "s", timeout, result.isEmpty() ? "" : ":");
 
-            result.forEach(n -> logger.info("  {}", n));
+            result.forEach(n -> logger.info("  {}, NI={}, {}", AddressParser.render4x4(n.address64), n.nodeIdentifier, n.deviceType));
 
             if (result.isEmpty()) {
                 logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", timeout);

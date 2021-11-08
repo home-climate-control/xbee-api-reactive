@@ -1,8 +1,8 @@
 package com.homeclimatecontrol.xbee;
 
-import com.rapplogic.xbee.api.XBeeFrameIdResponse;
+import com.homeclimatecontrol.xbee.response.frame.FrameIdAwareResponse;
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.rapplogic.xbee.api.XBeeRequest;
-import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.util.ByteUtils;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
@@ -115,7 +115,7 @@ public class XBeeReactive implements AutoCloseable {
      * @return Mono with a response, or empty Mono if the response didn't come within timeout, or error Mono if
      * there was a hardware problem.
      */
-    public Mono<XBeeResponse> send(XBeeRequest rq, Duration timeout) {
+    public Mono<XBeeResponseFrame> send(XBeeRequest rq, Duration timeout) {
 
         if (rq.getFrameId() == XBeeRequest.NO_RESPONSE_FRAME_ID) {
             throw new IllegalArgumentException("Invalid FrameID of zero for synchronous request, see https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_zigbee_frame_examples.htm");
@@ -138,9 +138,9 @@ public class XBeeReactive implements AutoCloseable {
                             : rawResponse.take(timeout).doOnComplete(() -> logger.debug("timed: done"));
 
                     var response = timedResponse
-                            .filter(XBeeFrameIdResponse.class::isInstance)
-                            .map(XBeeFrameIdResponse.class::cast)
-                            .filter(rsp -> rsp.getFrameId() == frameId)
+                            .filter(FrameIdAwareResponse.class::isInstance)
+                            .map(FrameIdAwareResponse.class::cast)
+                            .filter(rsp -> rsp.frameId == frameId)
                             .blockFirst();
 
                     sink.success(response);
@@ -160,7 +160,7 @@ public class XBeeReactive implements AutoCloseable {
      *
      * @return Flux of all incoming XBee packets. It will error out if there was a hardware problem.
      */
-    public Flux<XBeeResponse> receive() {
+    public Flux<XBeeResponseFrame> receive() {
         return reader.receive();
     }
 

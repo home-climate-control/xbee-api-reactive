@@ -44,8 +44,7 @@ public class NDResponse extends CommandResponse {
 
     @Override
     public String toString() {
-        return "{ND add16=" + address16
-                + ", addr64=" + AddressParser.render4x4(address64)
+        return "{ND address=" + AddressParser.render4x4(address64) + "/" + address16
                 + ", NI=" + nodeIdentifier
                 + ", parent=" + parentAddress
                 + ", deviceType=" + deviceType
