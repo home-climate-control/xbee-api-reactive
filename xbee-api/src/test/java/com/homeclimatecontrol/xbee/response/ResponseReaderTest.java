@@ -150,10 +150,12 @@ class ResponseReaderTest {
                 0x4E, 0x44, // ND
                 0x00, 0x46, // Address 16?
                 0x34, 0x00, 0x7D, 0x33, (byte) 0xA2, 0x00, 0x40, 0x2D, // Address 64?
-                0x52, (byte) 0xDD, 0x50, 0x52, 0x4F, 0x42, 0x45, 0x00,
-                (byte) 0xFF, (byte) 0xFE, // MY?
-                0x01, 0x00, // SH?
-                (byte) 0xC1, 0x05, 0x10, 0x1E, // SL?
+                0x52, (byte) 0xDD, 0x50, 0x52, 0x4F, 0x42, 0x45, 0x00, // NI?
+                (byte) 0xFF, (byte) 0xFE, // Parent address (always 0xFFFE)
+                0x01, // Device type
+                0x00, // Status
+                (byte) 0xC1, 0x05, // Profile ID
+                0x10, 0x1E, // Mfg ID
                 (byte) 0xAF // Checksum
         };
 
@@ -163,6 +165,28 @@ class ResponseReaderTest {
         assertThatCode(() -> {
             var response = rr.read(buffer);
             logger.info("ND response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void ntCommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x07, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x4E, 0x54, // NT
+                0x00, // Status
+                0x00, 0x3C,
+                (byte) 0x98 // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("NT response: {}", response);
         }).doesNotThrowAnyException();
     }
 

@@ -20,6 +20,7 @@ import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
+import static com.rapplogic.xbee.api.AtCommand.Command.NT;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -184,7 +185,21 @@ class XBeeReactiveTest {
                 xbee.send(new AtCommand(AP, 2), null).block();
                 var response = xbee.send(new AtCommand(ND), null).block();
                 logger.info("ND response: {}", response);
-                logger.info("Parsedresponse: {}", ZBNodeDiscover.parse((AtCommandResponse) response));
+                logger.info("Parsed response: {}", ZBNodeDiscover.parse((AtCommandResponse) response));
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void nt() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var response = xbee.send(new AtCommand(NT), null).block();
+                logger.info("NT response: {}", response);
                 dumpResponse(logger, response.getRawPacketBytes());
 
             }
