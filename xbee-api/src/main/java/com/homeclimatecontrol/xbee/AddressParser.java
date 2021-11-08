@@ -41,23 +41,20 @@ public class AddressParser {
             logger.debug("dense address: {}", denseAddress);
 
             if (denseAddress.length() != 16) {
-
                 throw new IllegalArgumentException("Bad address, dense form: '" + denseAddress + "'");
             }
 
             // Now let's fill it with spaces
-
             StringBuilder sb = new StringBuilder();
 
-            for (int offset = 0; offset < denseAddress.length(); offset++) {
+            for (int offset = 0; offset < denseAddress.length(); offset += 2) {
 
                 if (offset != 0) {
-
                     sb.append(' ');
                 }
 
-                sb.append(denseAddress.charAt(offset++));
                 sb.append(denseAddress.charAt(offset));
+                sb.append(denseAddress.charAt(offset + 1));
             }
 
             String result = sb.toString();
