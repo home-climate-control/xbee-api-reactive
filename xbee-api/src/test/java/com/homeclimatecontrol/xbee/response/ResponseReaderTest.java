@@ -287,7 +287,7 @@ class ResponseReaderTest {
     void ncCommandResponse() {
 
         var packet = new byte[] {
-                0x00, 0x06,
+                0x00, 0x06, // Length
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x4e,0x43, // NC
@@ -324,7 +324,7 @@ class ResponseReaderTest {
     void niCommandResponse() {
 
         var packet = new byte[] {
-                0x00, 0x10,
+                0x00, 0x10, // Length
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x4e, 0x49, // NI
@@ -350,6 +350,38 @@ class ResponseReaderTest {
         };
 
         checkResponse(packet, AtCommand.Command.NT);
+    }
+
+    @Test
+    void p0CommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x06, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x50, 0x30, // P0
+                0x00, // Status
+                0x01, // Payload
+                (byte) 0xf5
+        };
+
+        checkResponse(packet, AtCommand.Command.P0);
+    }
+
+    @Test
+    void vrCommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x07, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x56, 0x52, // VR
+                0x00, // Status
+                0x21, 0x70, // Payload
+                0x3d // Checksum
+        };
+
+        checkResponse(packet, AtCommand.Command.VR);
     }
 
     /**

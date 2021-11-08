@@ -19,6 +19,8 @@ import com.homeclimatecontrol.xbee.response.command.NCResponseReader;
 import com.homeclimatecontrol.xbee.response.command.NDResponseReader;
 import com.homeclimatecontrol.xbee.response.command.NIResponseReader;
 import com.homeclimatecontrol.xbee.response.command.NTResponseReader;
+import com.homeclimatecontrol.xbee.response.command.P0ResponseReader;
+import com.homeclimatecontrol.xbee.response.command.VRResponseReader;
 import com.rapplogic.xbee.api.AtCommand;
 
 import java.nio.ByteBuffer;
@@ -43,6 +45,8 @@ import static com.rapplogic.xbee.api.AtCommand.Command.NC;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NI;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
+import static com.rapplogic.xbee.api.AtCommand.Command.P0;
+import static com.rapplogic.xbee.api.AtCommand.Command.VR;
 
 public abstract class FrameReader {
 
@@ -67,7 +71,10 @@ public abstract class FrameReader {
             new AbstractMap.SimpleEntry<>(NC, new NCResponseReader()),
             new AbstractMap.SimpleEntry<>(ND, new NDResponseReader()),
             new AbstractMap.SimpleEntry<>(NI, new NIResponseReader()),
-            new AbstractMap.SimpleEntry<>(NT, new NTResponseReader())
+            new AbstractMap.SimpleEntry<>(NT, new NTResponseReader()),
+
+            new AbstractMap.SimpleEntry<>(P0, new P0ResponseReader()),
+            new AbstractMap.SimpleEntry<>(VR, new VRResponseReader())
     );
 
     protected CommandResponseReader getReader(AtCommand.Command command) {
