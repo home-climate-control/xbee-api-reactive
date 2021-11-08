@@ -23,7 +23,7 @@ public class HexFormat {
             sb.append(HexFormat.format(data.get()));
 
             if (data.hasRemaining()) {
-                sb.append(", ");
+                sb.append(",");
             } else {
                 return sb.toString();
             }

@@ -22,11 +22,12 @@ class ResponseReaderTest {
     @MethodSource("goodNonEscapedFrameProvider")
     void checksum(byte[] packet){
 
-        var buffer = Arrays.copyOfRange(packet, 3, packet.length);
+        var buffer = Arrays.copyOfRange(packet, 3, packet.length - 1);
+        var checksum = packet[packet.length - 1];
         var rr = new ResponseReader();
 
         assertThatCode(() -> {
-            rr.verifyChecksum(buffer);
+            rr.verifyChecksum(checksum, buffer);
             // If we're made it this far, checksum is good
         }).doesNotThrowAnyException();
     }
@@ -136,6 +137,32 @@ class ResponseReaderTest {
         assertThatCode(() -> {
             var response = rr.read(buffer);
             logger.info("AT response: {}", response);
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    void ndCommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x1D, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x4E, 0x44, // ND
+                0x00, 0x46, // Address 16?
+                0x34, 0x00, 0x7D, 0x33, (byte) 0xA2, 0x00, 0x40, 0x2D, // Address 64?
+                0x52, (byte) 0xDD, 0x50, 0x52, 0x4F, 0x42, 0x45, 0x00,
+                (byte) 0xFF, (byte) 0xFE, // MY?
+                0x01, 0x00, // SH?
+                (byte) 0xC1, 0x05, 0x10, 0x1E, // SL?
+                (byte) 0xAF // Checksum
+        };
+
+        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("ND response: {}", response);
         }).doesNotThrowAnyException();
     }
 

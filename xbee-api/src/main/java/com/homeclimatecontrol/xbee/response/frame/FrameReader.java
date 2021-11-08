@@ -3,6 +3,7 @@ package com.homeclimatecontrol.xbee.response.frame;
 import com.homeclimatecontrol.xbee.response.command.APResponseReader;
 import com.homeclimatecontrol.xbee.response.command.CommandResponseReader;
 import com.homeclimatecontrol.xbee.response.command.HVResponseReader;
+import com.homeclimatecontrol.xbee.response.command.NDResponseReader;
 import com.rapplogic.xbee.api.AtCommand;
 
 import java.nio.ByteBuffer;
@@ -10,12 +11,14 @@ import java.util.Map;
 
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 
 public abstract class FrameReader {
 
     private static Map<AtCommand.Command, CommandResponseReader> command2reader = Map.of(
             AP, new APResponseReader(),
-            HV, new HVResponseReader()
+            HV, new HVResponseReader(),
+            ND, new NDResponseReader()
     );
 
     protected CommandResponseReader getReader(AtCommand.Command command) {

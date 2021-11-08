@@ -4,6 +4,7 @@ import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.HardwareVersion;
+import com.rapplogic.xbee.api.zigbee.ZBNodeDiscover;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +19,7 @@ import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPor
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -158,7 +160,6 @@ class XBeeReactiveTest {
         }).doesNotThrowAnyException();
     }
 
-
     @Test
     @Disabled("Enable only if safe to use hardware is connected")
     void ap3() {
@@ -168,6 +169,22 @@ class XBeeReactiveTest {
                 // Value of 3 is invalid
                 var response = xbee.send(new AtCommand(AP, 3), null).block();
                 logger.info("AP2 response: {}", response);
+                dumpResponse(logger, response.getRawPacketBytes());
+
+            }
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void nd() {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                xbee.send(new AtCommand(AP, 2), null).block();
+                var response = xbee.send(new AtCommand(ND), null).block();
+                logger.info("ND response: {}", response);
+                logger.info("Parsedresponse: {}", ZBNodeDiscover.parse((AtCommandResponse) response));
                 dumpResponse(logger, response.getRawPacketBytes());
 
             }

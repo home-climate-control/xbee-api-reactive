@@ -9,6 +9,8 @@ import com.rapplogic.xbee.api.XBeeResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -20,7 +22,9 @@ public class ResponseReader {
 
     private final Logger logger = LogManager.getLogger();
 
-    private static Map<FrameType, FrameReader> frame2reader = Map.of(
+    private static final byte ESCAPE = 0x7D;
+
+    private static final Map<FrameType, FrameReader> frame2reader = Map.of(
             LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader()
     );
 
@@ -33,25 +37,62 @@ public class ResponseReader {
      */
     public XBeeResponse read(InputStream in) throws IOException {
 
-        // Read the packet in two blocks:
-        // - Fixed length header
-        // - Variable length payload (including the checksum)
-
         var headerBuffer = in.readNBytes(2);
 
         verifyRead(2, headerBuffer.length, "length");
 
         var frameSize = readLength(headerBuffer);
-        var frameBuffer = in.readNBytes(frameSize + 1);
+        var frameBuffer = readFrame(in, frameSize);
+        var checksum = readByte(in);
 
-        verifyRead(frameSize + 1, frameBuffer.length, "payload");
-        verifyChecksum(frameBuffer);
+        verifyChecksum(checksum, frameBuffer);
 
-        var frame = getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 2));
+        var frame = getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
 
         logger.info("read: {}", frame);
 
         return null;
+    }
+
+    /**
+     * Read the frame, unescaping it along the way.
+     *
+     * See <a href="https://www.digi.com/resources/documentation/Digidocs/90001456-13/concepts/c_api_escaped_operating_mode.htm">API escaped operating mode (API 2)</a>
+     */
+    private byte[] readFrame(InputStream in, int frameSize) throws IOException {
+
+        var buffer = new ByteArrayOutputStream();
+        var leftToRead = frameSize;
+
+        while (leftToRead > 0) {
+            buffer.write(unescape(in));
+            leftToRead--;
+        }
+
+        return buffer.toByteArray();
+    }
+
+    private byte readByte(InputStream in) throws IOException {
+
+        var b = in.read();
+
+        if (b == -1) {
+            throw new EOFException();
+        }
+
+        return (byte) (b & 0xFF);
+    }
+
+    private byte unescape(InputStream in) throws IOException {
+        var b = readByte(in);
+
+        if (b != ESCAPE) {
+            return b;
+        }
+
+        var e = readByte(in);
+
+        return (byte) (0x20 ^ e);
     }
 
     private int readLength(byte[] buffer) {
@@ -64,10 +105,9 @@ public class ResponseReader {
         }
     }
 
-    void verifyChecksum(byte[] frameBuffer) {
+    void verifyChecksum(byte checksumExpected, byte[] frameBuffer) {
 
-        var payload = ByteBuffer.wrap(frameBuffer, 0, frameBuffer.length - 1);
-        var checksumExpected = frameBuffer[frameBuffer.length - 1];
+        var payload = ByteBuffer.wrap(frameBuffer);
         var checksum = new XbeeChecksum();
 
         checksum.update(payload);

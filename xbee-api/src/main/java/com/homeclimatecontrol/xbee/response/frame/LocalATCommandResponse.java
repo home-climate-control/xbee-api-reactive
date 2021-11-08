@@ -45,7 +45,7 @@ public class LocalATCommandResponse extends FrameIdAwareResponse {
         return "{LocalATCommandResponse frameId=" + HexFormat.format(frameId)
                 + ", command=" + command
                 + ", status=" + status
-                + ", response={" + commandResponse
-                + "}}";
+                + ", response=" + commandResponse
+                + "}";
     }
 }
