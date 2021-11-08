@@ -1,5 +1,7 @@
 package com.homeclimatecontrol.xbee.response;
 
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
+import com.rapplogic.xbee.api.AtCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -8,10 +10,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class ResponseReaderTest {
@@ -73,7 +77,7 @@ class ResponseReaderTest {
         var buffer = new ByteArrayInputStream(packet, 1, packet.length - 1);
         var rr = new ResponseReader();
 
-        assertThatIllegalArgumentException().isThrownBy(() -> rr.read(buffer)).withMessage("No reader for {Frame type=0xA3 Many-to-One Route Request Indicator}");
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> rr.read(buffer)).withMessage("No reader for {Frame type=0xA3 Many-to-One Route Request Indicator}");
     }
 
     @Test
@@ -110,13 +114,7 @@ class ResponseReaderTest {
                 (byte) 0xE5 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("AT response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.AP);
     }
 
     @Test
@@ -131,13 +129,7 @@ class ResponseReaderTest {
                 (byte) 0xE2 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("AT response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.AP);
     }
 
     @Test
@@ -152,13 +144,7 @@ class ResponseReaderTest {
                 0x01 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("D0 response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.D0);
     }
 
     @Test
@@ -173,13 +159,7 @@ class ResponseReaderTest {
                 0x00 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("D2 response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.D2);
     }
 
     @Test
@@ -194,13 +174,7 @@ class ResponseReaderTest {
                 (byte) 0xFC // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("D2 response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.D5);
     }
 
     @Test
@@ -215,13 +189,7 @@ class ResponseReaderTest {
                 (byte) 0xFA // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("D2 response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.D7);
     }
 
     @Test
@@ -237,13 +205,23 @@ class ResponseReaderTest {
                 (byte) 0xeb // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
+        checkResponse(packet, AtCommand.Command.DD);
+    }
 
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("DD response: {}", response);
-        }).doesNotThrowAnyException();
+    @Test
+    void chCommandResponse() {
+
+        var packet = new byte[] {
+                0x00, 0x09, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x44, 0x44, // DD
+                0x00, // Status
+                0x00, 0x03, 0x00, 0x00,
+                (byte) 0xeb // Checksum
+        };
+
+        checkResponse(packet, AtCommand.Command.CH);
     }
 
     @Test
@@ -258,13 +236,7 @@ class ResponseReaderTest {
                 (byte) 0xD9 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("IS response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.IS);
     }
 
     @Test
@@ -299,7 +271,7 @@ class ResponseReaderTest {
     void myCommandResponse() {
 
         var packet = new byte[] {
-                0x00, 0x06,
+                0x00, 0x07, // Length
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x4d,0x59,  // MY
@@ -308,13 +280,7 @@ class ResponseReaderTest {
                 (byte) 0xd0 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("MY response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.MY);
     }
 
     @Test
@@ -329,13 +295,7 @@ class ResponseReaderTest {
                 (byte) 0xdb // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("NC response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.NC);
     }
 
     @Test
@@ -357,13 +317,7 @@ class ResponseReaderTest {
                 (byte) 0xAF // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("ND response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.ND);
     }
 
     @Test
@@ -379,13 +333,7 @@ class ResponseReaderTest {
                 (byte) 0x9b // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("NI response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.NI);
     }
 
     @Test
@@ -401,13 +349,7 @@ class ResponseReaderTest {
                 (byte) 0x98 // Checksum
         };
 
-        var buffer = new ByteArrayInputStream(packet, 0, packet.length);
-        var rr = new ResponseReader();
-
-        assertThatCode(() -> {
-            var response = rr.read(buffer);
-            logger.info("NT response: {}", response);
-        }).doesNotThrowAnyException();
+        checkResponse(packet, AtCommand.Command.NT);
     }
 
     /**
@@ -510,5 +452,21 @@ class ResponseReaderTest {
         };
 
         return Stream.of(packet0);
+    }
+
+    private XBeeResponseFrame checkResponse(byte[] source, AtCommand.Command command) {
+
+        var buffer = new ByteArrayInputStream(source, 0, source.length);
+        var rr = new ResponseReader();
+        var responseHolder = new ArrayList<XBeeResponseFrame>(1);
+
+        assertThatCode(() -> {
+            var response = rr.read(buffer);
+            logger.info("{} response: {}", command, response);
+            responseHolder.add(response);
+
+        }).doesNotThrowAnyException();
+
+        return responseHolder.get(0);
     }
 }
