@@ -87,7 +87,7 @@ class XbeeApiTest {
             logger.info("Source: " + ByteUtils.toBase16(knownGoodPacket));
             logger.info("Packet: " + ByteUtils.toBase16(byteBuffer));
 
-            assertThat(byteBuffer.length).isEqualTo(knownGoodPacket.length);
+            assertThat(byteBuffer).hasSameSizeAs(knownGoodPacket);
 
             for (int offset = 0; offset < knownGoodPacket.length; offset++) {
 
