@@ -7,6 +7,11 @@ import com.rapplogic.xbee.api.XBeeAddress64;
 
 import java.nio.ByteBuffer;
 
+/**
+ * ND command response reader.
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2021
+ */
 public class NDResponseReader extends CommandResponseReader {
 
     @Override

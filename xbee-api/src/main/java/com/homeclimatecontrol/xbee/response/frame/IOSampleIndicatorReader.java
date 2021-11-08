@@ -8,7 +8,15 @@ import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Remote IO Sample reader.
+ *
+ * See <a href="https://www.digi.com/resources/documentation/Digidocs/90002002/Default.htm#Reference/r_frame_0x92.htm">I/O Sample Indicator</a>.
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2021
+ */
 public class IOSampleIndicatorReader extends FrameReader {
+
     @Override
     public XBeeResponseFrame read(ByteBuffer frameData) {
 
