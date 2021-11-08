@@ -140,7 +140,7 @@ class ResponseReaderTest {
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x44, 0x30, // D0
-                0x00, 0x01,
+                0x00, 0x01, // Payload
                 0x01 // Checksum
         };
 
@@ -155,7 +155,7 @@ class ResponseReaderTest {
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x44, 0x32, // D2
-                0x00, 0x00,
+                0x00, 0x00, // Payload
                 0x00 // Checksum
         };
 
@@ -170,7 +170,7 @@ class ResponseReaderTest {
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x44, 0x35, // D5
-                0x00, 0x01,
+                0x00, 0x01, // Payload
                 (byte) 0xFC // Checksum
         };
 
@@ -185,7 +185,7 @@ class ResponseReaderTest {
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
                 0x44, 0x37, // D5
-                0x00, 0x01,
+                0x00, 0x01, // Payload
                 (byte) 0xFA // Checksum
         };
 
@@ -201,7 +201,7 @@ class ResponseReaderTest {
                 0x01, // Frame ID
                 0x44, 0x44, // DD
                 0x00, // Status
-                0x00, 0x03, 0x00, 0x00,
+                0x00, 0x03, 0x00, 0x00, // Payload
                 (byte) 0xeb // Checksum
         };
 
@@ -212,13 +212,13 @@ class ResponseReaderTest {
     void chCommandResponse() {
 
         var packet = new byte[] {
-                0x00, 0x09, // Length
+                0x00, 0x06, // Length
                 (byte) 0x88, // Local AT Command Response
                 0x01, // Frame ID
-                0x44, 0x44, // DD
+                0x43, 0x48, // CH
                 0x00, // Status
-                0x00, 0x03, 0x00, 0x00,
-                (byte) 0xeb // Checksum
+                0x14, // Payload
+                (byte) 0xd7 // Checksum
         };
 
         checkResponse(packet, AtCommand.Command.CH);
@@ -345,7 +345,7 @@ class ResponseReaderTest {
                 0x01, // Frame ID
                 0x4E, 0x54, // NT
                 0x00, // Status
-                0x00, 0x3C,
+                0x00, 0x3C, // Payload
                 (byte) 0x98 // Checksum
         };
 
@@ -371,7 +371,7 @@ class ResponseReaderTest {
                 0x01, // API Frame ID
                 0x50, 0x01, // Destination address low
                 0x00, // Option byte
-                0x48, 0x65, 0x6C, 0x6C, 0x6F, // Data packet
+                0x48, 0x65, 0x6C, 0x6C, 0x6F, // Payload
                 (byte) 0xB8 // Checksum
         };
 
