@@ -18,6 +18,6 @@ public class NTResponse extends CommandResponse {
 
     @Override
     public String toString() {
-        return "{NT unknown=" + HexFormat.format(unknown) + ", timeout=" + HexFormat.format(timeout) + " (" + Duration.ofMillis(timeout * 100) + ")}";
+        return "{NT unknown=" + HexFormat.format(unknown) + ", timeout=" + HexFormat.format(timeout) + " (" + Duration.ofMillis(timeout * 100L) + ")}";
     }
 }
