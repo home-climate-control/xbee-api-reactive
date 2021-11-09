@@ -2,10 +2,9 @@ package com.homeclimatecontrol.xbee.zigbee;
 
 import com.homeclimatecontrol.xbee.XBeeReactive;
 import com.homeclimatecontrol.xbee.response.command.NDResponse;
+import com.homeclimatecontrol.xbee.response.command.NTResponse;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import reactor.core.publisher.Flux;
@@ -30,11 +29,12 @@ public class NetworkBrowser {
     public Mono<Result> browse(XBeeReactive xbee) {
 
         return xbee
-                .send(new AtCommand(NT), null)
+                .sendAT(new AtCommand(NT), null)
                 .doOnNext(nt -> logger.debug("NT: {}", nt))
-                .map(AtCommandResponse.class::cast)
+                .map(nt -> nt.commandResponse)
+                .map(NTResponse.class::cast)
                 .map(nt -> {
-                    var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(nt.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
+                    var timeout = Duration.ofMillis(nt.timeout * 100L); // NOSONAR Unlikely, this is a local command
                     return new Result(timeout, browse(xbee, timeout));
                 });
     }

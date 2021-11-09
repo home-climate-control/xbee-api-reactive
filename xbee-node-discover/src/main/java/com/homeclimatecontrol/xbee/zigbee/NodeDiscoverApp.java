@@ -2,7 +2,6 @@ package com.homeclimatecontrol.xbee.zigbee;
 
 import com.homeclimatecontrol.xbee.XBeeReactive;
 import com.homeclimatecontrol.xbee.response.command.NTResponse;
-import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +27,7 @@ public class NodeDiscoverApp {
 
         try (var xbee = new XBeeReactive(args[0])) {
 
-            var response = (LocalATCommandResponse) xbee.send(new AtCommand(NT), null).block();
+            var response = xbee.sendAT(new AtCommand(NT), null).block();
             var ntResponse = (NTResponse) response.commandResponse; // NOSONAR Unlikely, this is a local command
 
             var timeout = Duration.ofMillis((ntResponse.timeout * 100L));
