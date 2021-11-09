@@ -1,6 +1,7 @@
 package com.homeclimatecontrol.xbee;
 
-import com.homeclimatecontrol.xbee.util.HexFormat;
+import com.homeclimatecontrol.xbee.response.command.DxResponse;
+import com.homeclimatecontrol.xbee.response.frame.RemoteATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.RemoteAtRequest;
 import org.apache.logging.log4j.LogManager;
@@ -251,19 +252,37 @@ class XBeeReactiveTest {
         }).doesNotThrowAnyException();
     }
 
-    public static void dumpResponse(Logger logger, int[] source) {
+    @Test
+    @Disabled("Enable only if safe to use hardware is connected")
+    void remoteD3AsAdcOverride() {
 
-        var sb = new StringBuilder();
+        var remoteAddress = AddressParser.parse("0013A200.402D52DD");
 
-        for (var b : source) {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-            if (!(sb.toString().length() == 0)) {
-                sb.append(", ");
+                // Verify the state; must be configured as ADC so that "set state" command should fail.
+                // If this part fails, configure the remote accordingly.
+
+                var d3getState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), null).block();
+                assertThat(d3getState1.status).isEqualTo(RemoteATCommandResponse.Status.OK); // NOSONAR This is expected
+
+                var state1 = (DxResponse<?>) d3getState1.commandResponse;
+                assertThat(((DxResponse<?>) d3getState1.commandResponse).code).isEqualTo((byte) 0x02);
+
+                // Set the state
+                var d3setState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 5 }), null).block();
+
+                // Crap... The commands overrides the setting.
+                var d3getState2 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), null).block();
+                var state2 = (DxResponse<?>) d3getState2.commandResponse; // NOSONAR This is expected
+                assertThat(((DxResponse<?>) d3getState2.commandResponse).code).isEqualTo((byte) 0x05);
+
+                // All right... Set it back to ADC.
+                xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 2 }), null).block();
+
             }
-            sb.append(HexFormat.format((byte) b));
-        }
-
-        logger.debug("raw response: {}", sb);
+        }).doesNotThrowAnyException();
     }
 
     private static Stream<AtCommand.Command> dXCommandProvider() {
