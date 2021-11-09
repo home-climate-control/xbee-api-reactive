@@ -51,7 +51,7 @@ public class NetworkBrowser {
 
         xbee.sendAsync(new AtCommand(ND));
 
-        logger.info("Collecting responses for NT={}", timeout);
+        logger.debug("Collecting responses for NT={}", timeout);
 
         return xbee
                 .receive()
