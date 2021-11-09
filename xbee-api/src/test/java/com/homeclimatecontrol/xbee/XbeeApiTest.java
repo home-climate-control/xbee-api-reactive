@@ -16,27 +16,19 @@ import java.time.Duration;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AI;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
-import static com.rapplogic.xbee.api.AtCommand.Command.BD;
 import static com.rapplogic.xbee.api.AtCommand.Command.CH;
 import static com.rapplogic.xbee.api.AtCommand.Command.D0;
 import static com.rapplogic.xbee.api.AtCommand.Command.DD;
-import static com.rapplogic.xbee.api.AtCommand.Command.EE;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
-import static com.rapplogic.xbee.api.AtCommand.Command.ID;
 import static com.rapplogic.xbee.api.AtCommand.Command.MY;
 import static com.rapplogic.xbee.api.AtCommand.Command.NC;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NI;
-import static com.rapplogic.xbee.api.AtCommand.Command.NJ;
-import static com.rapplogic.xbee.api.AtCommand.Command.NO;
-import static com.rapplogic.xbee.api.AtCommand.Command.NP;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
-import static com.rapplogic.xbee.api.AtCommand.Command.OI;
-import static com.rapplogic.xbee.api.AtCommand.Command.OP;
 import static com.rapplogic.xbee.api.AtCommand.Command.P0;
-import static com.rapplogic.xbee.api.AtCommand.Command.SD;
 import static com.rapplogic.xbee.api.AtCommand.Command.VR;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.fail;
 
 class XbeeApiTest {
@@ -112,130 +104,71 @@ class XbeeApiTest {
 
         ThreadContext.push("testXBee");
 
-        try (var xbee = new XBeeReactive(getTestPort())) {
+        assertThatCode(() -> {
 
-            // Find out who's around
+            try (var xbee = new XBeeReactive(getTestPort())) {
 
-            AT(xbee, MY);
-            AT(xbee, NC);
-            AT(xbee, NI);
-            AT(xbee, NP);
-            AT(xbee, DD);
-            AT(xbee, CH);
-            AT(xbee, ID);
-            AT(xbee, OP);
-            AT(xbee, OI);
-            AT(xbee, NT);
-            AT(xbee, NO);
-            AT(xbee, SD);
-            AT(xbee, NJ);
-            AT(xbee, EE);
-            AT(xbee, AP);
-            AT(xbee, BD);
-            AT(xbee, P0);
-            AT(xbee, VR);
-            AT(xbee, HV);
-            AT(xbee, AI);
+                // Find out who's around
 
-            AT(xbee, ND);
-            AT(xbee, AI);
+                AT(xbee, MY);
+                AT(xbee, NC);
+                AT(xbee, NI);
+                // AT(xbee, NP); // NOSONAR Implementation pending
+                AT(xbee, DD);
+                AT(xbee, CH);
+                // AT(xbee, ID); // NOSONAR Implementation pending
+                // AT(xbee, OP); // NOSONAR Implementation pending
+                // AT(xbee, OI); // NOSONAR Implementation pending
+                AT(xbee, NT);
+                // AT(xbee, NO); // NOSONAR Implementation pending
+                // AT(xbee, SD); // NOSONAR Implementation pending
+                // AT(xbee, NJ); // NOSONAR Implementation pending
+                // AT(xbee, EE); // NOSONAR Implementation pending
+                AT(xbee, AP);
+                // AT(xbee, BD); // NOSONAR Implementation pending
+                AT(xbee, P0);
+                AT(xbee, VR);
+                AT(xbee, HV);
+                AT(xbee, AI);
 
-            AT(xbee, AP, 2);
+                AT(xbee, ND);
 
-            for (int offset = 0; offset < 4; offset++) {
+                AT(xbee, AP, 2);
 
-                var target = "D" + offset;
-                var addr64 = AddressParser.parse("0013A200.402D52DD");
-//                XBeeAddress64 addr64 = new XBeeAddress64(0x00, 0x13, 0xa2, 0x00, 0x40, 0x5d, 0x80, 0x27);
-//                  XBeeAddress64 addr64 = new XBeeAddress64("00 13 A2 00 40 5D 80 27");
-//                  XBeeAddress16 addr16 = new XBeeAddress16(0x48, 0xFE);
-//                  XBeeAddress64 addr64 = new XBeeAddress64(0x00, 0x13, 0xa2, 0x00, 0x40, 0x62, 0xac, 0x98);
+                for (int offset = 0; offset < 4; offset++) {
 
-                ThreadContext.push(AddressParser.render4x4(addr64) + ":" + offset + " write 5");
+                    var target = "D" + offset;
+                    var addr64 = AddressParser.parse("0013A200.402D52DD");
 
-                try {
+                    ThreadContext.push(AddressParser.render4x4(addr64) + ":D" + offset);
 
-                    logger.info("creating request to " + addr64);
+                    try {
 
-                    // Send the request to turn on D${offset}
-                    var request = new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {5});
-//                        ZNetRemoteAtRequest request = new ZNetRemoteAtRequest(XBeeRequest.DEFAULT_FRAME_ID, addr64, addr16, true, target, new int[] {5});
-                    var rsp = xbee.send(request, Duration.ofSeconds(5)).block();
+                        // Send the request to turn on D${offset}
+                        var setHigh = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {5}), Duration.ofSeconds(5)).block();
+                        logger.info("{}/set response 1/4: {}", target, setHigh);
 
-                    logger.info("{} response 1/2: {}", target, rsp);
+                        // Query D${offset} status
+                        var getHigh = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target)), Duration.ofSeconds(5)).block();
+                        logger.info("{}/get response 2/4: {}", target, getHigh);
 
-                    var response = xbee.receive().take(1).blockFirst();
+                        // Send the request to turn off D${offset}
+                        var setLow = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {4}), Duration.ofSeconds(5)).block();
+                        logger.info("{}/set response: 3/4 {}", target, setLow);
 
-                    logger.info("response 2/2: {}", response);
+                        var getLow = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target)), Duration.ofSeconds(5)).block();
+                        logger.info("{}/get response 4/4: {}", target, getLow);
 
-//                    if (response.isOk()) {
-//                        logger.info("Successfully turned {}", target);
-//                    } else {
-//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-//                    }
-
-                } finally {
-                    ThreadContext.pop();
+                    } finally {
+                        ThreadContext.pop();
+                    }
                 }
 
-                ThreadContext.push(AddressParser.render4x4(addr64) + ":" + offset + " read");
-
-                try {
-
-                    // Query D${offset} status
-                    var request = new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target));
-                    var rsp = xbee.send(request, Duration.ofSeconds(10)).block();
-
-                    logger.info("{} response 1/2: {}", target, rsp);
-
-                    var response = xbee.receive().take(1).blockFirst();
-
-                    logger.info("response 2/2: {}", response);
-
-//                    if (response.isOk()) {
-//                        logger.info("Successfully turned {}", target);
-//                    } else {
-//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-//                    }
-
-                } finally {
-                    ThreadContext.pop();
-                }
-
-                ThreadContext.push(AddressParser.render4x4(addr64) + ":" + offset + " write 4");
-
-                try {
-
-                    logger.info("creating request to " + addr64);
-
-                    // Send the request to turn on D${offset}
-                    var request = new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {4});
-//                        ZNetRemoteAtRequest request = new ZNetRemoteAtRequest(XBeeRequest.DEFAULT_FRAME_ID, addr64, addr16, true, target, new int[] {5});
-                    var rsp = xbee.send(request, Duration.ofSeconds(5)).block();
-
-                    logger.info(target + " response 1/2: " + rsp);
-
-                    var response = xbee.receive().take(1).blockFirst();
-
-                    logger.info("response 2/2: {}", response);
-
-                    //                    if (response.isOk()) {
-//                        logger.info("Successfully turned {}", target);
-//                    } else {
-//                        logger.error("Attempt to turn on {} failed.  Status: {}",  target, response.getStatus());
-//                    }
-
-                } finally {
-                    ThreadContext.pop();
-                }
+            } finally {
+                ThreadContext.pop();
             }
 
-            // Just pass.
-            assertThat(true).isTrue();
-
-        } finally {
-            ThreadContext.pop();
-        }
+        }).doesNotThrowAnyException();
     }
 
     private void AT(XBeeReactive xbee, AtCommand.Command command) {
@@ -244,7 +177,7 @@ class XbeeApiTest {
 
         try {
 
-            logger.info("{} response: {}", command, xbee.send(new AtCommand(command), Duration.ofSeconds(10)).block());
+            logger.info("{} response: {}", command, xbee.sendAT(new AtCommand(command), Duration.ofSeconds(10)).block());
 
         } catch (Throwable t) {
             throw new IllegalStateException(command + " failed", t);
@@ -259,7 +192,7 @@ class XbeeApiTest {
 
         try {
 
-            logger.info("{} response: {}", command, xbee.send(new AtCommand(command), Duration.ofSeconds(10)).block());
+            logger.info("{} response: {}", command, xbee.sendAT(new AtCommand(command), Duration.ofSeconds(10)).block());
 
         } catch (Throwable t) {
             throw new IllegalStateException(command + " failed", t);
