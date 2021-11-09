@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.xbee.zigbee;
 
-import com.homeclimatecontrol.xbee.AddressParser;
 import com.homeclimatecontrol.xbee.XBeeReactive;
 import com.homeclimatecontrol.xbee.response.command.NTResponse;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
@@ -44,7 +43,7 @@ public class NodeDiscoverApp {
             logger.info("{} node{} discovered within {}{}", result.size(), // NOSONAR False positive for this specific case
                     result.size() == 1 ? "" : "s", timeout, result.isEmpty() ? "" : ":");
 
-            result.forEach(n -> logger.info("  {}, NI={}, {}", AddressParser.render4x4(n.address64), n.nodeIdentifier, n.deviceType));
+            result.forEach(n -> logger.info("  {}, NI={}, {}", n.address64, n.nodeIdentifier, n.deviceType));
 
             if (result.isEmpty()) {
                 logger.warn("Increase NT value if not all of your nodes are discovered within current timeout ({})", timeout);

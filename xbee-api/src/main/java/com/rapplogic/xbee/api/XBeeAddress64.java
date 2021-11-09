@@ -19,6 +19,8 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.AddressParser;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.StringTokenizer;
@@ -96,19 +98,10 @@ public class XBeeAddress64 extends XBeeAddress  {
 
         address = new int[8];
 
-        address[0] = source.get() & 0xFF;
-        address[1] = source.get() & 0xFF;
-        address[2] = source.get() & 0xFF;
-        address[3] = source.get() & 0xFF;
-        address[4] = source.get() & 0xFF;
-        address[5] = source.get() & 0xFF;
-        address[6] = source.get() & 0xFF;
-        address[7] = source.get() & 0xFF;
+        for (var offset = 0; offset < 8; offset++) {
+            address[offset] = source.get() & 0xFF;
+        }
     }
-
-    public void setAddress(int[] address) {
-		this.address = address;
-	}
 
     @Override
     public boolean equals(Object o) {
@@ -135,4 +128,9 @@ public class XBeeAddress64 extends XBeeAddress  {
 	public int[] getAddress() {
 		return address;
 	}
+
+    @Override
+    public String toString() {
+        return AddressParser.render4x4(this);
+    }
 }

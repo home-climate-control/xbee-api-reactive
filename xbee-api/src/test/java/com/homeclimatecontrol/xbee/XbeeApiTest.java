@@ -166,7 +166,7 @@ class XbeeApiTest {
                     var target = "D" + offset;
                     var addr64 = AddressParser.parse("0013A200.402D52DD");
 
-                    ThreadContext.push(AddressParser.render4x4(addr64) + ":D" + offset);
+                    ThreadContext.push(addr64 + ":D" + offset);
 
                     try {
 

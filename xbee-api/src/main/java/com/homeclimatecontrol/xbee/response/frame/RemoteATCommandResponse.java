@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.xbee.response.frame;
 
-import com.homeclimatecontrol.xbee.AddressParser;
 import com.homeclimatecontrol.xbee.response.command.CommandResponse;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.AtCommand;
@@ -48,7 +47,7 @@ public class RemoteATCommandResponse extends ATCommandResponse<RemoteATCommandRe
     @Override
     public String toString() {
         return "{" + getClass().getSimpleName() + " frameId=" + HexFormat.format(frameId)
-                + ", address" + AddressParser.render4x4(address64) + "/" + address16
+                + ", address" + address64 + "/" + address16
                 + ", command=" + command
                 + ", status=" + status
                 + ", response=" + commandResponse
