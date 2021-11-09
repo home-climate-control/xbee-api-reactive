@@ -50,24 +50,8 @@ public class HardwareReader implements AutoCloseable {
             logger.info("started");
 
             while (!Thread.currentThread().isInterrupted()) {
-
-                try {
-
-                    var packet = readPacket(in);
-
-                    if (receiveSink == null) {
-                        logger.debug("No subscriptions yet, packet dropped: {}", packet);
-                        continue;
-                    }
-
-                    receiveSink.next(packet);
-
-                } catch (UnsupportedOperationException ex) {
-                    // Most likely, the frame data was read in its entirety and we're going to land at the sync byte
-                    logger.error("Unsupported frame, dropped", ex);
-                }
+                processFrame();
             }
-
 
         } catch (IOException ex) {
             logger.error("Unexpected I/O problem, stopping the reader", ex);
@@ -81,7 +65,25 @@ public class HardwareReader implements AutoCloseable {
         }
     }
 
-    private XBeeResponseFrame readPacket(InputStream in) throws IOException, InterruptedException {
+    private void processFrame() throws IOException, InterruptedException {
+        try {
+
+            var packet = readFrame(in);
+
+            if (receiveSink == null) {
+                logger.debug("No subscriptions yet, packet dropped: {}", packet);
+                return;
+            }
+
+            receiveSink.next(packet);
+
+        } catch (UnsupportedOperationException ex) {
+            // Most likely, the frame data was read in its entirety and we're going to land at the sync byte
+            logger.error("Unsupported frame, dropped", ex);
+        }
+    }
+
+    private XBeeResponseFrame readFrame(InputStream in) throws IOException, InterruptedException {
         ThreadContext.push("readPacket");
         try {
             syncOnStartByte(in);
