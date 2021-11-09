@@ -13,6 +13,7 @@ import com.homeclimatecontrol.xbee.response.command.D5ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.D6ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.D7ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.DDResponseReader;
+import com.homeclimatecontrol.xbee.response.command.GenericResponseReader;
 import com.homeclimatecontrol.xbee.response.command.HVResponseReader;
 import com.homeclimatecontrol.xbee.response.command.ISResponseReader;
 import com.homeclimatecontrol.xbee.response.command.MYResponseReader;
@@ -23,6 +24,8 @@ import com.homeclimatecontrol.xbee.response.command.NTResponseReader;
 import com.homeclimatecontrol.xbee.response.command.P0ResponseReader;
 import com.homeclimatecontrol.xbee.response.command.VRResponseReader;
 import com.rapplogic.xbee.api.AtCommand;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
@@ -51,6 +54,8 @@ import static com.rapplogic.xbee.api.AtCommand.Command.P0;
 import static com.rapplogic.xbee.api.AtCommand.Command.VR;
 
 public abstract class FrameReader {
+
+    private final Logger logger = LogManager.getLogger();
 
     private static final Map<AtCommand.Command, CommandResponseReader> command2reader = Map.ofEntries(
 
@@ -85,7 +90,9 @@ public abstract class FrameReader {
         var result = command2reader.get(command);
 
         if (result == null) {
-            throw new UnsupportedOperationException("No command response reader exists for command=" + command);
+            logger.warn("No command response reader exists for command={}, returning generic byte buffer response", command);
+
+            return new GenericResponseReader(command);
         }
 
         return result;

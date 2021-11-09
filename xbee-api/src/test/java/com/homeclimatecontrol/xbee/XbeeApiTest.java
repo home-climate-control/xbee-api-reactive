@@ -16,16 +16,25 @@ import java.time.Duration;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AI;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
+import static com.rapplogic.xbee.api.AtCommand.Command.BD;
 import static com.rapplogic.xbee.api.AtCommand.Command.CH;
 import static com.rapplogic.xbee.api.AtCommand.Command.D0;
 import static com.rapplogic.xbee.api.AtCommand.Command.DD;
+import static com.rapplogic.xbee.api.AtCommand.Command.EE;
 import static com.rapplogic.xbee.api.AtCommand.Command.HV;
+import static com.rapplogic.xbee.api.AtCommand.Command.ID;
 import static com.rapplogic.xbee.api.AtCommand.Command.MY;
 import static com.rapplogic.xbee.api.AtCommand.Command.NC;
 import static com.rapplogic.xbee.api.AtCommand.Command.ND;
 import static com.rapplogic.xbee.api.AtCommand.Command.NI;
+import static com.rapplogic.xbee.api.AtCommand.Command.NJ;
+import static com.rapplogic.xbee.api.AtCommand.Command.NO;
+import static com.rapplogic.xbee.api.AtCommand.Command.NP;
 import static com.rapplogic.xbee.api.AtCommand.Command.NT;
+import static com.rapplogic.xbee.api.AtCommand.Command.OI;
+import static com.rapplogic.xbee.api.AtCommand.Command.OP;
 import static com.rapplogic.xbee.api.AtCommand.Command.P0;
+import static com.rapplogic.xbee.api.AtCommand.Command.SD;
 import static com.rapplogic.xbee.api.AtCommand.Command.VR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -113,19 +122,19 @@ class XbeeApiTest {
                 AT(xbee, MY);
                 AT(xbee, NC);
                 AT(xbee, NI);
-                // AT(xbee, NP); // NOSONAR Implementation pending
+                AT(xbee, NP);
                 AT(xbee, DD);
                 AT(xbee, CH);
-                // AT(xbee, ID); // NOSONAR Implementation pending
-                // AT(xbee, OP); // NOSONAR Implementation pending
-                // AT(xbee, OI); // NOSONAR Implementation pending
+                AT(xbee, ID);
+                AT(xbee, OP);
+                AT(xbee, OI);
                 AT(xbee, NT);
-                // AT(xbee, NO); // NOSONAR Implementation pending
-                // AT(xbee, SD); // NOSONAR Implementation pending
-                // AT(xbee, NJ); // NOSONAR Implementation pending
-                // AT(xbee, EE); // NOSONAR Implementation pending
+                AT(xbee, NO);
+                AT(xbee, SD);
+                AT(xbee, NJ);
+                AT(xbee, EE);
                 AT(xbee, AP);
-                // AT(xbee, BD); // NOSONAR Implementation pending
+                AT(xbee, BD);
                 AT(xbee, P0);
                 AT(xbee, VR);
                 AT(xbee, HV);
