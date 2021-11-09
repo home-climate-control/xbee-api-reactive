@@ -106,8 +106,14 @@ public class XBeeReactive implements AutoCloseable {
         return Mono.fromFuture(written);
     }
 
-    public Mono<? extends ATCommandResponse<?>> sendAT(AtCommand rq, Duration timeout) {
-        return (Mono<? extends ATCommandResponse<?>>) send(rq, timeout); // NOSONAR This is intended
+    /**
+     * Send an AT request and expect a response.
+     *
+     * Syntax sugar for {@link #send(XBeeRequest, Duration)}.
+     */
+    public Mono<ATCommandResponse<?>> sendAT(AtCommand rq, Duration timeout) {
+        return send(rq, timeout)
+                .map(ATCommandResponse.class::cast);
     }
 
     /**
@@ -121,7 +127,7 @@ public class XBeeReactive implements AutoCloseable {
      * @return Mono with a response, or empty Mono if the response didn't come within timeout, or error Mono if
      * there was a hardware problem.
      */
-    public Mono<? extends XBeeResponseFrame> send(XBeeRequest rq, Duration timeout) {
+    public Mono<XBeeResponseFrame> send(XBeeRequest rq, Duration timeout) {
 
         if (rq.getFrameId() == XBeeRequest.NO_RESPONSE_FRAME_ID) {
             throw new IllegalArgumentException("Invalid FrameID of zero for synchronous request, see https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_zigbee_frame_examples.htm");
