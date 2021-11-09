@@ -10,9 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
+import static com.homeclimatecontrol.xbee.TestPortProvider.getCoordinatorTestPort;
 import static com.homeclimatecontrol.xbee.TestPortProvider.getTestPort;
 import static com.rapplogic.xbee.api.AtCommand.Command.AI;
 import static com.rapplogic.xbee.api.AtCommand.Command.AP;
@@ -47,7 +50,7 @@ class XbeeApiTest {
     @Test
     void packetEscape() {
 
-        final int[] knownGoodPacket = new int[] {
+        final int[] knownGoodPacket = new int[]{
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x0F, // Length LSB
@@ -75,13 +78,11 @@ class XbeeApiTest {
         try {
 
             XBeeAddress64 xbeeAddress = AddressParser.parse("0013A200.4062AC98");
-
             RemoteAtRequest request = new RemoteAtRequest(xbeeAddress, D0);
 
             request.setApplyChanges(true);
 
             XBeePacket packet = request.getXBeePacket();
-
             int[] byteBuffer = packet.getByteArray();
 
             logger.info("Source: " + ByteUtils.toBase16(knownGoodPacket));
@@ -90,7 +91,6 @@ class XbeeApiTest {
             assertThat(byteBuffer).hasSameSizeAs(knownGoodPacket);
 
             for (int offset = 0; offset < knownGoodPacket.length; offset++) {
-
                 assertThat(byteBuffer[offset]).as("Packet content mismatch @" + offset).isEqualTo(knownGoodPacket[offset]);
             }
 
@@ -107,42 +107,59 @@ class XbeeApiTest {
 
     @Test
     @Disabled("Enable this if you have the actual hardware (you will need to adjust the addresses, too")
-    void testXbee() throws Exception {
+    void lookingAround() {
 
-        // VT: NOTE: Actual hardware is necessary for this test, so disabled
-
-        ThreadContext.push("testXBee");
+        ThreadContext.push("lookingAround");
 
         assertThatCode(() -> {
 
             try (var xbee = new XBeeReactive(getTestPort())) {
 
-                // Find out who's around
+                Flux.just(
+                                MY,
+                                NC,
+                                NI,
+                                NP,
+                                DD,
+                                CH,
+                                ID,
+                                OP,
+                                OI,
+                                NT,
+                                NO,
+                                SD,
+                                NJ,
+                                EE,
+                                AP,
+                                BD,
+                                P0,
+                                VR,
+                                HV,
+                                AI,
+                                ND
+                        )
+                        .map(command -> xbee.sendAT(new AtCommand(command), Duration.ofSeconds(5)))
+                        .map(Mono::block) // NOSONAR Acceptable in this context
+                        .doOnNext(response -> logger.info("AT response: {}", response))
+                        .blockLast();
 
-                AT(xbee, MY);
-                AT(xbee, NC);
-                AT(xbee, NI);
-                AT(xbee, NP);
-                AT(xbee, DD);
-                AT(xbee, CH);
-                AT(xbee, ID);
-                AT(xbee, OP);
-                AT(xbee, OI);
-                AT(xbee, NT);
-                AT(xbee, NO);
-                AT(xbee, SD);
-                AT(xbee, NJ);
-                AT(xbee, EE);
-                AT(xbee, AP);
-                AT(xbee, BD);
-                AT(xbee, P0);
-                AT(xbee, VR);
-                AT(xbee, HV);
-                AT(xbee, AI);
+            } finally {
+                ThreadContext.pop();
+            }
 
-                AT(xbee, ND);
+        }).doesNotThrowAnyException();
+    }
 
-                AT(xbee, AP, 2);
+    @Test
+    @Disabled("Enable this if you have the actual hardware (you will need to adjust the addresses, too")
+    void dxCommandSetGet() {
+
+        ThreadContext.push("dxCommandSetGet");
+
+        assertThatCode(() -> {
+
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
 
                 for (int offset = 0; offset < 4; offset++) {
 
@@ -153,20 +170,18 @@ class XbeeApiTest {
 
                     try {
 
-                        // Send the request to turn on D${offset}
-                        var setHigh = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {5}), Duration.ofSeconds(5)).block();
-                        logger.info("{}/set response 1/4: {}", target, setHigh);
-
-                        // Query D${offset} status
-                        var getHigh = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target)), Duration.ofSeconds(5)).block();
-                        logger.info("{}/get response 2/4: {}", target, getHigh);
-
-                        // Send the request to turn off D${offset}
-                        var setLow = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {4}), Duration.ofSeconds(5)).block();
-                        logger.info("{}/set response: 3/4 {}", target, setLow);
-
-                        var getLow = xbee.sendAT(new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target)), Duration.ofSeconds(5)).block();
-                        logger.info("{}/get response 4/4: {}", target, getLow);
+                        Flux.just(
+                                        new AtCommand(AP, new int[] { 2}),
+                                        new AtCommand(AP),
+                                        new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {5}),
+                                        new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target)),
+                                        new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target), new int[] {4}),
+                                        new RemoteAtRequest(addr64, AtCommand.Command.valueOf(target))
+                                )
+                                .map(command -> xbee.sendAT(command, Duration.ofSeconds(5)))
+                                .map(Mono::block) // NOSONAR Acceptable in this context
+                                .doOnNext(response -> logger.info("{} response: {}", target, response))
+                                .blockLast();
 
                     } finally {
                         ThreadContext.pop();
@@ -178,35 +193,5 @@ class XbeeApiTest {
             }
 
         }).doesNotThrowAnyException();
-    }
-
-    private void AT(XBeeReactive xbee, AtCommand.Command command) {
-
-        ThreadContext.push("AT");
-
-        try {
-
-            logger.info("{} response: {}", command, xbee.sendAT(new AtCommand(command), Duration.ofSeconds(10)).block());
-
-        } catch (Throwable t) {
-            throw new IllegalStateException(command + " failed", t);
-        } finally {
-            ThreadContext.pop();
-        }
-    }
-
-    private void AT(XBeeReactive xbee, AtCommand.Command command, int value) {
-
-        ThreadContext.push("AT");
-
-        try {
-
-            logger.info("{} response: {}", command, xbee.sendAT(new AtCommand(command), Duration.ofSeconds(10)).block());
-
-        } catch (Throwable t) {
-            throw new IllegalStateException(command + " failed", t);
-        } finally {
-            ThreadContext.pop();
-        }
     }
 }
