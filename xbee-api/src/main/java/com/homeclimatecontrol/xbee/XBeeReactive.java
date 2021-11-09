@@ -1,7 +1,9 @@
 package com.homeclimatecontrol.xbee;
 
+import com.homeclimatecontrol.xbee.response.frame.ATCommandResponse;
 import com.homeclimatecontrol.xbee.response.frame.FrameIdAwareResponse;
 import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
+import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.util.ByteUtils;
 import gnu.io.CommPort;
@@ -104,6 +106,10 @@ public class XBeeReactive implements AutoCloseable {
         return Mono.fromFuture(written);
     }
 
+    public Mono<? extends ATCommandResponse<?>> sendAT(AtCommand rq, Duration timeout) {
+        return (Mono<? extends ATCommandResponse<?>>) send(rq, timeout); // NOSONAR This is intended
+    }
+
     /**
      * Send a request and expect a response.
      *
@@ -115,7 +121,7 @@ public class XBeeReactive implements AutoCloseable {
      * @return Mono with a response, or empty Mono if the response didn't come within timeout, or error Mono if
      * there was a hardware problem.
      */
-    public Mono<XBeeResponseFrame> send(XBeeRequest rq, Duration timeout) {
+    public Mono<? extends XBeeResponseFrame> send(XBeeRequest rq, Duration timeout) {
 
         if (rq.getFrameId() == XBeeRequest.NO_RESPONSE_FRAME_ID) {
             throw new IllegalArgumentException("Invalid FrameID of zero for synchronous request, see https://www.digi.com/resources/documentation/Digidocs/90001942-13/reference/r_zigbee_frame_examples.htm");
