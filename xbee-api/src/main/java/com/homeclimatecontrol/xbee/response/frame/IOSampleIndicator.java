@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.xbee.response.frame;
 
-import com.homeclimatecontrol.xbee.AddressParser;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -49,7 +48,7 @@ public class IOSampleIndicator extends XBeeResponseFrame{
 
         var sb = new StringBuilder("{IOSample");
 
-        sb.append(" sourceAddress=").append(AddressParser.render4x4(sourceAddress64)).append("/").append(sourceAddress16);
+        sb.append(" sourceAddress=").append(sourceAddress64).append("/").append(sourceAddress16);
         sb.append(", receiveOptions=").append(HexFormat.format(receiveOptions));
         sb.append(", sampleCount=").append(sampleCount);
 

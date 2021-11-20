@@ -4,11 +4,10 @@ import com.homeclimatecontrol.xbee.FrameType;
 import com.homeclimatecontrol.xbee.response.frame.FrameReader;
 import com.homeclimatecontrol.xbee.response.frame.IOSampleIndicatorReader;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.RemoteATCommandResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.homeclimatecontrol.xbee.util.HexFormat;
 import com.homeclimatecontrol.xbee.util.XbeeChecksum;
-import com.rapplogic.xbee.api.XBeeResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -19,16 +18,16 @@ import java.util.Map;
 
 import static com.homeclimatecontrol.xbee.FrameType.IO_SAMPLE_INDICATOR;
 import static com.homeclimatecontrol.xbee.FrameType.LOCAL_AT_COMMAND_RESPONSE;
+import static com.homeclimatecontrol.xbee.FrameType.REMOTE_AT_COMMAND_RESPONSE;
 
 public class ResponseReader {
-
-    private final Logger logger = LogManager.getLogger();
 
     private static final byte ESCAPE = 0x7D;
 
     private static final Map<FrameType, FrameReader> frame2reader = Map.of(
             LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader(),
-            IO_SAMPLE_INDICATOR, new IOSampleIndicatorReader()
+            IO_SAMPLE_INDICATOR, new IOSampleIndicatorReader(),
+            REMOTE_AT_COMMAND_RESPONSE, new RemoteATCommandResponseReader()
     );
 
     /**
@@ -38,7 +37,7 @@ public class ResponseReader {
      *           start delimiter.
      * @return A newly instantiated response object.
      */
-    public XBeeResponse read(InputStream in) throws IOException {
+    public XBeeResponseFrame read(InputStream in) throws IOException {
 
         var headerBuffer = in.readNBytes(2);
 
@@ -50,11 +49,7 @@ public class ResponseReader {
 
         verifyChecksum(checksum, frameBuffer);
 
-        var frame = getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
-
-        logger.info("read: {}", frame);
-
-        return null;
+        return getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
     }
 
     /**
@@ -128,7 +123,7 @@ public class ResponseReader {
         var result = frame2reader.get(frameType);
 
         if (result == null) {
-            throw new IllegalArgumentException("No reader for " + frameType);
+            throw new UnsupportedOperationException("No reader for " + frameType);
         }
 
         return result;

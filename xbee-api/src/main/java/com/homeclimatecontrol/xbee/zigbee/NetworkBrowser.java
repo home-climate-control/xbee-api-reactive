@@ -1,10 +1,10 @@
 package com.homeclimatecontrol.xbee.zigbee;
 
 import com.homeclimatecontrol.xbee.XBeeReactive;
+import com.homeclimatecontrol.xbee.response.command.NDResponse;
+import com.homeclimatecontrol.xbee.response.command.NTResponse;
+import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.rapplogic.xbee.api.AtCommand;
-import com.rapplogic.xbee.api.AtCommandResponse;
-import com.rapplogic.xbee.api.zigbee.ZBNodeDiscover;
-import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import reactor.core.publisher.Flux;
@@ -29,11 +29,12 @@ public class NetworkBrowser {
     public Mono<Result> browse(XBeeReactive xbee) {
 
         return xbee
-                .send(new AtCommand(NT), null)
+                .sendAT(new AtCommand(NT), null)
                 .doOnNext(nt -> logger.debug("NT: {}", nt))
-                .map(AtCommandResponse.class::cast)
+                .map(nt -> nt.commandResponse)
+                .map(NTResponse.class::cast)
                 .map(nt -> {
-                    var timeout = Duration.ofMillis(ByteUtils.convertMultiByteToInt(nt.getValue()) * 100L); // NOSONAR Unlikely, this is a local command
+                    var timeout = Duration.ofMillis(nt.timeout * 100L); // NOSONAR Unlikely, this is a local command
                     return new Result(timeout, browse(xbee, timeout));
                 });
     }
@@ -46,20 +47,21 @@ public class NetworkBrowser {
      *
      * @return Flux of discovered nodes (we know the timeout already, we've set it up ourselves).
      */
-    public Flux<ZBNodeDiscover> browse(XBeeReactive xbee, Duration timeout) {
+    public Flux<NDResponse> browse(XBeeReactive xbee, Duration timeout) {
 
         xbee.sendAsync(new AtCommand(ND));
 
-        logger.info("Collecting responses for NT={}", timeout);
+        logger.debug("Collecting responses for NT={}", timeout);
 
         return xbee
                 .receive()
                 .take(timeout)
                 .doOnNext(incoming -> logger.debug("Incoming packet: {}", incoming))
-                .filter(AtCommandResponse.class::isInstance)
-                .map(AtCommandResponse.class::cast)
-                .filter(rsp -> rsp.getCommand().equals(ND))
-                .map(ZBNodeDiscover::parse)
+                .filter(LocalATCommandResponse.class::isInstance)
+                .map(LocalATCommandResponse.class::cast)
+                .filter(rsp -> rsp.command.equals(ND))
+                .map(rsp -> rsp.commandResponse)
+                .map(NDResponse.class::cast)
                 .doOnNext(nd -> logger.debug("ND response: {}", nd));
     }
 
@@ -73,9 +75,9 @@ public class NetworkBrowser {
         /**
          * Flux of discovered nodes.
          */
-        public final Flux<ZBNodeDiscover> discovered;
+        public final Flux<NDResponse> discovered;
 
-        Result(Duration timeout, Flux<ZBNodeDiscover> discovered) {
+        Result(Duration timeout, Flux<NDResponse> discovered) {
             this.timeout = timeout;
             this.discovered = discovered;
         }

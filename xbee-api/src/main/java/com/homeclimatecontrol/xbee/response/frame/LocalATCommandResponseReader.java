@@ -18,7 +18,9 @@ public class LocalATCommandResponseReader extends FrameIdAwareReader {
         var commandName = Character.toString((char) frameData.get()) + Character.toString((char) frameData.get());
         var command = AtCommand.Command.valueOf(commandName);
         var status = LocalATCommandResponse.Status.valueOf(frameData.get());
-        var commandResponse = getReader(command).read(frameData.slice());
+
+        // Response may be unavailable if the command was to set  the value, not read it
+        var commandResponse = frameData.hasRemaining() ? getReader(command).read(frameData.slice()) : null;
 
         return new LocalATCommandResponse(frameId, command, status, commandResponse);
     }

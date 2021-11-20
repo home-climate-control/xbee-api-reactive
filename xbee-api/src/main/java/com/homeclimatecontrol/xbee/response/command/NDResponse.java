@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.xbee.response.command;
 
-import com.homeclimatecontrol.xbee.AddressParser;
 import com.homeclimatecontrol.xbee.DeviceType;
 import com.homeclimatecontrol.xbee.response.frame.LocalATCommandResponse;
 import com.homeclimatecontrol.xbee.util.HexFormat;
@@ -44,8 +43,7 @@ public class NDResponse extends CommandResponse {
 
     @Override
     public String toString() {
-        return "{ND add16=" + address16
-                + ", addr64=" + AddressParser.render4x4(address64)
+        return "{ND address=" + address64 + "/" + address16
                 + ", NI=" + nodeIdentifier
                 + ", parent=" + parentAddress
                 + ", deviceType=" + deviceType

@@ -1,8 +1,8 @@
 package com.homeclimatecontrol.xbee;
 
-import com.rapplogic.xbee.api.PacketParser;
+import com.homeclimatecontrol.xbee.response.ResponseReader;
+import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
 import com.rapplogic.xbee.api.XBeePacket;
-import com.rapplogic.xbee.api.XBeeResponse;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +18,11 @@ import java.io.InputStream;
 public class HardwareReader implements AutoCloseable {
 
     private final Logger logger = LogManager.getLogger();
+    private final ResponseReader responseReader = new ResponseReader();
+
     private final InputStream in;
-    private final Flux<XBeeResponse> inFlux;
-    private FluxSink<XBeeResponse> receiveSink;
+    private final Flux<XBeeResponseFrame> inFlux;
+    private FluxSink<XBeeResponseFrame> receiveSink;
     private Thread reader;
 
     public HardwareReader(InputStream in) {
@@ -48,15 +50,7 @@ public class HardwareReader implements AutoCloseable {
             logger.info("started");
 
             while (!Thread.currentThread().isInterrupted()) {
-
-                var packet = readPacket(in);
-
-                if (receiveSink == null) {
-                    logger.debug("No subscriptions yet, packet dropped: {}", packet);
-                    continue;
-                }
-
-                receiveSink.next(packet);
+                processFrame();
             }
 
         } catch (IOException ex) {
@@ -71,11 +65,29 @@ public class HardwareReader implements AutoCloseable {
         }
     }
 
-    private XBeeResponse readPacket(InputStream in) throws IOException, InterruptedException {
+    private void processFrame() throws IOException, InterruptedException {
+        try {
+
+            var packet = readFrame(in);
+
+            if (receiveSink == null) {
+                logger.debug("No subscriptions yet, packet dropped: {}", packet);
+                return;
+            }
+
+            receiveSink.next(packet);
+
+        } catch (UnsupportedOperationException ex) {
+            // Most likely, the frame data was read in its entirety and we're going to land at the sync byte
+            logger.error("Unsupported frame, dropped", ex);
+        }
+    }
+
+    private XBeeResponseFrame readFrame(InputStream in) throws IOException, InterruptedException {
         ThreadContext.push("readPacket");
         try {
             syncOnStartByte(in);
-            return new PacketParser(in).parsePacket();
+            return responseReader.read(in);
         } finally {
             ThreadContext.pop();
         }
@@ -122,11 +134,11 @@ public class HardwareReader implements AutoCloseable {
         reader.interrupt();
     }
 
-    private void connect(FluxSink<XBeeResponse> sink) {
+    private void connect(FluxSink<XBeeResponseFrame> sink) {
         receiveSink = sink;
     }
 
-    public Flux<XBeeResponse> receive() {
+    public Flux<XBeeResponseFrame> receive() {
         return inFlux;
     }
 
