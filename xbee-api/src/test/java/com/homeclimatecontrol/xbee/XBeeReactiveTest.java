@@ -40,6 +40,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class XBeeReactiveTest {
 
     private final Logger logger = LogManager.getLogger();
+    private final Duration localTimeout = Duration.ofSeconds(5);
+    private final Duration remoteTimeout = Duration.ofSeconds(5);
 
     @BeforeAll
     static void init() {
@@ -153,6 +155,7 @@ class XBeeReactiveTest {
                         .take(1)
                         .doOnNext(p -> logger.info("received: {}", p))
                         .blockLast();
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -163,9 +166,9 @@ class XBeeReactiveTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var response = xbee.send(new AtCommand(AP, 2), null).block();
+                var response = xbee.send(new AtCommand(AP, 2), localTimeout).block();
                 logger.info("AP2 response: {}", response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -177,9 +180,9 @@ class XBeeReactiveTest {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
                 // Value of 3 is invalid
-                var response = xbee.send(new AtCommand(AP, 3), null).block();
+                var response = xbee.send(new AtCommand(AP, 3), localTimeout).block();
                 logger.info("AP2 response: {}", response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -190,9 +193,9 @@ class XBeeReactiveTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var response = xbee.send(new AtCommand(IS), null).block();
+                var response = xbee.send(new AtCommand(IS), localTimeout).block();
                 logger.info("IS response: {}", response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -203,10 +206,10 @@ class XBeeReactiveTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                xbee.send(new AtCommand(AP, 2), null).block();
-                var response = xbee.send(new AtCommand(ND), null).block();
+                xbee.send(new AtCommand(AP, 2), localTimeout).block();
+                var response = xbee.send(new AtCommand(ND), localTimeout).block();
                 logger.info("ND response: {}", response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -217,9 +220,9 @@ class XBeeReactiveTest {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var response = xbee.send(new AtCommand(NT), null).block();
+                var response = xbee.send(new AtCommand(NT), localTimeout).block();
                 logger.info("NT response: {}", response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -227,13 +230,27 @@ class XBeeReactiveTest {
     @ParameterizedTest
     @MethodSource("dXCommandProvider")
     @Disabled("Enable only if safe to use hardware is connected")
-    void dX(AtCommand.Command command) {
+    void localDx(AtCommand.Command command) {
         assertThatCode(() -> {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
-                var response = xbee.send(new AtCommand(command), null).block();
+                var response = xbee.send(new AtCommand(command), localTimeout).block();
                 logger.info("{}} response: {}", command, response);
+                assertThat(response).isNotNull();
+            }
+        }).doesNotThrowAnyException();
+    }
 
+    @ParameterizedTest
+    @MethodSource("dXCommandProvider")
+    @Disabled("Enable only if safe to use hardware is connected")
+    void remoteDx(AtCommand.Command command) {
+        assertThatCode(() -> {
+            try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
+
+                var response = xbee.send(new RemoteAtRequest(AddressParser.parse("0013A200.402D52DD"), command), remoteTimeout).block();
+                logger.info("{}} response: {}", command, response);
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -245,9 +262,9 @@ class XBeeReactiveTest {
             try (var xbee = new XBeeReactive(getCoordinatorTestPort())) {
 
                 var command = new RemoteAtRequest(AddressParser.parse("0013A200.402D52DD"), P0);
-                var response = xbee.send(command, null).block();
+                var response = xbee.send(command, remoteTimeout).block();
                 logger.info("{} response: {}", P0, response);
-
+                assertThat(response).isNotNull();
             }
         }).doesNotThrowAnyException();
     }
@@ -264,22 +281,22 @@ class XBeeReactiveTest {
                 // Verify the state; must be configured as ADC so that "set state" command should fail.
                 // If this part fails, configure the remote accordingly.
 
-                var d3getState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), null).block();
+                var d3getState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), remoteTimeout).block();
                 assertThat(d3getState1.status).isEqualTo(RemoteATCommandResponse.Status.OK); // NOSONAR This is expected
 
                 var state1 = (DxResponse<?>) d3getState1.commandResponse;
                 assertThat(((DxResponse<?>) d3getState1.commandResponse).code).isEqualTo((byte) 0x02);
 
                 // Set the state
-                var d3setState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 5 }), null).block();
+                var d3setState1 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 5 }), remoteTimeout).block();
 
                 // Crap... The commands overrides the setting.
-                var d3getState2 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), null).block();
+                var d3getState2 = xbee.sendAT(new RemoteAtRequest(remoteAddress, D3), remoteTimeout).block();
                 var state2 = (DxResponse<?>) d3getState2.commandResponse; // NOSONAR This is expected
                 assertThat(((DxResponse<?>) d3getState2.commandResponse).code).isEqualTo((byte) 0x05);
 
                 // All right... Set it back to ADC.
-                xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 2 }), null).block();
+                xbee.sendAT(new RemoteAtRequest(remoteAddress, D3, new int[] { 2 }), remoteTimeout).block();
 
             }
         }).doesNotThrowAnyException();
