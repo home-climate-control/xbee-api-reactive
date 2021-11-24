@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -24,7 +25,7 @@ class ResponseReaderTest {
 
     @ParameterizedTest
     @MethodSource("goodNonEscapedFrameProvider")
-    void checksum(byte[] packet){
+    void checksum(byte[] packet) {
 
         var buffer = Arrays.copyOfRange(packet, 3, packet.length - 1);
         var checksum = packet[packet.length - 1];
@@ -32,6 +33,19 @@ class ResponseReaderTest {
 
         assertThatCode(() -> {
             rr.verifyChecksum(checksum, buffer);
+            // If we're made it this far, checksum is good
+        }).doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @MethodSource("goodEscapedFrameProvider")
+    void checksumEscaped(byte[] packet) {
+
+        var buffer = new ByteArrayInputStream(packet, 1, packet.length - 1);
+        var rr = new ResponseReader();
+
+        assertThatCode(() -> {
+            rr.read(buffer);
             // If we're made it this far, checksum is good
         }).doesNotThrowAnyException();
     }
@@ -475,28 +489,21 @@ class ResponseReaderTest {
     private static Stream<byte[]> goodEscapedFrameProvider() {
 
         var packet0 = new byte[] {
-                (byte) 0x7E, // Start delimiter
-                (byte) 0x00, // Length MSB
-                (byte) 0x0F, // Length LSB
-
-                // Frame data start
-                (byte) 0x17, // API Identifier ('Remote AT' command)
-                (byte) 0x01, // API Frame ID
-                (byte) 0x00,
-                (byte) 0x7D, // 0x7D33 is 0x13 escaped
-                (byte) 0x33,
-                (byte) 0xA2,
-                (byte) 0x00,
-                (byte) 0x40,
-                (byte) 0x62,
-                (byte) 0xAC,
-                (byte) 0x98,
-                (byte) 0xFF,
-                (byte) 0xFE,
-                (byte) 0x02, // 0x02 means 'apply changes'
-                (byte) 0x44,
-                (byte) 0x30,
-                (byte) 0xD9  // Checksum
+                0x7E, // Start delimiter
+                0x00, 0x22, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x4E, 0x44, // ND
+                0x00, (byte) 0xAE, // Address 16?
+                0x38, 0x00, 0x13, (byte) 0xA2, 0x00, 0x40, 0x2D, 0x03, // Address 64?
+                0x0D, 0x48, 0x56, 0x41, 0x43, 0x2D, 0x54, 0x52, 0x41, 0x4E, 0x45, 0x00, // NI?
+                (byte) 0xFF, (byte) 0xFE, // Parent address (always 0xFFFE)
+                0x01, // Device type
+                0x00, // Status
+                (byte) 0xC1, 0x05, // Profile ID
+                0x10, 0x1E, // Mfg ID
+                0x7D, // Escape
+                0x31 // Checksum = 0x11 ^ 0x20
         };
 
         return Stream.of(packet0);
@@ -516,5 +523,62 @@ class ResponseReaderTest {
         }).doesNotThrowAnyException();
 
         return responseHolder.get(0);
+    }
+
+    @Test
+    void issue18packetND() {
+
+        var packet = new byte[] {
+                0x00, 0x22, // Length
+                (byte) 0x88, // Local AT Command Response
+                0x01, // Frame ID
+                0x4E, 0x44, // ND
+                0x00, (byte) 0xAE, // Address 16?
+                0x38, 0x00, 0x13, (byte) 0xA2, 0x00, 0x40, 0x2D, 0x03, // Address 64?
+                0x0D, 0x48, 0x56, 0x41, 0x43, 0x2D, 0x54, 0x52, 0x41, 0x4E, 0x45, 0x00, // NI?
+                (byte) 0xFF, (byte) 0xFE, // Parent address (always 0xFFFE)
+                0x01, // Device type
+                0x00, // Status
+                (byte) 0xC1, 0x05, // Profile ID
+                0x10, 0x1E, // Mfg ID
+                0x7D, // Escape
+                0x31 // Checksum = 0x11 ^ 0x20
+        };
+
+        checkResponse(packet, AtCommand.Command.ND);
+    }
+
+    @Test
+    void issue18packetD0() {
+
+        // See https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_frame_0x97.htm
+
+        var packet = new byte[] {
+                0x00, 0x0F,
+                (byte) 0x97, // Remote AT Command Response
+                0x01,
+                0x00, 0x13, (byte) 0xA2, 0x00, 0x40, 0x55, 0x73, 0x0D, // Remote Address64
+                (byte) 0xDC, (byte) 0xCF, // Remote Address16
+                0x44, 0x30, // D0
+                0x00, // Status
+                0x7D, // Escape
+                0x5E // Checksum = 0x7E ^ 0x20
+        };
+
+        checkResponse(packet, AtCommand.Command.D0);
+    }
+
+    @Test
+    void isEscapeCharacter() {
+
+        var rr = new ResponseReader();
+
+        assertThat(rr.isEscaped((byte) 0x00)).isFalse();
+        assertThat(rr.isEscaped((byte) 0xFF)).isFalse();
+
+        assertThat(rr.isEscaped((byte) 0x11)).isTrue();
+        assertThat(rr.isEscaped((byte) 0x13)).isTrue();
+        assertThat(rr.isEscaped((byte) 0x7D)).isTrue();
+        assertThat(rr.isEscaped((byte) 0x7E)).isTrue();
     }
 }

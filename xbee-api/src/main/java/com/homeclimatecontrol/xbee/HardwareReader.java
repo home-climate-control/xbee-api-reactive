@@ -2,7 +2,6 @@ package com.homeclimatecontrol.xbee;
 
 import com.homeclimatecontrol.xbee.response.ResponseReader;
 import com.homeclimatecontrol.xbee.response.frame.XBeeResponseFrame;
-import com.rapplogic.xbee.api.XBeePacket;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +13,8 @@ import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import static com.homeclimatecontrol.xbee.response.ResponseReader.FRAME_DELIMITER;
 
 public class HardwareReader implements AutoCloseable {
 
@@ -117,7 +118,7 @@ public class HardwareReader implements AutoCloseable {
                     throw new IOException("Unexpected end of stream while synchronizing on start byte");
                 }
 
-                if (read == XBeePacket.SpecialByte.START_BYTE.getValue()) {
+                if (read == FRAME_DELIMITER) {
                     // We are at the start of the packet
                     logger.debug("Got the start byte");
                     return;

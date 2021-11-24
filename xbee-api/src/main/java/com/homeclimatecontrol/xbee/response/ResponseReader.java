@@ -15,14 +15,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Set;
 
 import static com.homeclimatecontrol.xbee.FrameType.IO_SAMPLE_INDICATOR;
 import static com.homeclimatecontrol.xbee.FrameType.LOCAL_AT_COMMAND_RESPONSE;
 import static com.homeclimatecontrol.xbee.FrameType.REMOTE_AT_COMMAND_RESPONSE;
 
+/**
+ * XBee response frame reader.
+ *
+ * See <a href="https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_api_frame_format_900hp.htm">API frame format</a>.
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2021
+ */
 public class ResponseReader {
 
+    public static final byte FRAME_DELIMITER = 0x7E;
     private static final byte ESCAPE = 0x7D;
+    private static final byte XON = 0x11;
+    private static final byte XOFF = 0x13;
+
+    private static final Set<Byte> escaped = Set.of(
+            FRAME_DELIMITER,
+            ESCAPE,
+            XON,
+            XOFF
+    );
 
     private static final Map<FrameType, FrameReader> frame2reader = Map.of(
             LOCAL_AT_COMMAND_RESPONSE, new LocalATCommandResponseReader(),
@@ -45,11 +63,15 @@ public class ResponseReader {
 
         var frameSize = readLength(headerBuffer);
         var frameBuffer = readFrame(in, frameSize);
-        var checksum = readByte(in);
+        var checksum = unescape(in);
 
         verifyChecksum(checksum, frameBuffer);
 
         return getReader(frameBuffer[0]).read(ByteBuffer.wrap(frameBuffer, 1, frameBuffer.length - 1));
+    }
+
+    boolean isEscaped(byte b) {
+        return escaped.contains(b);
     }
 
     /**
@@ -63,7 +85,14 @@ public class ResponseReader {
         var leftToRead = frameSize;
 
         while (leftToRead > 0) {
-            buffer.write(unescape(in));
+            try {
+                buffer.write(unescape(in));
+            } catch (EOFException ex) {
+                var offset = frameSize - leftToRead;
+                throw new IOException("Unexpected EOF at frame offset "
+                        + offset + " (" + HexFormat.format(offset)
+                        + ") of " + frameSize + " (" + HexFormat.format(frameSize) + ")", ex);
+            }
             leftToRead--;
         }
 
@@ -84,7 +113,12 @@ public class ResponseReader {
     private byte unescape(InputStream in) throws IOException {
         var b = readByte(in);
 
+        if (!isEscaped(b)) {
+            return b;
+        }
+
         if (b != ESCAPE) {
+            // Special case: unescaped character
             return b;
         }
 
