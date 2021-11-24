@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -566,19 +565,5 @@ class ResponseReaderTest {
         };
 
         checkResponse(packet, AtCommand.Command.D0);
-    }
-
-    @Test
-    void isEscapeCharacter() {
-
-        var rr = new ResponseReader();
-
-        assertThat(rr.isEscaped((byte) 0x00)).isFalse();
-        assertThat(rr.isEscaped((byte) 0xFF)).isFalse();
-
-        assertThat(rr.isEscaped((byte) 0x11)).isTrue();
-        assertThat(rr.isEscaped((byte) 0x13)).isTrue();
-        assertThat(rr.isEscaped((byte) 0x7D)).isTrue();
-        assertThat(rr.isEscaped((byte) 0x7E)).isTrue();
     }
 }
