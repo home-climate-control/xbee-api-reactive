@@ -113,7 +113,9 @@ public class ResponseReader {
         var checksumActual = checksum.getValue();
 
         if (checksumActual != checksumExpected) {
-            throw new IllegalArgumentException("Checksum mismatch, expected " + HexFormat.format(checksumExpected) + ", actual " + HexFormat.format(checksumActual));
+            throw new IllegalArgumentException("Checksum mismatch, expected " + HexFormat.format(checksumExpected)
+                    + ", actual " + HexFormat.format(checksumActual)
+                    + ", data: " + HexFormat.format(ByteBuffer.wrap(frameBuffer)));
         }
     }
 

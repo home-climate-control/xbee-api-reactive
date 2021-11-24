@@ -77,6 +77,8 @@ public class HardwareReader implements AutoCloseable {
 
             receiveSink.next(packet);
 
+        } catch (IllegalArgumentException ex) {
+            logger.error("Checksum error, dropped", ex);
         } catch (UnsupportedOperationException ex) {
             // Most likely, the frame data was read in its entirety and we're going to land at the sync byte
             logger.error("Unsupported frame, dropped", ex);
