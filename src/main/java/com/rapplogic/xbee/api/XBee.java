@@ -328,10 +328,20 @@ public class XBee implements IXBee {
             throw new XBeeException("Frame Id cannot be 0 for a synchronous call -- it will always timeout as there is no response!");
         }
 
+        if (xbeeRequest.getFrameId() == XBeeRequest.DEFAULT_FRAME_ID) {
+
+            // VT: NOTE: See https://github.com/home-climate-control/xbee-api-reactive/issues/19
+            // As is, this message will be logged with EVERY XBee packet sent (since using DEFAULT_FRAME_ID was a nice
+            // syntax sugar, and it's used everywhere). Later, either existing consumers will fix the situation and will
+            // only get this warning once per 254 frames, or the reactive branch will take over and this will become irrelevant.
+
+            log.warn("Default frameId used, sendSynchronous() may fail to recognize correct response for request={}", xbeeRequest);
+        }
+
         PacketListener pl = null;
 
         try {
-            List<XBeeResponse> container = new LinkedList<XBeeResponse>();
+            var container = new LinkedList<XBeeResponse>();
 
             // this makes it thread safe -- prevents multiple threads from writing to output stream simultaneously
             synchronized (sendPacketBlock) {

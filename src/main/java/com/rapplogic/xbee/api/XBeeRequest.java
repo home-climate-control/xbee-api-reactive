@@ -34,8 +34,22 @@ public abstract class XBeeRequest implements Serializable {
 
     private static final long serialVersionUID = -9181542059678009341L;
 
+    /**
+     * Default frame ID.
+     *
+     * @deprecated Using this value will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
+     */
+    @Deprecated(forRemoval = false)
     public static final int DEFAULT_FRAME_ID = 1;
-    // XBee will not generate a TX Status Packet if this frame id sent
+
+    /**
+     * "Disable response frame" frame ID.
+     *
+     * See <a href="https://www.digi.com/resources/documentation/digidocs/90001942-13/reference/r_zigbee_frame_examples.htm">API Mode/Frame Examples</a>
+     * (search for "Setting Frame ID to '0' will disable response frame").
+     */
     public static final int NO_RESPONSE_FRAME_ID = 0;
 
     private ApiId apiId;
