@@ -1,18 +1,18 @@
 /**
  * Copyright (c) 2008 Andrew Rapp. All rights reserved.
- *  
+ *
  * This file is part of XBee-API.
- *  
+ *
  * XBee-API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * XBee-API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with XBee-API.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,7 @@ package com.rapplogic.xbee.api;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
-/** 
+/**
  * API technique to set/query commands
  * <p/>
  * WARNING: Any changes made will not survive a power cycle unless written to memory with WR command
@@ -42,10 +42,10 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  * @author andrew
  */
 public class AtCommand extends XBeeRequest {
-	
-	private String command;
-	private int[] value;
-	
+
+    private String command;
+    private int[] value;
+
 //	// common i/o pin settings.  it is up to the developer to ensure the setting is applicable to the pin (e.g. not all pins support analog input)
 //	public enum IoSetting {
 //		DISABLED (new int[] {0x0}),
@@ -53,86 +53,89 @@ public class AtCommand extends XBeeRequest {
 //		DIGITAL_INPUT (new int[] {0x3}),
 //		DIGITAL_OUTPUT_LOW (new int[] {0x4}),
 //		DIGITAL_OUTPUT_HIGH (new int[] {0x5});
-//		
+//
 //	    private final int[] value;
-//	    
+//
 //	    IoSetting(int[] value) {
 //	        this.value = value;
 //	    }
 //	}
-	
-	public AtCommand(String command) {
-		this(command, null, DEFAULT_FRAME_ID);
-	}
-	
-	public AtCommand(String command, int value) {
-		this(command, new int[] {value}, DEFAULT_FRAME_ID);		
-	}
 
-	public AtCommand(String command, int value[]) {
-		this(command, value, DEFAULT_FRAME_ID);
-	}
-	
-	/**
-	 * Warning: frameId must be > 0 for a response
-	 * 
-	 * @param command
-	 * @param value
-	 * @param frameId
-	 */
-	public AtCommand(String command, int[] value, int frameId) {
-		this.command = command;
-		this.value = value;
-		this.setFrameId(frameId);
-	}
+    public AtCommand(String command) {
+        this(command, null, DEFAULT_FRAME_ID);
+    }
 
-	public int[] getFrameData() {
-		if (command.length() > 2) {
-			throw new IllegalArgumentException("Command should be two characters.  Do not include AT prefix");
-		}
-		
-		IntArrayOutputStream out = new IntArrayOutputStream();
-		
-		// api id
-		out.write(this.getApiId().getValue());
-		// frame id
-		out.write(this.getFrameId());
-		// at command byte 1
-		out.write((int) command.substring(0, 1).toCharArray()[0]);
-		// at command byte 2
-		out.write((int) command.substring(1, 2).toCharArray()[0]);
+    public AtCommand(String command, int value) {
+        this(command, new int[]{value}, DEFAULT_FRAME_ID);
+    }
 
-		// int value is up to four bytes to represent command value
-		if (value != null) {
-			out.write(value);
-		}
-		
-		return out.getIntArray();
-	}
+    public AtCommand(String command, int value[]) {
+        this(command, value, DEFAULT_FRAME_ID);
+    }
 
-	public ApiId getApiId() {
-		return ApiId.AT_COMMAND;
-	}
-	
-	public String getCommand() {
-		return command;
-	}
+    /**
+     * Warning: frameId must be > 0 for a response
+     *
+     * @param command
+     * @param value
+     * @param frameId
+     */
+    public AtCommand(String command, int[] value, int frameId) {
+        this.command = command;
+        this.value = value;
+        setFrameId(frameId);
+    }
 
-	public void setCommand(String command) {
-		this.command = command;
-	}
+    @Override
+    public int[] getFrameData() {
+        if (command.length() > 2) {
+            throw new IllegalArgumentException("Command should be two characters.  Do not include AT prefix");
+        }
 
-	public int[] getValue() {
-		return value;
-	}
+        IntArrayOutputStream out = new IntArrayOutputStream();
 
-	public void setValue(int[] value) {
-		this.value = value;
-	}
+        // api id
+        out.write(getApiId().getValue());
+        // frame id
+        out.write(getFrameId());
+        // at command byte 1
+        out.write((int) command.substring(0, 1).toCharArray()[0]);
+        // at command byte 2
+        out.write((int) command.substring(1, 2).toCharArray()[0]);
 
-	public String toString() {
-		return super.toString() +
-			",command=" + this.command +
-			",value=" + (value == null ? "null" : ByteUtils.toBase16(value));
-	}
+        // int value is up to four bytes to represent command value
+        if (value != null) {
+            out.write(value);
+        }
+
+        return out.getIntArray();
+    }
+
+    @Override
+    public ApiId getApiId() {
+        return ApiId.AT_COMMAND;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public int[] getValue() {
+        return value;
+    }
+
+    public void setValue(int[] value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ",command=" + command +
+                ",value=" + (value == null ? "null" : ByteUtils.toBase16(value));
+    }
 }
