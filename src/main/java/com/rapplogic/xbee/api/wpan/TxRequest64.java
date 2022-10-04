@@ -20,7 +20,9 @@
 package com.rapplogic.xbee.api.wpan;
 
 import com.rapplogic.xbee.api.ApiId;
+import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress64;
+import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
 // TODO test setting DH/DL to 0 and SH/SL
@@ -46,9 +48,11 @@ public class TxRequest64 extends TxRequestBase {
     /**
      * 16 bit Tx Request with default frame id and awk option
      *
-     * @param destinationAddress
-     * @param payload
+     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
      */
+    @Deprecated(forRemoval = false)
     public TxRequest64(XBeeAddress64 destination, int[] payload) {
         this(destination, DEFAULT_FRAME_ID, Option.UNICAST, payload);
     }
@@ -61,8 +65,8 @@ public class TxRequest64 extends TxRequestBase {
      *
      * Payload size is limited to 100 bytes, according to MaxStream documentation.
      *
-     * @param destinationAddress
-     * @param awkFrameId
+     * @param destination
+     * @param frameId
      * @param payload
      */
     public TxRequest64(XBeeAddress64 destination, int frameId, int[] payload) {
@@ -72,8 +76,8 @@ public class TxRequest64 extends TxRequestBase {
     /**
      * Note: if option is DISABLE_ACK_OPTION you will not get a ack response and you must use the asynchronous send method
      *
-     * @param destinationAddress
-     * @param awkFrameId
+     * @param remoteAddr64
+     * @param frameId
      * @param payload
      * @param option
      */

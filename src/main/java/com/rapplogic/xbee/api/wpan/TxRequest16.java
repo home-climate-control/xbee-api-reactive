@@ -20,7 +20,9 @@
 package com.rapplogic.xbee.api.wpan;
 
 import com.rapplogic.xbee.api.ApiId;
+import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
+import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
 /**
@@ -42,9 +44,11 @@ public class TxRequest16 extends TxRequestBase {
      * Keep in mind that if you programmed the destination address with X-CTU, the unit is
      * hex, so if you set MY=1234, use 0x1234.
      *
-     * @param remoteAddr16
-     * @param payload
+     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
      */
+    @Deprecated(forRemoval = false)
     public TxRequest16(XBeeAddress16 remoteAddr16, int[] payload) {
         this(remoteAddr16, DEFAULT_FRAME_ID, Option.UNICAST, payload);
     }

@@ -61,24 +61,47 @@ public class AtCommand extends XBeeRequest {
 //	    }
 //	}
 
+    /**
+     * Create an instance.
+     *
+     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
+     */
+    @Deprecated(forRemoval = false)
     public AtCommand(String command) {
         this(command, null, DEFAULT_FRAME_ID);
     }
 
+    /**
+     * Create an instance.
+     *
+     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
+     */
+    @Deprecated(forRemoval = false)
     public AtCommand(String command, int value) {
         this(command, new int[]{value}, DEFAULT_FRAME_ID);
     }
 
+    /**
+     * Create an instance.
+     *
+     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
+     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * too much hassle.
+     */
+    @Deprecated(forRemoval = false)
     public AtCommand(String command, int value[]) {
         this(command, value, DEFAULT_FRAME_ID);
     }
 
     /**
-     * Warning: frameId must be > 0 for a response
+     * Create an instance.
      *
-     * @param command
-     * @param value
-     * @param frameId
+     * @param frameId Must not be {@link XBeeRequest#NO_RESPONSE_FRAME_ID} for the response to be returned.
+     *                Be careful with {@link XBeeRequest#DEFAULT_FRAME_ID} as well.
      */
     public AtCommand(String command, int[] value, int frameId) {
         this.command = command;
