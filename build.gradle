@@ -12,7 +12,7 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 group = 'com.rapplogic'
-version = '0.9.1-dz'
+version = '0.9.2-dz'
 
 /*
 apply plugin: 'findbugs'
@@ -27,17 +27,18 @@ findbugs {
 repositories {
 
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
 
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
     implementation 'org.rxtx:rxtx:2.1.7'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 
-    errorprone 'com.google.errorprone:error_prone_core:2.6.0'
+    errorprone 'com.google.errorprone:error_prone_core:2.15.0'
 }
 
 sonarqube {
