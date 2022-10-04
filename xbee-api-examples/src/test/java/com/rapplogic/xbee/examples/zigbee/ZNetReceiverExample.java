@@ -45,57 +45,57 @@ import static com.rapplogic.xbee.api.AtCommand.Command.DB;
  */
 class ZNetReceiverExample {
 
-	private final Logger log = LogManager.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
 
-	@Test
+    @Test
     @Disabled("Enable only if safe to use hardware is connected")
-	void  testZNetReceiverExample() throws Exception {
+    void testZNetReceiverExample() throws Exception {
 
-		XBee xbee = new XBee();
+        XBee xbee = new XBee();
 
-		try {
-			// replace with the com port of your receiving XBee (typically your end device)
-			// router
-			xbee.open(getTestPort(), 9600);
+        try {
+            // replace with the com port of your receiving XBee (typically your end device)
+            // router
+            xbee.open(getTestPort(), 9600);
 
-			while (true) {
+            while (true) {
 
-				try {
-					// we wait here until a packet is received.
-					XBeeResponse response = xbee.getResponse();
+                try {
+                    // we wait here until a packet is received.
+                    XBeeResponse response = xbee.getResponse();
 
-					log.info("received response " + response.toString());
+                    log.info("received response " + response.toString());
 
-					if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
-						// we received a packet from ZNetSenderTest.java
-						ZNetRxResponse rx = (ZNetRxResponse) response;
+                    if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
+                        // we received a packet from ZNetSenderTest.java
+                        ZNetRxResponse rx = (ZNetRxResponse) response;
 
-						log.info("Received RX packet, option is " + rx.getOption() + ", sender 64 address is " + ByteUtils.toBase16(rx.getRemoteAddress64().getAddress()) + ", remote 16-bit address is " + ByteUtils.toBase16(rx.getRemoteAddress16().getAddress()) + ", data is " + ByteUtils.toBase16(rx.getData()));
+                        log.info("Received RX packet, option is " + rx.getOption() + ", sender 64 address is " + ByteUtils.toBase16(rx.getRemoteAddress64().getAddress()) + ", remote 16-bit address is " + ByteUtils.toBase16(rx.getRemoteAddress16().getAddress()) + ", data is " + ByteUtils.toBase16(rx.getData()));
 
-						// optionally we may want to get the signal strength (RSSI) of the last hop.
-						// keep in mind if you have routers in your network, this will be the signal of the last hop.
-						AtCommand at = new AtCommand(DB);
-						xbee.sendAsynchronous(at);
-						XBeeResponse atResponse = xbee.getResponse();
+                        // optionally we may want to get the signal strength (RSSI) of the last hop.
+                        // keep in mind if you have routers in your network, this will be the signal of the last hop.
+                        AtCommand at = new AtCommand(DB);
+                        xbee.sendAsynchronous(at);
+                        XBeeResponse atResponse = xbee.getResponse();
 
-						if (atResponse.getApiId() == ApiId.AT_RESPONSE) {
-							// remember rssi is a negative db value
-							log.info("RSSI of last response is " + -((AtCommandResponse)atResponse).getValue()[0]);
-						} else {
-							// we didn't get an AT response
-							log.info("expected RSSI, but received " + atResponse.toString());
-						}
-					} else {
-						log.debug("received unexpected packet " + response.toString());
-					}
-				} catch (Throwable t) {
-					log.error("Unexpected exception", t);
-				}
-			}
-		} finally {
-			if (xbee != null && xbee.isConnected()) {
-				xbee.close();
-			}
-		}
-	}
+                        if (atResponse.getApiId() == ApiId.AT_RESPONSE) {
+                            // remember rssi is a negative db value
+                            log.info("RSSI of last response is " + -((AtCommandResponse) atResponse).getValue()[0]);
+                        } else {
+                            // we didn't get an AT response
+                            log.info("expected RSSI, but received " + atResponse.toString());
+                        }
+                    } else {
+                        log.debug("received unexpected packet " + response.toString());
+                    }
+                } catch (Throwable t) {
+                    log.error("Unexpected exception", t);
+                }
+            }
+        } finally {
+            if (xbee != null && xbee.isConnected()) {
+                xbee.close();
+            }
+        }
+    }
 }

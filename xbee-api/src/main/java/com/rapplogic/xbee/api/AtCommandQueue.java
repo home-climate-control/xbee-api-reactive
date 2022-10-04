@@ -28,17 +28,17 @@ package com.rapplogic.xbee.api;
  *
  */
 public class AtCommandQueue extends AtCommand {
-	//TODO test
-	public AtCommandQueue(Command command) {
-		this(command, null, DEFAULT_FRAME_ID);
-	}
+    //TODO test
+    public AtCommandQueue(Command command) {
+        this(command, null, DEFAULT_FRAME_ID);
+    }
 
-	public AtCommandQueue(Command command, int[] value, byte frameId) {
-		super(command, value, frameId);
-	}
+    public AtCommandQueue(Command command, int[] value, byte frameId) {
+        super(command, value, frameId);
+    }
 
     @Override
-	public ApiId getApiId() {
-		return ApiId.AT_COMMAND_QUEUE;
-	}
+    public ApiId getApiId() {
+        return ApiId.AT_COMMAND_QUEUE;
+    }
 }

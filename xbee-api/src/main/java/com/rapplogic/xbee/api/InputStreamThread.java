@@ -43,53 +43,53 @@ public class InputStreamThread implements Runnable {
 
     private final Logger logger = LogManager.getLogger();
 
-	private final Thread thread;
-	private final ExecutorService listenerPool;
-	private volatile boolean done = false;
-	private final XBeeConnection connection;
-	private final XBeeConfiguration conf;
+    private final Thread thread;
+    private final ExecutorService listenerPool;
+    private volatile boolean done = false;
+    private final XBeeConnection connection;
+    private final XBeeConfiguration conf;
 
-	public XBeeConnection getXBeeConnection() {
-		return connection;
-	}
+    public XBeeConnection getXBeeConnection() {
+        return connection;
+    }
 
-	private final BlockingQueue<XBeeResponse> responseQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<XBeeResponse> responseQueue = new LinkedBlockingQueue<>();
 
-	// TODO use weak references
-	private final List<PacketListener> packetListenerList = new ArrayList<>();
+    // TODO use weak references
+    private final List<PacketListener> packetListenerList = new ArrayList<>();
 
-	public List<PacketListener> getPacketListenerList() {
-		return packetListenerList;
-	}
+    public List<PacketListener> getPacketListenerList() {
+        return packetListenerList;
+    }
 
-	public BlockingQueue<XBeeResponse> getResponseQueue() {
-		return responseQueue;
-	}
+    public BlockingQueue<XBeeResponse> getResponseQueue() {
+        return responseQueue;
+    }
 
-	public InputStreamThread(XBeeConnection connection, XBeeConfiguration conf) {
-		this.connection = connection;
-		this.conf = conf;
+    public InputStreamThread(XBeeConnection connection, XBeeConfiguration conf) {
+        this.connection = connection;
+        this.conf = conf;
 
         // Create an executor to deliver incoming packets to listeners. We'll use a single
         // thread with an unbounded queue.
-		listenerPool = Executors.newSingleThreadExecutor();
+        listenerPool = Executors.newSingleThreadExecutor();
 
-		thread = new Thread(this);
-		thread.setName("InputStreamThread");
-		thread.start();
-	}
+        thread = new Thread(this);
+        thread.setName("InputStreamThread");
+        thread.start();
+    }
 
-	private void addResponse(XBeeResponse response) throws InterruptedException {
+    private void addResponse(XBeeResponse response) throws InterruptedException {
 
-		if (conf.getResponseQueueFilter() != null) {
-			if (conf.getResponseQueueFilter().accept(response)) {
-				addToResponseQueue(response);
-			}
-		} else {
-			addToResponseQueue(response);
-		}
+        if (conf.getResponseQueueFilter() != null) {
+            if (conf.getResponseQueueFilter().accept(response)) {
+                addToResponseQueue(response);
+            }
+        } else {
+            addToResponseQueue(response);
+        }
 
-		listenerPool.submit(() -> {
+        listenerPool.submit(() -> {
             // must synchronize to avoid  java.util.ConcurrentModificationException at java.util.AbstractList$Itr.checkForComodification(Unknown Source)
             // this occurs if packet listener add/remove is called while we are iterating
 
@@ -107,31 +107,31 @@ public class InputStreamThread implements Runnable {
                 }
             }
         });
-	}
+    }
 
-	private void addToResponseQueue(XBeeResponse response) throws InterruptedException{
+    private void addToResponseQueue(XBeeResponse response) throws InterruptedException {
 
-		if (conf.getMaxQueueSize() == 0) {
-			// warn
-			return;
-		}
-		// trim the queue
-		while (responseQueue.size() >= conf.getMaxQueueSize()) {
+        if (conf.getMaxQueueSize() == 0) {
+            // warn
+            return;
+        }
+        // trim the queue
+        while (responseQueue.size() >= conf.getMaxQueueSize()) {
             logger.warn("Response queue has reached the maximum size of {} packets.  Trimming a packet from head of queue to make room", conf.getMaxQueueSize());
-			responseQueue.poll();
-		}
+            responseQueue.poll();
+        }
 
-		responseQueue.put(response);
-	}
+        responseQueue.put(response);
+    }
 
-	@Override
+    @Override
     public void run() {
 
         logger.info("Started");
 
-		try {
-			while (!done) {
-				try {
+        try {
+            while (!done) {
+                try {
                     if (connection.getInputStream().available() > 0) {
                         logger.debug("About to read from input stream");
                         var val = connection.getInputStream().read();
@@ -159,43 +159,43 @@ public class InputStreamThread implements Runnable {
                 } catch (InterruptedException ex) {
                     // Nothing we can do with it here, just rethrow
                     throw ex;
-				} catch (Exception ex) {
+                } catch (Exception ex) {
 
-					logger.error("Error while parsing packet:", ex);
+                    logger.error("Error while parsing packet:", ex);
 
-					if (ex instanceof IOException) {
-						// this is thrown by RXTX if the serial device unplugged while we are reading data; if we are waiting then it will waiting forever
-						logger.error("Serial device IOException.. exiting");
-						break;
-					}
-				}
-			}
-		} catch(InterruptedException ie) {
+                    if (ex instanceof IOException) {
+                        // this is thrown by RXTX if the serial device unplugged while we are reading data; if we are waiting then it will waiting forever
+                        logger.error("Serial device IOException.. exiting");
+                        break;
+                    }
+                }
+            }
+        } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-			// We've been told to stop -- the user called the close() method
-			logger.info("Packet parser thread was interrupted.  This occurs when close() is called");
-		} catch (Throwable t) {
-			logger.error("Error in input stream thread.. exiting", t);
-		} finally {
-			try {
-				if (connection != null) {
-					connection.close();
-				}
+            // We've been told to stop -- the user called the close() method
+            logger.info("Packet parser thread was interrupted.  This occurs when close() is called");
+        } catch (Throwable t) {
+            logger.error("Error in input stream thread.. exiting", t);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
 
-				if (listenerPool != null) {
-					try {
-						listenerPool.shutdownNow();
-					} catch (Throwable t) {
-						logger.warn("Failed to shutdown listner thread pool", t);
-					}
-				}
-			} catch (Throwable t) {
-				logger.error("Error in input stream thread finally", t);
-			}
-		}
+                if (listenerPool != null) {
+                    try {
+                        listenerPool.shutdownNow();
+                    } catch (Throwable t) {
+                        logger.warn("Failed to shutdown listner thread pool", t);
+                    }
+                }
+            } catch (Throwable t) {
+                logger.error("Error in input stream thread finally", t);
+            }
+        }
 
-		logger.info("InputStreamThread is exiting");
-	}
+        logger.info("InputStreamThread is exiting");
+    }
 
     private void readPacket() throws InterruptedException {
         var packetStream = new PacketParser(connection.getInputStream());
@@ -209,16 +209,16 @@ public class InputStreamThread implements Runnable {
     }
 
     public void setDone(boolean done) {
-		this.done = done;
-	}
+        this.done = done;
+    }
 
-	public void interrupt() {
-		if (thread != null) {
-			try {
-				thread.interrupt();
-			} catch (Exception e) {
-				logger.warn("Error interrupting parser thread", e);
-			}
-		}
-	}
+    public void interrupt() {
+        if (thread != null) {
+            try {
+                thread.interrupt();
+            } catch (Exception e) {
+                logger.warn("Error interrupting parser thread", e);
+            }
+        }
+    }
 }

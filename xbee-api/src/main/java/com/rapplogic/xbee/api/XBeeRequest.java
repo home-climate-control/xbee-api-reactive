@@ -35,36 +35,36 @@ public abstract class XBeeRequest {
      */
     public static final byte NO_RESPONSE_FRAME_ID = 0;
 
-	public static final byte DEFAULT_FRAME_ID = 1;
+    public static final byte DEFAULT_FRAME_ID = 1;
 
-	private final byte frameId;
+    private final byte frameId;
 
     protected XBeeRequest(byte frameId) {
         this.frameId = frameId;
     }
 
     // TODO create XBeePacket(XBeeRequest) constructor and move operation there
-	public XBeePacket getXBeePacket() {
+    public XBeePacket getXBeePacket() {
         var frameData = getFrameData();
 
-		if (frameData == null) {
-			throw new IllegalArgumentException("frame data can't be null");
-		}
+        if (frameData == null) {
+            throw new IllegalArgumentException("frame data can't be null");
+        }
 
-		// TODO xbee packet should handle api/frame id
-		return new XBeePacket(frameData);
-	}
+        // TODO xbee packet should handle api/frame id
+        return new XBeePacket(frameData);
+    }
 
-	public abstract int[] getFrameData();
+    public abstract int[] getFrameData();
 
-	public abstract ApiId getApiId();
+    public abstract ApiId getApiId();
 
-	public byte getFrameId() {
-		return frameId;
-	}
+    public byte getFrameId() {
+        return frameId;
+    }
 
     @Override
-	public String toString() {
-		return "apiId=" + getApiId() + ",frameId=" + getFrameId();
-	}
+    public String toString() {
+        return "apiId=" + getApiId() + ",frameId=" + getFrameId();
+    }
 }

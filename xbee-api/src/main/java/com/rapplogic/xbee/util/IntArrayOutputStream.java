@@ -27,38 +27,38 @@ import java.util.List;
  */
 public class IntArrayOutputStream implements IIntArray {
 
-	private final List<Integer> intList = new ArrayList<>();
+    private final List<Integer> intList = new ArrayList<>();
 
-	public IntArrayOutputStream() {
+    public IntArrayOutputStream() {
 
-	}
+    }
 
-	public void write (int val) {
-		intList.add(val);
-	}
+    public void write(int val) {
+        intList.add(val);
+    }
 
-	public void write(int[] val) {
+    public void write(int[] val) {
         for (int aVal : val) {
-            this.write(aVal);
+            write(aVal);
         }
-	}
+    }
 
-	@Override
+    @Override
     public int[] getIntArray() {
-		//int[] integer = (int[]) intList.toArray(new int[0]);
-		// TODO there has got to be a better way -- how to convert list to int[] array?
-		int[] intArr = new int[intList.size()];
+        //int[] integer = (int[]) intList.toArray(new int[0]);
+        // TODO there has got to be a better way -- how to convert list to int[] array?
+        int[] intArr = new int[intList.size()];
 
-		int i = 0;
+        int i = 0;
 
-		for (Integer integer : intList) {
-			intArr[i++] = integer;
-		}
+        for (Integer integer : intList) {
+            intArr[i++] = integer;
+        }
 
-		return intArr;
-	}
+        return intArr;
+    }
 
-	public List<Integer> getInternalList() {
-		return intList;
-	}
+    public List<Integer> getInternalList() {
+        return intList;
+    }
 }

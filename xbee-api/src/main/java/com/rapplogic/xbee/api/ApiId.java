@@ -37,39 +37,39 @@ import java.util.Map;
 public enum ApiId {
 
     // VT: FIXME: Who are these guys? Do they belong here?
-	TX_REQUEST_64 (0x0, null),
-	TX_REQUEST_16 (0x1, null),
-    RX_64_RESPONSE (0x80, null),
-    RX_16_RESPONSE (0x81, null),
-    RX_64_IO_RESPONSE (0x82, null),
-    RX_16_IO_RESPONSE (0x83, null),
-    TX_STATUS_RESPONSE (0x89, null),
+    TX_REQUEST_64(0x0, null),
+    TX_REQUEST_16(0x1, null),
+    RX_64_RESPONSE(0x80, null),
+    RX_16_RESPONSE(0x81, null),
+    RX_64_IO_RESPONSE(0x82, null),
+    RX_16_IO_RESPONSE(0x83, null),
+    TX_STATUS_RESPONSE(0x89, null),
 
-	AT_COMMAND (0x08, XBeeFrameDirection.TRANSMIT),
-	AT_COMMAND_QUEUE (0x09, XBeeFrameDirection.TRANSMIT),
-    ZNET_TX_REQUEST (0x10, XBeeFrameDirection.TRANSMIT),
-    ZNET_EXPLICIT_TX_REQUEST (0x11, XBeeFrameDirection.TRANSMIT),
-	REMOTE_AT_REQUEST (0x17, XBeeFrameDirection.TRANSMIT),
+    AT_COMMAND(0x08, XBeeFrameDirection.TRANSMIT),
+    AT_COMMAND_QUEUE(0x09, XBeeFrameDirection.TRANSMIT),
+    ZNET_TX_REQUEST(0x10, XBeeFrameDirection.TRANSMIT),
+    ZNET_EXPLICIT_TX_REQUEST(0x11, XBeeFrameDirection.TRANSMIT),
+    REMOTE_AT_REQUEST(0x17, XBeeFrameDirection.TRANSMIT),
 
 
-	AT_RESPONSE (0x88, XBeeFrameDirection.RECEIVE),
-	MODEM_STATUS_RESPONSE (0x8A, XBeeFrameDirection.RECEIVE),
-    ZNET_TX_STATUS_RESPONSE (0x8B, XBeeFrameDirection.RECEIVE),
-	ZNET_RX_RESPONSE (0x90, XBeeFrameDirection.RECEIVE),
-	ZNET_EXPLICIT_RX_RESPONSE (0x91, XBeeFrameDirection.RECEIVE),
-    ZNET_IO_SAMPLE_RESPONSE (0x92, XBeeFrameDirection.RECEIVE),
-    ZNET_IO_NODE_IDENTIFIER_RESPONSE (0x95, XBeeFrameDirection.RECEIVE),
-	REMOTE_AT_RESPONSE (0x97, XBeeFrameDirection.RECEIVE),
+    AT_RESPONSE(0x88, XBeeFrameDirection.RECEIVE),
+    MODEM_STATUS_RESPONSE(0x8A, XBeeFrameDirection.RECEIVE),
+    ZNET_TX_STATUS_RESPONSE(0x8B, XBeeFrameDirection.RECEIVE),
+    ZNET_RX_RESPONSE(0x90, XBeeFrameDirection.RECEIVE),
+    ZNET_EXPLICIT_RX_RESPONSE(0x91, XBeeFrameDirection.RECEIVE),
+    ZNET_IO_SAMPLE_RESPONSE(0x92, XBeeFrameDirection.RECEIVE),
+    ZNET_IO_NODE_IDENTIFIER_RESPONSE(0x95, XBeeFrameDirection.RECEIVE),
+    REMOTE_AT_RESPONSE(0x97, XBeeFrameDirection.RECEIVE),
 
-	/**
-	 * Indicates that we've parsed a packet for which we didn't know how to handle the API type.  This will be parsed into a GenericResponse
-	 */
-	UNKNOWN (0xFF, null),
+    /**
+     * Indicates that we've parsed a packet for which we didn't know how to handle the API type.  This will be parsed into a GenericResponse
+     */
+    UNKNOWN(0xFF, null),
 
-	/**
-	 * This is returned if an error occurs during packet parsing and does not correspond to a XBee API ID.
-	 */
-	ERROR_RESPONSE (-1, null);
+    /**
+     * This is returned if an error occurs during packet parsing and does not correspond to a XBee API ID.
+     */
+    ERROR_RESPONSE(-1, null);
 
     public final int id;
 
@@ -78,29 +78,29 @@ public enum ApiId {
      */
     public final XBeeFrameDirection direction;
 
-	private static final Map<Integer, ApiId> lookup = new HashMap<>();
+    private static final Map<Integer, ApiId> lookup = new HashMap<>();
 
     ApiId(int id, XBeeFrameDirection direction) {
         this.id = id;
         this.direction = direction;
     }
 
-	static {
-		for(ApiId s : EnumSet.allOf(ApiId.class)) {
-			lookup.put(s.getId(), s);
-		}
-	}
+    static {
+        for (ApiId s : EnumSet.allOf(ApiId.class)) {
+            lookup.put(s.getId(), s);
+        }
+    }
 
-	public static ApiId get(int value) {
-		return lookup.get(value);
-	}
+    public static ApiId get(int value) {
+        return lookup.get(value);
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
     @Override
-	public String toString() {
-		return name() + "(" + ByteUtils.toBase16(getId()) + "," + direction + ")";
-	}
+    public String toString() {
+        return name() + "(" + ByteUtils.toBase16(getId()) + "," + direction + ")";
+    }
 }

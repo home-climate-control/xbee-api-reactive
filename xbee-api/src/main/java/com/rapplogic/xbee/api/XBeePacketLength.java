@@ -29,18 +29,18 @@ import com.rapplogic.xbee.util.DoubleByte;
  */
 public class XBeePacketLength extends DoubleByte {
 
-	/**
-	 * Manual says max packet length is 100 bytes so not sure why 2 bytes are needed
-	 */
-	public XBeePacketLength(int msb, int lsb) {
-		super(msb, lsb);
-	}
+    /**
+     * Manual says max packet length is 100 bytes so not sure why 2 bytes are needed
+     */
+    public XBeePacketLength(int msb, int lsb) {
+        super(msb, lsb);
+    }
 
-	public XBeePacketLength(int length) {
-		super(length);
-	}
+    public XBeePacketLength(int length) {
+        super(length);
+    }
 
-	public int getLength() {
-		return this.get16BitValue();
-	}
+    public int getLength() {
+        return get16BitValue();
+    }
 }

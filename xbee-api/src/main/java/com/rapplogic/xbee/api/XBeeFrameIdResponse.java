@@ -29,18 +29,18 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public abstract class XBeeFrameIdResponse extends XBeeResponse {
 
-	private int frameId;
+    private int frameId;
 
-	public int getFrameId() {
-		return frameId;
-	}
+    public int getFrameId() {
+        return frameId;
+    }
 
-	public void setFrameId(int frameId) {
-		this.frameId = frameId;
-	}
+    public void setFrameId(int frameId) {
+        this.frameId = frameId;
+    }
 
     @Override
-	public String toString() {
-		return super.toString() + ",frameId=" + ByteUtils.toBase16(this.frameId);
-	}
+    public String toString() {
+        return super.toString() + ",frameId=" + ByteUtils.toBase16(frameId);
+    }
 }

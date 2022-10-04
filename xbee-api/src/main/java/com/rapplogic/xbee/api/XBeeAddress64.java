@@ -31,68 +31,68 @@ import java.util.StringTokenizer;
  * @author andrew
  *
  */
-public class XBeeAddress64 extends XBeeAddress  {
+public class XBeeAddress64 extends XBeeAddress {
 
-	public static final XBeeAddress64 BROADCAST = new XBeeAddress64(new int[] {0, 0, 0, 0, 0, 0, 0xff, 0xff});
-	public static final XBeeAddress64 ZNET_COORDINATOR = new XBeeAddress64(new int[] {0, 0, 0, 0, 0, 0, 0, 0});
+    public static final XBeeAddress64 BROADCAST = new XBeeAddress64(new int[]{0, 0, 0, 0, 0, 0, 0xff, 0xff});
+    public static final XBeeAddress64 ZNET_COORDINATOR = new XBeeAddress64(new int[]{0, 0, 0, 0, 0, 0, 0, 0});
 
-	private int[] address;
+    private int[] address;
 
-	/**
-	 * Parses an 64-bit XBee address from a string representation
-	 * May be contain spaces ## ## ## ## ## ## ## ## or without ################ but cannot use the 0x prefix
-	 * ex: 0013A200408B98FF or 00 13 A2 00 40 8B 98 FF
-	 */
-	public XBeeAddress64(String addressStr) {
-		address = new int[8];
+    /**
+     * Parses an 64-bit XBee address from a string representation
+     * May be contain spaces ## ## ## ## ## ## ## ## or without ################ but cannot use the 0x prefix
+     * ex: 0013A200408B98FF or 00 13 A2 00 40 8B 98 FF
+     */
+    public XBeeAddress64(String addressStr) {
+        address = new int[8];
 
-		if (addressStr.contains(" ")) {
-			StringTokenizer st = new StringTokenizer(addressStr, " ");
+        if (addressStr.contains(" ")) {
+            StringTokenizer st = new StringTokenizer(addressStr, " ");
 
-			for (int i = 0; i < address.length; i++) {
-				String byteStr = st.nextToken();
-				address[i] = Integer.parseInt(byteStr, 16);
-			}
-		} else {
-			// secretly also handle no space format
-			for (int i = 0; i < address.length; i++) {
-				address[i] = Integer.parseInt(addressStr.substring(i*2, i*2+2), 16);
-			}
-		}
-	}
+            for (int i = 0; i < address.length; i++) {
+                String byteStr = st.nextToken();
+                address[i] = Integer.parseInt(byteStr, 16);
+            }
+        } else {
+            // secretly also handle no space format
+            for (int i = 0; i < address.length; i++) {
+                address[i] = Integer.parseInt(addressStr.substring(i * 2, i * 2 + 2), 16);
+            }
+        }
+    }
 
-	/**
-	 * Creates a 64-bit address
-	 *
-	 * @param b1 MSB
-	 * @param b2 byte
-	 * @param b3 byte
-	 * @param b4 byte
-	 * @param b5 byte
-	 * @param b6 byte
-	 * @param b7 byte
-	 * @param b8 LSB
-	 */
-	public XBeeAddress64(int b1, int b2, int b3, int b4, int b5, int b6, int b7, int b8) {
-		address = new int[8];
+    /**
+     * Creates a 64-bit address
+     *
+     * @param b1 MSB
+     * @param b2 byte
+     * @param b3 byte
+     * @param b4 byte
+     * @param b5 byte
+     * @param b6 byte
+     * @param b7 byte
+     * @param b8 LSB
+     */
+    public XBeeAddress64(int b1, int b2, int b3, int b4, int b5, int b6, int b7, int b8) {
+        address = new int[8];
 
-		address[0] = b1;
-		address[1] = b2;
-		address[2] = b3;
-		address[3] = b4;
-		address[4] = b5;
-		address[5] = b6;
-		address[6] = b7;
-		address[7] = b8;
-	}
+        address[0] = b1;
+        address[1] = b2;
+        address[2] = b3;
+        address[3] = b4;
+        address[4] = b5;
+        address[5] = b6;
+        address[6] = b7;
+        address[7] = b8;
+    }
 
-	public XBeeAddress64(int[] address) {
-		this.address = address;
-	}
+    public XBeeAddress64(int[] address) {
+        this.address = address;
+    }
 
-	public XBeeAddress64() {
-		address = new int[8];
-	}
+    public XBeeAddress64() {
+        address = new int[8];
+    }
 
     public XBeeAddress64(ByteBuffer source) {
 
@@ -125,9 +125,9 @@ public class XBeeAddress64 extends XBeeAddress  {
     }
 
     @Override
-	public int[] getAddress() {
-		return address;
-	}
+    public int[] getAddress() {
+        return address;
+    }
 
     @Override
     public String toString() {

@@ -31,27 +31,27 @@ import java.nio.ByteBuffer;
  */
 public class XBeeAddress16 extends XBeeAddress {
 
-	public static final XBeeAddress16 BROADCAST = new XBeeAddress16(0xFF, 0xFF);
-	public static final XBeeAddress16 ZNET_BROADCAST = new XBeeAddress16(0xFF, 0xFE);
+    public static final XBeeAddress16 BROADCAST = new XBeeAddress16(0xFF, 0xFF);
+    public static final XBeeAddress16 ZNET_BROADCAST = new XBeeAddress16(0xFF, 0xFE);
 
-	private final DoubleByte doubleByte = new DoubleByte();
+    private final DoubleByte doubleByte = new DoubleByte();
 
-	/**
-	 * Provide address as msb byte and lsb byte
-	 */
-	public XBeeAddress16(int msb, int lsb) {
-		doubleByte.setMsb(msb);
-		doubleByte.setLsb(lsb);
-	}
+    /**
+     * Provide address as msb byte and lsb byte
+     */
+    public XBeeAddress16(int msb, int lsb) {
+        doubleByte.setMsb(msb);
+        doubleByte.setLsb(lsb);
+    }
 
-	public XBeeAddress16(int[] arr) {
-		doubleByte.setMsb(arr[0]);
-		doubleByte.setLsb(arr[1]);
-	}
+    public XBeeAddress16(int[] arr) {
+        doubleByte.setMsb(arr[0]);
+        doubleByte.setLsb(arr[1]);
+    }
 
-	public XBeeAddress16() {
+    public XBeeAddress16() {
 
-	}
+    }
 
     public XBeeAddress16(ByteBuffer source) {
         doubleByte.setMsb(source.get() & 0xFF);
@@ -59,20 +59,20 @@ public class XBeeAddress16 extends XBeeAddress {
     }
 
     public int getMsb() {
-		return doubleByte.getMsb();
-	}
+        return doubleByte.getMsb();
+    }
 
-	public void setMsb(int msb) {
-		doubleByte.setMsb(msb);
-	}
+    public void setMsb(int msb) {
+        doubleByte.setMsb(msb);
+    }
 
-	public int getLsb() {
-		return doubleByte.getLsb();
-	}
+    public int getLsb() {
+        return doubleByte.getLsb();
+    }
 
-	public void setLsb(int lsb) {
-		doubleByte.setLsb(lsb);
-	}
+    public void setLsb(int lsb) {
+        doubleByte.setLsb(lsb);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -96,7 +96,7 @@ public class XBeeAddress16 extends XBeeAddress {
     }
 
     @Override
-	public int[] getAddress() {
-		return new int[] { doubleByte.getMsb(), doubleByte.getLsb() };
-	}
+    public int[] getAddress() {
+        return new int[]{doubleByte.getMsb(), doubleByte.getLsb()};
+    }
 }

@@ -29,41 +29,41 @@ package com.rapplogic.xbee.api;
  */
 public class ErrorResponse extends XBeeResponse {
 
-	private String errorMsg;
-	private Exception exception;
+    private String errorMsg;
+    private Exception exception;
 
-	public ErrorResponse() {
-		super();
-		this.setApiId(ApiId.ERROR_RESPONSE);
-		this.setError(true);
-	}
+    public ErrorResponse() {
+        super();
+        setApiId(ApiId.ERROR_RESPONSE);
+        setError(true);
+    }
 
-	/**
-	 * A bit redundant in that it is the same as getException.getMessage()
-	 */
-	public String getErrorMsg() {
-		return errorMsg;
-	}
+    /**
+     * A bit redundant in that it is the same as getException.getMessage()
+     */
+    public String getErrorMsg() {
+        return errorMsg;
+    }
 
-	public void setErrorMsg(String errorMsg) {
-		this.errorMsg = errorMsg;
-	}
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
 
-	public Exception getException() {
-		return exception;
-	}
+    public Exception getException() {
+        return exception;
+    }
 
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-
-    @Override
-	public void parse(IPacketParser parser) {
-		// nothing to do
-	}
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
 
     @Override
-	public String toString() {
-		return super.toString() + ",errorMsg=" + this.errorMsg + ",exception=" + this.exception;
-	}
+    public void parse(IPacketParser parser) {
+        // nothing to do
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ",errorMsg=" + errorMsg + ",exception=" + exception;
+    }
 }

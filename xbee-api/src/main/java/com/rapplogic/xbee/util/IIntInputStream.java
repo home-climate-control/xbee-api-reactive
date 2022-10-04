@@ -22,6 +22,7 @@ package com.rapplogic.xbee.util;
 import java.io.IOException;
 
 public interface IIntInputStream {
-	int read() throws IOException;
-	int read(String s) throws IOException;
+    int read() throws IOException;
+
+    int read(String s) throws IOException;
 }

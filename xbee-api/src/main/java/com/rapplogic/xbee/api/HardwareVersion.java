@@ -30,20 +30,20 @@ import static com.rapplogic.xbee.api.AtCommand.Command.HV;
  */
 public class HardwareVersion {
 
-	public enum RadioType {
-		SERIES1(0x17, "Series 1"),
-		SERIES1_PRO(0x18, "Series 1 Pro"),
-		SERIES2(0x19, "Series 2"),
-		SERIES2_PRO(0x1a, "Series 2 Pro"),
-		SERIES2B_PRO(0x1e, "Series 2B Pro");
+    public enum RadioType {
+        SERIES1(0x17, "Series 1"),
+        SERIES1_PRO(0x18, "Series 1 Pro"),
+        SERIES2(0x19, "Series 2"),
+        SERIES2_PRO(0x1a, "Series 2 Pro"),
+        SERIES2B_PRO(0x1e, "Series 2B Pro");
 
         public final int id;
         public final String description;
 
-		RadioType(int id, String description) {
+        RadioType(int id, String description) {
             this.id = id;
-			this.description = description;
-		}
+            this.description = description;
+        }
 
         public static RadioType getById(int id) {
             for (var type : values()) {
@@ -53,18 +53,18 @@ public class HardwareVersion {
             }
             return null;
         }
-	}
+    }
 
-	public static RadioType parse(AtCommandResponse response) throws XBeeException {
+    public static RadioType parse(AtCommandResponse response) throws XBeeException {
 
-		if (!response.getCommand().equals(HV)) {
-			throw new IllegalArgumentException("This is only applicable to the HV command, given: " + response);
-		}
+        if (!response.getCommand().equals(HV)) {
+            throw new IllegalArgumentException("This is only applicable to the HV command, given: " + response);
+        }
 
-		if (!response.isOk()) {
-			throw new XBeeException("Attempt to query HV parameter failed");
-		}
+        if (!response.isOk()) {
+            throw new XBeeException("Attempt to query HV parameter failed");
+        }
 
         return RadioType.getById(response.getValue()[0]);
-	}
+    }
 }

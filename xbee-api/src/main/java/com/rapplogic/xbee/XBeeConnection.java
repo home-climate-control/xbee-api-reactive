@@ -18,6 +18,7 @@ import java.io.OutputStream;
  *
  */
 public interface XBeeConnection extends AutoCloseable {
-	OutputStream getOutputStream();
-	InputStream getInputStream();
+    OutputStream getOutputStream();
+
+    InputStream getInputStream();
 }

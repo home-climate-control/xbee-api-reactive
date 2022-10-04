@@ -32,43 +32,43 @@ import java.io.IOException;
  */
 public class RemoteAtResponse extends AtCommandResponse {
 
-	private XBeeAddress64 remoteAddress64;
-	private XBeeAddress16 remoteAddress16;
+    private XBeeAddress64 remoteAddress64;
+    private XBeeAddress16 remoteAddress16;
 
-	public void setRemoteAddress64(
-			XBeeAddress64 sixtyFourBitResponderAddress) {
-		this.remoteAddress64 = sixtyFourBitResponderAddress;
-	}
+    public void setRemoteAddress64(
+            XBeeAddress64 sixtyFourBitResponderAddress) {
+        remoteAddress64 = sixtyFourBitResponderAddress;
+    }
 
-	public void setRemoteAddress16(
-			XBeeAddress16 sixteenBitResponderAddress) {
-		this.remoteAddress16 = sixteenBitResponderAddress;
-	}
-
-    @Override
-	public void parse(IPacketParser parser) throws IOException {
-		this.setFrameId(parser.read("Remote AT Response Frame Id"));
-
-		this.setRemoteAddress64(parser.parseAddress64());
-
-		this.setRemoteAddress16(parser.parseAddress16());
-
-		char cmd1 = (char)parser.read("Command char 1");
-		char cmd2 = (char)parser.read("Command char 2");
-
-		this.setChar1(cmd1);
-		this.setChar2(cmd2);
-
-		int status = parser.read("AT Response Status");
-		this.setStatus(AtCommandResponse.Status.get(status));
-
-		this.setValue(parser.readRemainingBytes());
-	}
+    public void setRemoteAddress16(
+            XBeeAddress16 sixteenBitResponderAddress) {
+        remoteAddress16 = sixteenBitResponderAddress;
+    }
 
     @Override
-	public String toString() {
-		return super.toString() +
-			",remoteAddress64=" + this.remoteAddress64 +
-			",remoteAddress16=" + this.remoteAddress16;
-	}
+    public void parse(IPacketParser parser) throws IOException {
+        setFrameId(parser.read("Remote AT Response Frame Id"));
+
+        setRemoteAddress64(parser.parseAddress64());
+
+        setRemoteAddress16(parser.parseAddress16());
+
+        char cmd1 = (char) parser.read("Command char 1");
+        char cmd2 = (char) parser.read("Command char 2");
+
+        setChar1(cmd1);
+        setChar2(cmd2);
+
+        int status = parser.read("AT Response Status");
+        setStatus(AtCommandResponse.Status.get(status));
+
+        setValue(parser.readRemainingBytes());
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ",remoteAddress64=" + remoteAddress64 +
+                ",remoteAddress16=" + remoteAddress16;
+    }
 }
