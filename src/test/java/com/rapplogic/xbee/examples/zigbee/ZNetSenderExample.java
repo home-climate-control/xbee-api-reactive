@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.examples.zigbee;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -148,7 +149,7 @@ public class ZNetSenderExample {
             try {
                 ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, 10000);
                 // update frame id for next request
-                request.setFrameId(xbee.getNextFrameId());
+                request.setFrameId(FrameIdGenerator.getInstance().getNext());
 
                 log.info("received response " + response);
 
