@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
 /**
@@ -81,37 +82,22 @@ public class RemoteAtRequest extends AtCommand {
 
     /**
      * Abbreviated Constructor for setting an AT command on a remote XBee.
-     * This defaults to the DEFAULT_FRAME_ID, and true for apply changes
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
+     * This defaults to {@link FrameIdGenerator#getNext()}, and true for apply changes
      */
     @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command, int[] value) {
         // Note: the ZNET broadcast also works for series 1.  We could also use ffff but then that wouldn't work for series 2
-        this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
+        this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
     }
 
-    /**
-     * Create an instance.
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
-     */
     @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command, int value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[]{value});
+        this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[]{value});
     }
 
     /**
      * Abbreviated Constructor for querying the value of an AT command on a remote XBee.
-     * This defaults to the DEFAULT_FRAME_ID, and false for apply changes
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
+     * This defaults to {@link FrameIdGenerator#getNext()}, and false for apply changes
      */
     @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command) {
@@ -145,11 +131,11 @@ public class RemoteAtRequest extends AtCommand {
      * @param command
      */
     public RemoteAtRequest(XBeeAddress16 remoteAddress16, String command, int[] value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, value);
+        this(FrameIdGenerator.getInstance().getNext(), XBeeAddress64.BROADCAST, remoteAddress16, true, command, value);
     }
 
     public RemoteAtRequest(XBeeAddress16 remoteAddress16, String command, int value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, new int[]{value});
+        this(FrameIdGenerator.getInstance().getNext(), XBeeAddress64.BROADCAST, remoteAddress16, true, command, new int[]{value});
     }
 
     @Override

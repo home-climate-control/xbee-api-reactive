@@ -316,10 +316,6 @@ public class XBee implements IXBee {
      * <p/>
      * This method is thread-safe
      *
-     * @param xbeeRequest
-     *
-     * @return
-     * @throws XBeeException
      * @throws XBeeTimeoutException thrown if no matching response is identified
      */
     @Override
@@ -332,7 +328,7 @@ public class XBee implements IXBee {
 
             // VT: NOTE: See https://github.com/home-climate-control/xbee-api-reactive/issues/19
             // As is, this message will be logged with EVERY XBee packet sent (since using DEFAULT_FRAME_ID was a nice
-            // syntax sugar, and it's used everywhere). Later, either existing consumers will fix the situation by using the frame ID generator
+            // syntax sugar, and it's used everywhere). Later, either existing consumers will fix the situation by using FrameIdGenerator
             // and not get this warning at all, or the reactive branch will take over and this will become irrelevant.
 
             log.warn("Default frameId used, sendSynchronous() may fail to recognize correct response for request={}", xbeeRequest);

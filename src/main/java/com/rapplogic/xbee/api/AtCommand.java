@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
@@ -61,40 +62,19 @@ public class AtCommand extends XBeeRequest {
 //	    }
 //	}
 
-    /**
-     * Create an instance.
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
-     */
     @Deprecated(forRemoval = false)
     public AtCommand(String command) {
-        this(command, null, DEFAULT_FRAME_ID);
+        this(command, null, FrameIdGenerator.getInstance().getNext());
     }
 
-    /**
-     * Create an instance.
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
-     */
     @Deprecated(forRemoval = false)
     public AtCommand(String command, int value) {
-        this(command, new int[]{value}, DEFAULT_FRAME_ID);
+        this(command, new int[]{value}, FrameIdGenerator.getInstance().getNext());
     }
 
-    /**
-     * Create an instance.
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
-     */
     @Deprecated(forRemoval = false)
     public AtCommand(String command, int value[]) {
-        this(command, value, DEFAULT_FRAME_ID);
+        this(command, value, FrameIdGenerator.getInstance().getNext());
     }
 
     /**

@@ -19,11 +19,10 @@
 
 package com.rapplogic.xbee.api.zigbee;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.RemoteAtRequest;
-import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
-import com.rapplogic.xbee.api.XBeeRequest;
 
 /**
  * Uses Remote AT to send a Force Sample (IS) AT command to a remote XBee
@@ -35,13 +34,9 @@ public class ZBForceSampleRequest extends RemoteAtRequest {
 
     /**
      * Creates a Force Sample Remote AT request
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
      */
     @Deprecated(forRemoval = false)
     public ZBForceSampleRequest(XBeeAddress64 dest64) {
-        super(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, false, "IS", null);
+        super(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, false, "IS", null);
     }
 }
