@@ -19,6 +19,8 @@
 
 package com.rapplogic.xbee.api;
 
+import com.rapplogic.xbee.util.ByteUtils;
+
 import java.io.Serializable;
 
 
@@ -85,7 +87,7 @@ public abstract class XBeeRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "apiId=" + getApiId() + ",frameId=" + getFrameId();
+        return "apiId=" + getApiId() + ",frameId=" + ByteUtils.toBase16(getFrameId());
     }
 
     public void setApiId(ApiId apiId) {
