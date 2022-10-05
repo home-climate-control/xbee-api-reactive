@@ -17,6 +17,10 @@ public class FrameIdGenerator {
         return instance;
     }
 
+    public synchronized void reset() {
+        currentId = MAX_ID;
+    }
+
     public synchronized int getNext() {
 
         if (currentId == MAX_ID) {
