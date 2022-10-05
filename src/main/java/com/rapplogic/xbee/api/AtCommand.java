@@ -62,17 +62,14 @@ public class AtCommand extends XBeeRequest {
 //	    }
 //	}
 
-    @Deprecated(forRemoval = false)
     public AtCommand(String command) {
         this(command, null, FrameIdGenerator.getInstance().getNext());
     }
 
-    @Deprecated(forRemoval = false)
     public AtCommand(String command, int value) {
         this(command, new int[]{value}, FrameIdGenerator.getInstance().getNext());
     }
 
-    @Deprecated(forRemoval = false)
     public AtCommand(String command, int value[]) {
         this(command, value, FrameIdGenerator.getInstance().getNext());
     }

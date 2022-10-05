@@ -43,7 +43,6 @@ public class TxRequest16 extends TxRequestBase {
      * Keep in mind that if you programmed the destination address with X-CTU, the unit is
      * hex, so if you set MY=1234, use 0x1234.
      */
-    @Deprecated(forRemoval = false)
     public TxRequest16(XBeeAddress16 remoteAddr16, int[] payload) {
         this(remoteAddr16, FrameIdGenerator.getInstance().getNext(), Option.UNICAST, payload);
     }

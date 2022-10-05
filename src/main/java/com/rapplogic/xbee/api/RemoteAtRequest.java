@@ -84,13 +84,11 @@ public class RemoteAtRequest extends AtCommand {
      * Abbreviated Constructor for setting an AT command on a remote XBee.
      * This defaults to {@link FrameIdGenerator#getNext()}, and true for apply changes
      */
-    @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command, int[] value) {
         // Note: the ZNET broadcast also works for series 1.  We could also use ffff but then that wouldn't work for series 2
         this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
     }
 
-    @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command, int value) {
         this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[]{value});
     }
@@ -99,7 +97,6 @@ public class RemoteAtRequest extends AtCommand {
      * Abbreviated Constructor for querying the value of an AT command on a remote XBee.
      * This defaults to {@link FrameIdGenerator#getNext()}, and false for apply changes
      */
-    @Deprecated(forRemoval = false)
     public RemoteAtRequest(XBeeAddress64 dest64, String command) {
         this(dest64, command, null);
         // apply changes doesn't make sense for a query

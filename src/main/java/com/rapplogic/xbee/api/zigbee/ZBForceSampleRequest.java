@@ -35,7 +35,6 @@ public class ZBForceSampleRequest extends RemoteAtRequest {
     /**
      * Creates a Force Sample Remote AT request
      */
-    @Deprecated(forRemoval = false)
     public ZBForceSampleRequest(XBeeAddress64 dest64) {
         super(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, false, "IS", null);
     }

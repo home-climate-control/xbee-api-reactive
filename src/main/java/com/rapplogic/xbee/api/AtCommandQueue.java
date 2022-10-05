@@ -31,7 +31,6 @@ import com.homeclimatecontrol.xbee.FrameIdGenerator;
  */
 public class AtCommandQueue extends AtCommand {
 
-    @Deprecated(forRemoval = false)
     public AtCommandQueue(String command) {
         this(command, null, FrameIdGenerator.getInstance().getNext());
     }

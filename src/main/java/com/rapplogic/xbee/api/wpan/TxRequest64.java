@@ -47,7 +47,6 @@ public class TxRequest64 extends TxRequestBase {
     /**
      * 16 bit Tx Request with default frame id and awk option
      */
-    @Deprecated(forRemoval = false)
     public TxRequest64(XBeeAddress64 destination, int[] payload) {
         this(destination, FrameIdGenerator.getInstance().getNext(), Option.UNICAST, payload);
     }
