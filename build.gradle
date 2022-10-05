@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.rxtx:rxtx:2.1.7'
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation('org.assertj:assertj-core:3.20.2')
 
     errorprone 'com.google.errorprone:error_prone_core:2.15.0'
 }
