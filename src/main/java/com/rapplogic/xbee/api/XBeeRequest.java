@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.ByteUtils;
 
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public abstract class XBeeRequest implements Serializable {
      * Default frame ID.
      *
      * @deprecated Using this value will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
+     * at some point. Use {@link FrameIdGenerator#getNext()} instead. Since this is a maintenance branch, this constant will not be removed,
      * too much hassle.
      */
     @Deprecated(forRemoval = false)
