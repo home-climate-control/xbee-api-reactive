@@ -19,10 +19,10 @@
 
 package com.rapplogic.xbee.api.zigbee;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.RemoteAtRequest;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
-import com.rapplogic.xbee.api.XBeeRequest;
 
 import static com.rapplogic.xbee.api.AtCommand.Command.IS;
 
@@ -38,6 +38,6 @@ public class ZBForceSampleRequest extends RemoteAtRequest {
 	 * Creates a Force Sample Remote AT request
 	 */
 	public ZBForceSampleRequest(XBeeAddress64 dest64) {
-		super(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, false, IS, null);
+            super(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, false, IS, null);
 	}
 }

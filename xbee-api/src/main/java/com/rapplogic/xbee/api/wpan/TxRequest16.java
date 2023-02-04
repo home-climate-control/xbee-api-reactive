@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api.wpan;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
@@ -43,7 +44,7 @@ public class TxRequest16 extends TxRequestBase {
 	 * hex, so if you set MY=1234, use 0x1234.
 	 */
 	public TxRequest16(XBeeAddress16 remoteAddr16, int[] payload) {
-		this(remoteAddr16, DEFAULT_FRAME_ID, Option.UNICAST, payload);
+            this(remoteAddr16, FrameIdGenerator.getInstance().getNext(), Option.UNICAST, payload);
 	}
 
 	/**
