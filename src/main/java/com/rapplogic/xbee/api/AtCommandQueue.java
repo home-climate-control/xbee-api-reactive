@@ -19,6 +19,8 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
+
 /**
  * AT Command Queue
  * <p/>
@@ -29,16 +31,8 @@ package com.rapplogic.xbee.api;
  */
 public class AtCommandQueue extends AtCommand {
 
-    /**
-     * Create an instance.
-     *
-     * @deprecated Using {@link XBeeRequest#DEFAULT_FRAME_ID} will inevitably trigger <a href="https://github.com/home-climate-control/xbee-api-reactive/issues/19">this bug</a>
-     * at some point. Use {@link XBee#getNextFrameId()} or similar instead. Since this is a maintenance branch, this constant will not be removed,
-     * too much hassle.
-     */
-    @Deprecated(forRemoval = false)
     public AtCommandQueue(String command) {
-        this(command, null, DEFAULT_FRAME_ID);
+        this(command, null, FrameIdGenerator.getInstance().getNext());
     }
 
     /**

@@ -316,10 +316,6 @@ public class XBee implements IXBee {
      * <p/>
      * This method is thread-safe
      *
-     * @param xbeeRequest
-     *
-     * @return
-     * @throws XBeeException
      * @throws XBeeTimeoutException thrown if no matching response is identified
      */
     @Override
@@ -332,7 +328,7 @@ public class XBee implements IXBee {
 
             // VT: NOTE: See https://github.com/home-climate-control/xbee-api-reactive/issues/19
             // As is, this message will be logged with EVERY XBee packet sent (since using DEFAULT_FRAME_ID was a nice
-            // syntax sugar, and it's used everywhere). Later, either existing consumers will fix the situation by using the frame ID generator
+            // syntax sugar, and it's used everywhere). Later, either existing consumers will fix the situation by using FrameIdGenerator
             // and not get this warning at all, or the reactive branch will take over and this will become irrelevant.
 
             log.warn("Default frameId used, sendSynchronous() may fail to recognize correct response for request={}", xbeeRequest);
@@ -594,51 +590,6 @@ public class XBee implements IXBee {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    // TODO move to its own class
-    private int sequentialFrameId = 0xff;
-
-    @Override
-    public int getCurrentFrameId() {
-        // TODO move to separate class (e.g. FrameIdCounter)
-        return sequentialFrameId;
-    }
-
-    /**
-     * This is useful for obtaining a frame id when composing your XBeeRequest.
-     * It will return frame ids in a sequential manner until the maximum is reached (0xff)
-     * and it flips to 1 and starts over.
-     *
-     * Not Thread-safe
-     *
-     * @return
-     */
-    @Override
-    public int getNextFrameId() {
-        if (sequentialFrameId == 0xff) {
-            // flip
-            sequentialFrameId = 1;
-        } else {
-            sequentialFrameId++;
-        }
-
-        return sequentialFrameId;
-    }
-
-    /**
-     * Updates the frame id.  Any value between 1 and ff is valid
-     *
-     * @param val
-     * Jan 24, 2009
-     */
-    @Override
-    public void updateFrameId(int val) {
-        if (val <= 0 || val > 0xff) {
-            throw new IllegalArgumentException("invalid frame id " + val);
-        }
-
-        sequentialFrameId = val;
     }
 
     /**
