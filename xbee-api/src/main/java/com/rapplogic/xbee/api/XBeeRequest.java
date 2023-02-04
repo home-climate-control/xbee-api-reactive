@@ -19,6 +19,8 @@
 
 package com.rapplogic.xbee.api;
 
+import com.rapplogic.xbee.util.ByteUtils;
+
 /**
  * The super class of all XBee transmit packets.
  * Constructs frame data portion of an XBee packet
@@ -65,6 +67,6 @@ public abstract class XBeeRequest {
 
     @Override
     public String toString() {
-        return "apiId=" + getApiId() + ",frameId=" + getFrameId();
+        return "apiId=" + getApiId() + ",frameId=" + ByteUtils.toBase16(getFrameId());
     }
 }
