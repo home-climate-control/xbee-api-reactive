@@ -29,21 +29,21 @@ import java.io.IOException;
  */
 public class GenericResponse extends XBeeResponse {
 
-	private int genericApiId;
+    private int genericApiId;
 
-	public int getGenericApiId() {
-		return genericApiId;
-	}
+    public int getGenericApiId() {
+        return genericApiId;
+    }
 
-	public void setGenericApiId(int genericApiId) {
-		this.genericApiId = genericApiId;
-	}
+    public void setGenericApiId(int genericApiId) {
+        this.genericApiId = genericApiId;
+    }
 
     @Override
-	public void parse(IPacketParser parser) throws IOException {
-		//eat packet bytes -- they will be save to bytearray and stored in response
-		parser.readRemainingBytes();
-		// TODO gotta save it because it isn't know to the enum apiId won't
-		this.setGenericApiId(parser.getIntApiId());
-	}
+    public void parse(IPacketParser parser) throws IOException {
+        //eat packet bytes -- they will be save to bytearray and stored in response
+        parser.readRemainingBytes();
+        // TODO gotta save it because it isn't know to the enum apiId won't
+        setGenericApiId(parser.getIntApiId());
+    }
 }

@@ -38,38 +38,38 @@ import static com.rapplogic.xbee.TestPortProvider.getTestPort;
  */
 class ZNetExplicitReceiverExample {
 
-	private final Logger log = LogManager.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
 
-	@Test
+    @Test
     @Disabled("Enable only if safe to use hardware is connected")
-	void testZNetExplicitReceiverExample() throws Exception {
-		XBee xbee = new XBee();
+    void testZNetExplicitReceiverExample() throws Exception {
+        XBee xbee = new XBee();
 
-		try {
-			// replace with the com port or your receiving XBee
-			xbee.open(getTestPort(), 9600);
+        try {
+            // replace with the com port or your receiving XBee
+            xbee.open(getTestPort(), 9600);
 
-			while (true) {
+            while (true) {
 
-				try {
-					// we wait here until a packet is received.
-					XBeeResponse response = xbee.getResponse();
+                try {
+                    // we wait here until a packet is received.
+                    XBeeResponse response = xbee.getResponse();
 
-					if (response.getApiId() == ApiId.ZNET_EXPLICIT_RX_RESPONSE) {
-						ZNetExplicitRxResponse rx = (ZNetExplicitRxResponse) response;
+                    if (response.getApiId() == ApiId.ZNET_EXPLICIT_RX_RESPONSE) {
+                        ZNetExplicitRxResponse rx = (ZNetExplicitRxResponse) response;
 
-						log.info("received explicit packet response " + response.toString());
-					} else {
-						log.debug("received unexpected packet " + response.toString());
-					}
-				} catch (Throwable t) {
-					log.error("Unexpected exception", t);
-				}
-			}
-		} finally {
-			if (xbee != null && xbee.isConnected()) {
-				xbee.close();
-			}
-		}
-	}
+                        log.info("received explicit packet response " + response.toString());
+                    } else {
+                        log.debug("received unexpected packet " + response.toString());
+                    }
+                } catch (Throwable t) {
+                    log.error("Unexpected exception", t);
+                }
+            }
+        } finally {
+            if (xbee != null && xbee.isConnected()) {
+                xbee.close();
+            }
+        }
+    }
 }

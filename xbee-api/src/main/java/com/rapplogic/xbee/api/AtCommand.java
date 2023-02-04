@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
@@ -103,8 +104,8 @@ public class AtCommand extends XBeeRequest {
         }
     }
 
-	public final Command command;
-	private final int[] value;
+    public final Command command;
+    private final int[] value;
 
 //	// common i/o pin settings.  it is up to the developer to ensure the setting is applicable to the pin (e.g. not all pins support analog input)
 //	public enum IoSetting {
@@ -121,66 +122,66 @@ public class AtCommand extends XBeeRequest {
 //	    }
 //	}
 
-	public AtCommand(Command command) {
-		this(command, null, DEFAULT_FRAME_ID);
-	}
+    public AtCommand(Command command) {
+        this(command, null, FrameIdGenerator.getInstance().getNext());
+    }
 
-	public AtCommand(Command command, int value) {
-		this(command, new int[] {value}, DEFAULT_FRAME_ID);
-	}
+    public AtCommand(Command command, int value) {
+        this(command, new int[]{value}, FrameIdGenerator.getInstance().getNext());
+    }
 
-	public AtCommand(Command command, int[] value) {
-		this(command, value, DEFAULT_FRAME_ID);
-	}
+    public AtCommand(Command command, int[] value) {
+        this(command, value, FrameIdGenerator.getInstance().getNext());
+    }
 
-	/**
-	 * Warning: frameId must be > 0 for a response
-	 */
-	public AtCommand(Command command, int[] value, byte frameId) {
+    /**
+     * Warning: frameId must be > 0 for a response
+     */
+    public AtCommand(Command command, int[] value, byte frameId) {
         super(frameId);
         this.command = command;
-		this.value = value;
-	}
+        this.value = value;
+    }
 
-	@Override
+    @Override
     public int[] getFrameData() {
 
-		IntArrayOutputStream out = new IntArrayOutputStream();
+        IntArrayOutputStream out = new IntArrayOutputStream();
 
-		// api id
-		out.write(getApiId().getId());
-		// frame id
-		out.write(getFrameId());
-		// at command byte 1
-		out.write(command.code.substring(0, 1).toCharArray()[0]);
-		// at command byte 2
-		out.write(command.code.substring(1, 2).toCharArray()[0]);
+        // api id
+        out.write(getApiId().getId());
+        // frame id
+        out.write(getFrameId());
+        // at command byte 1
+        out.write(command.code.substring(0, 1).toCharArray()[0]);
+        // at command byte 2
+        out.write(command.code.substring(1, 2).toCharArray()[0]);
 
-		// int value is up to four bytes to represent command value
-		if (value != null) {
-			out.write(value);
-		}
+        // int value is up to four bytes to represent command value
+        if (value != null) {
+            out.write(value);
+        }
 
-		return out.getIntArray();
-	}
-
-    @Override
-	public ApiId getApiId() {
-		return ApiId.AT_COMMAND;
-	}
-
-	public Command getCommand() {
-		return command;
-	}
-
-	public int[] getValue() {
-		return value;
-	}
+        return out.getIntArray();
+    }
 
     @Override
-	public String toString() {
-		return super.toString() +
-			",command=" + command +
-			",value=" + (value == null ? "null" : ByteUtils.toBase16(value));
-	}
+    public ApiId getApiId() {
+        return ApiId.AT_COMMAND;
+    }
+
+    public Command getCommand() {
+        return command;
+    }
+
+    public int[] getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ",command=" + command +
+                ",value=" + (value == null ? "null" : ByteUtils.toBase16(value));
+    }
 }

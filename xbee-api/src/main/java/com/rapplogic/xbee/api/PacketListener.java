@@ -7,7 +7,7 @@ package com.rapplogic.xbee.api;
  * @author andrew
  */
 public interface PacketListener {
-	public void processResponse(XBeeResponse response);
+    public void processResponse(XBeeResponse response);
 //	public void handleError(XBeeResponse error);
 //	public void connectionClosed();
 }

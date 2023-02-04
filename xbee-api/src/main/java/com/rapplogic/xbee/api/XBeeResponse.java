@@ -32,133 +32,133 @@ import java.util.Arrays;
  */
 public abstract class XBeeResponse {
 
-	// TODO consider adding UUID to each response
+    // TODO consider adding UUID to each response
 
-	// the raw (escaped) bytes of this packet (minus start byte)
-	// this is the most compact representation of the packet;
-	// useful for sending the packet over a wire (e.g. xml),
-	// for later reconstitution
-	private int[] rawPacketBytes;
-	private int[] processedPacketBytes;
+    // the raw (escaped) bytes of this packet (minus start byte)
+    // this is the most compact representation of the packet;
+    // useful for sending the packet over a wire (e.g. xml),
+    // for later reconstitution
+    private int[] rawPacketBytes;
+    private int[] processedPacketBytes;
 
-	private ApiId apiId;
-	private int checksum;
+    private ApiId apiId;
+    private int checksum;
 
-	private XBeePacketLength length;
+    private XBeePacketLength length;
 
-	private boolean error = false;
+    private boolean error = false;
 
-	protected XBeeResponse() {
+    protected XBeeResponse() {
 
-	}
+    }
 
-	public XBeePacketLength getLength() {
-		return length;
-	}
+    public XBeePacketLength getLength() {
+        return length;
+    }
 
-	public void setLength(XBeePacketLength length) {
-		this.length = length;
-	}
+    public void setLength(XBeePacketLength length) {
+        this.length = length;
+    }
 
-	public ApiId getApiId() {
-		return apiId;
-	}
+    public ApiId getApiId() {
+        return apiId;
+    }
 
-	public void setApiId(ApiId apiId) {
-		this.apiId = apiId;
-	}
+    public void setApiId(ApiId apiId) {
+        this.apiId = apiId;
+    }
 
-	public int getChecksum() {
-		return checksum;
-	}
+    public int getChecksum() {
+        return checksum;
+    }
 
-	public void setChecksum(int checksum) {
-		this.checksum = checksum;
-	}
+    public void setChecksum(int checksum) {
+        this.checksum = checksum;
+    }
 
-	/**
-	 * Indicates an error occurred during the parsing of the packet.
-	 * This may indicate a bug in this software or in the XBee firmware.
-	 * Absence of an error does not indicate the request was successful;
-	 * you will need to inspect the status byte of the response object (if available)
-	 * to determine success.
-	 */
-	public boolean isError() {
-		return error;
-	}
+    /**
+     * Indicates an error occurred during the parsing of the packet.
+     * This may indicate a bug in this software or in the XBee firmware.
+     * Absence of an error does not indicate the request was successful;
+     * you will need to inspect the status byte of the response object (if available)
+     * to determine success.
+     */
+    public boolean isError() {
+        return error;
+    }
 
-	public void setError(boolean error) {
-		this.error = error;
-	}
+    public void setError(boolean error) {
+        this.error = error;
+    }
 
-	/**
-	 * Returns an array all bytes (as received off radio, including escape bytes) in packet except the start byte.
-	 */
-	public int[] getRawPacketBytes() {
-		return rawPacketBytes;
-	}
+    /**
+     * Returns an array all bytes (as received off radio, including escape bytes) in packet except the start byte.
+     */
+    public int[] getRawPacketBytes() {
+        return rawPacketBytes;
+    }
 
-	/**
-	 * Returns an array of all bytes (after being un-escaped) in the packet except the start byte.
-	 */
-	public int[] getProcessedPacketBytes() {
-		return processedPacketBytes;
-	}
+    /**
+     * Returns an array of all bytes (after being un-escaped) in the packet except the start byte.
+     */
+    public int[] getProcessedPacketBytes() {
+        return processedPacketBytes;
+    }
 
-	public void setRawPacketBytes(int[] packetBytes) {
-		rawPacketBytes = packetBytes;
-		processedPacketBytes = XBeePacket.unEscapePacket(packetBytes);
-	}
+    public void setRawPacketBytes(int[] packetBytes) {
+        rawPacketBytes = packetBytes;
+        processedPacketBytes = XBeePacket.unEscapePacket(packetBytes);
+    }
 
-	/**
-	 * For internal use only.  Called after successful parsing to allow subclass to do any final processing before delivery
-	 */
-	public void finish() {
+    /**
+     * For internal use only.  Called after successful parsing to allow subclass to do any final processing before delivery
+     */
+    public void finish() {
 
-	}
+    }
 
-	/**
-	 * All subclasses must implement to parse the packet from the input stream.
-	 * The subclass must parse all bytes in the packet starting after the API_ID, and
-	 * up to but not including the checksum.  Reading either more or less bytes that expected will
-	 * result in an error.
-	 */
-	protected abstract void parse(IPacketParser parser) throws IOException;
+    /**
+     * All subclasses must implement to parse the packet from the input stream.
+     * The subclass must parse all bytes in the packet starting after the API_ID, and
+     * up to but not including the checksum.  Reading either more or less bytes that expected will
+     * result in an error.
+     */
+    protected abstract void parse(IPacketParser parser) throws IOException;
 
-	@Override
-	public int hashCode() {
-		final var prime = 31;
+    @Override
+    public int hashCode() {
+        final var prime = 31;
         var result = 1;
-		result = prime * result + ((apiId == null) ? 0 : apiId.hashCode());
-		result = prime * result + checksum;
-		result = prime * result + (error ? 1231 : 1237);
-		result = prime * result + ((length == null) ? 0 : length.hashCode());
-		result = prime * result + Arrays.hashCode(rawPacketBytes);
-		return result;
-	}
+        result = prime * result + ((apiId == null) ? 0 : apiId.hashCode());
+        result = prime * result + checksum;
+        result = prime * result + (error ? 1231 : 1237);
+        result = prime * result + ((length == null) ? 0 : length.hashCode());
+        result = prime * result + Arrays.hashCode(rawPacketBytes);
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-		if (obj == null) {
+        if (obj == null) {
             return false;
         }
         if (!(obj instanceof XBeeResponse)) {
             return false;
         }
 
-		XBeeResponse other = (XBeeResponse) obj;
-		if (apiId == null) {
-			if (other.apiId != null) {
+        XBeeResponse other = (XBeeResponse) obj;
+        if (apiId == null) {
+            if (other.apiId != null) {
                 return false;
             }
-		} else if (!apiId.equals(other.apiId)) {
+        } else if (!apiId.equals(other.apiId)) {
             return false;
         }
 
-		if (checksum != other.checksum) {
+        if (checksum != other.checksum) {
             return false;
         }
 
@@ -166,11 +166,11 @@ public abstract class XBeeResponse {
             return false;
         }
 
-		if (length == null) {
-			if (other.length != null) {
+        if (length == null) {
+            if (other.length != null) {
                 return false;
             }
-		} else if (!length.equals(other.length)) {
+        } else if (!length.equals(other.length)) {
             return false;
         }
 
@@ -179,9 +179,9 @@ public abstract class XBeeResponse {
 
     @Override
     public String toString() {
-		return "apiId=" + apiId +
-			",length=" + (length == null ? "null" : length.get16BitValue()) +
-			",checksum=" + ByteUtils.toBase16(checksum) +
-			",error=" + error;
-	}
+        return "apiId=" + apiId +
+                ",length=" + (length == null ? "null" : length.get16BitValue()) +
+                ",checksum=" + ByteUtils.toBase16(checksum) +
+                ",error=" + error;
+    }
 }

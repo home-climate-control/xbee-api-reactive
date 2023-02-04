@@ -2,8 +2,10 @@ package com.homeclimatecontrol.xbee;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.RemoteAtRequest;
+import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.api.XBeePacket;
+import com.rapplogic.xbee.api.XBeeRequest;
 import com.rapplogic.xbee.util.ByteUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +52,7 @@ class XbeeApiTest {
     @Test
     void packetEscape() {
 
-        final int[] knownGoodPacket = new int[]{
+        int[] knownGoodPacket = new int[]{
                 0x7E, // Start delimiter
                 0x00, // Length MSB
                 0x0F, // Length LSB
@@ -78,7 +80,7 @@ class XbeeApiTest {
         try {
 
             XBeeAddress64 xbeeAddress = AddressParser.parse("0013A200.4062AC98");
-            RemoteAtRequest request = new RemoteAtRequest(xbeeAddress, D0);
+            RemoteAtRequest request = new RemoteAtRequest(XBeeRequest.DEFAULT_FRAME_ID, xbeeAddress, XBeeAddress16.ZNET_BROADCAST, true, D0, null);
 
             request.setApplyChanges(true);
 

@@ -29,10 +29,10 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public abstract class XBeeAddress {
 
-	public abstract int[] getAddress();
+    public abstract int[] getAddress();
 
-	@Override
+    @Override
     public String toString() {
-		return ByteUtils.toBase16(this.getAddress());
-	}
+        return ByteUtils.toBase16(getAddress());
+    }
 }

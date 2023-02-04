@@ -31,29 +31,29 @@ import java.util.List;
  */
 public interface IXBee extends AutoCloseable {
 
-	void open(String port, int baudRate) throws XBeeException;
+    void open(String port, int baudRate) throws XBeeException;
 
-	void addPacketListener(PacketListener packetListener);
+    void addPacketListener(PacketListener packetListener);
 
-	void removePacketListener(PacketListener packetListener);
+    void removePacketListener(PacketListener packetListener);
 
-	void sendPacket(XBeePacket packet) throws IOException;
+    void sendPacket(XBeePacket packet) throws IOException;
 
-	void sendPacket(int[] packet)  throws IOException;
+    void sendPacket(int[] packet) throws IOException;
 
-	void sendAsynchronous(XBeeRequest xbeeRequest) throws XBeeException;
+    void sendAsynchronous(XBeeRequest xbeeRequest) throws XBeeException;
 
-	XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, Duration timeout) throws XBeeException;
+    XBeeResponse sendSynchronous(XBeeRequest xbeeRequest, Duration timeout) throws XBeeException;
 
-	XBeeResponse getResponse() throws XBeeException;
+    XBeeResponse getResponse() throws XBeeException;
 
-	XBeeResponse getResponse(Duration timeout) throws XBeeException;
+    XBeeResponse getResponse(Duration timeout) throws XBeeException;
 
-	byte getNextFrameId();
+    byte getNextFrameId();
 
-	boolean isConnected();
+    boolean isConnected();
 
-	void clearResponseQueue();
+    void clearResponseQueue();
 
-	List<XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException;
+    List<XBeeResponse> collectResponses(Duration wait, CollectTerminator terminator) throws XBeeException;
 }

@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api.wpan;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
@@ -47,7 +48,7 @@ public class TxRequest64 extends TxRequestBase {
 	 * 16 bit Tx Request with default frame id and awk option
 	 */
 	public TxRequest64(XBeeAddress64 destination, int[] payload) {
-		this(destination, DEFAULT_FRAME_ID, Option.UNICAST, payload);
+            this(destination, FrameIdGenerator.getInstance().getNext(), Option.UNICAST, payload);
 	}
 
 	/**

@@ -114,72 +114,72 @@ import static com.rapplogic.xbee.TestPortProvider.getTestPort;
  */
 class ZNetSenderExample {
 
-	private final Logger log = LogManager.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
 
-	@Test
+    @Test
     @Disabled("Enable only if safe to use hardware is connected")
-	void testZNetSenderExample() throws XBeeException {
+    void testZNetSenderExample() throws XBeeException {
 
-		var xbee = new XBee();
+        var xbee = new XBee();
 
         // An XBee with Coordinator firmware must be connected to this port
-		xbee.open(getTestPort(), 9600);
-		// coord (21A7)
-		//XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xfe);
+        xbee.open(getTestPort(), 9600);
+        // coord (21A7)
+        //XBeeAddress64 addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xfe);
 
-		// replace with end device's 64-bit address (SH + SL)
-		// router (firmware 23A7)
+        // replace with end device's 64-bit address (SH + SL)
+        // router (firmware 23A7)
         var addr64 = new XBeeAddress64(0, 0x13, 0xa2, 0, 0x40, 0x8b, 0x98, 0xff);
 
-		// create an array of arbitrary data to send
-		int[] payload = new int[] { 'X', 'B', 'e', 'e' };
+        // create an array of arbitrary data to send
+        int[] payload = new int[]{'X', 'B', 'e', 'e'};
 
-		// first request we just send 64-bit address.  we get 16-bit network address with status response
+        // first request we just send 64-bit address.  we get 16-bit network address with status response
         var request = new ZNetTxRequest(addr64, payload);
 
-		log.debug("zb request is " + Arrays.toString(request.getXBeePacket().getByteArray()));
+        log.debug("zb request is " + Arrays.toString(request.getXBeePacket().getByteArray()));
 
-		log.info("sending tx " + request);
+        log.info("sending tx " + request);
 
-		while (true) {
-			log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getByteArray()));
+        while (true) {
+            log.info("request packet bytes (base 16) " + ByteUtils.toBase16(request.getXBeePacket().getByteArray()));
 
-			long start = System.currentTimeMillis();
-			//log.info("sending tx packet: " + request.toString());
+            long start = System.currentTimeMillis();
+            //log.info("sending tx packet: " + request.toString());
 
-			try {
-				ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
-				// update frame id for next request
+            try {
+                ZNetTxStatusResponse response = (ZNetTxStatusResponse) xbee.sendSynchronous(request, Duration.ofSeconds(10));
+                // update frame id for next request
 
                 request = new ZNetTxRequest(xbee.getNextFrameId(), addr64, payload);
 
-				log.info("received response " + response);
+                log.info("received response " + response);
 
-				//log.debug("status response bytes:" + ByteUtils.toBase16(response.getPacketBytes()));
+                //log.debug("status response bytes:" + ByteUtils.toBase16(response.getPacketBytes()));
 
-				if (response.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
-					// the packet was successfully delivered
-					if (response.getRemoteAddress16().equals(XBeeAddress16.ZNET_BROADCAST)) {
-						// specify 16-bit address for faster routing?.. really only need to do this when it changes
-						request.setDestAddr16(response.getRemoteAddress16());
-					}
-				} else {
-					// packet failed.  log error
-					// it's easy to create this error by unplugging/powering off your remote xbee.  when doing so I get: packet failed due to error: ADDRESS_NOT_FOUND
-					log.error("packet failed due to error: " + response.getDeliveryStatus());
-				}
+                if (response.getDeliveryStatus() == ZNetTxStatusResponse.DeliveryStatus.SUCCESS) {
+                    // the packet was successfully delivered
+                    if (response.getRemoteAddress16().equals(XBeeAddress16.ZNET_BROADCAST)) {
+                        // specify 16-bit address for faster routing?.. really only need to do this when it changes
+                        request.setDestAddr16(response.getRemoteAddress16());
+                    }
+                } else {
+                    // packet failed.  log error
+                    // it's easy to create this error by unplugging/powering off your remote xbee.  when doing so I get: packet failed due to error: ADDRESS_NOT_FOUND
+                    log.error("packet failed due to error: " + response.getDeliveryStatus());
+                }
 
-				// I get the following message: Response in 75, Delivery status is SUCCESS, 16-bit address is 0x08 0xe5, retry count is 0, discovery status is SUCCESS
-				log.info("Response in " + (System.currentTimeMillis() - start) + ", Delivery status is " + response.getDeliveryStatus() + ", 16-bit address is " + ByteUtils.toBase16(response.getRemoteAddress16().getAddress()) + ", retry count is " +  response.getRetryCount() + ", discovery status is " + response.getDeliveryStatus());
-			} catch (XBeeTimeoutException e) {
-				log.warn("request timed out");
-			}
+                // I get the following message: Response in 75, Delivery status is SUCCESS, 16-bit address is 0x08 0xe5, retry count is 0, discovery status is SUCCESS
+                log.info("Response in " + (System.currentTimeMillis() - start) + ", Delivery status is " + response.getDeliveryStatus() + ", 16-bit address is " + ByteUtils.toBase16(response.getRemoteAddress16().getAddress()) + ", retry count is " + response.getRetryCount() + ", discovery status is " + response.getDeliveryStatus());
+            } catch (XBeeTimeoutException e) {
+                log.warn("request timed out");
+            }
 
-			try {
-				// wait a bit then send another packet
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+            try {
+                // wait a bit then send another packet
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 }
