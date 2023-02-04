@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
 /**
@@ -71,20 +72,20 @@ public class RemoteAtRequest extends AtCommand {
 
     /**
      * Abbreviated Constructor for setting an AT command on a remote XBee.
-     * This defaults to the DEFAULT_FRAME_ID, and true for apply changes
+     * This defaults to {@link FrameIdGenerator#getNext()} and {@code true} for "apply changes".
      */
     public RemoteAtRequest(XBeeAddress64 dest64, Command command, int[] value) {
         // Note: the ZNET broadcast also works for series 1.  We could also use ffff but then that wouldn't work for series 2
-        this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
+        this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, value);
     }
 
     public RemoteAtRequest(XBeeAddress64 dest64, Command command, int value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[]{value});
+        this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, true, command, new int[]{value});
     }
 
     /**
      * Abbreviated Constructor for querying the value of an AT command on a remote XBee.
-     * This defaults to the DEFAULT_FRAME_ID, and false for apply changes
+     * This defaults to {@link FrameIdGenerator#getNext()} and {@code false} for "apply changes".
      */
     public RemoteAtRequest(XBeeAddress64 dest64, Command command) {
         this(dest64, command, null);
@@ -108,14 +109,14 @@ public class RemoteAtRequest extends AtCommand {
      * Creates a Remote AT instance for setting the value of an AT command on a remote XBee,
      * by specifying the 16-bit address and value.  Uses the broadcast address for 64-bit address (00 00 00 00 00 00 ff ff)
      * <p/>
-     * Defaults are: frame id: 1, applyChanges: true
+     * Defaults are: {@link FrameIdGenerator#getNext()}, applyChanges: true
      */
     public RemoteAtRequest(XBeeAddress16 remoteAddress16, Command command, int[] value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, value);
+        this(FrameIdGenerator.getInstance().getNext(), XBeeAddress64.BROADCAST, remoteAddress16, true, command, value);
     }
 
     public RemoteAtRequest(XBeeAddress16 remoteAddress16, Command command, int value) {
-        this(XBeeRequest.DEFAULT_FRAME_ID, XBeeAddress64.BROADCAST, remoteAddress16, true, command, new int[]{value});
+        this(FrameIdGenerator.getInstance().getNext(), XBeeAddress64.BROADCAST, remoteAddress16, true, command, new int[]{value});
     }
 
     @Override

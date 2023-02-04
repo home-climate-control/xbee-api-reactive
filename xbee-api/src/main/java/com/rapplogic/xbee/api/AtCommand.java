@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IntArrayOutputStream;
 
@@ -122,15 +123,15 @@ public class AtCommand extends XBeeRequest {
 //	}
 
     public AtCommand(Command command) {
-        this(command, null, DEFAULT_FRAME_ID);
+        this(command, null, FrameIdGenerator.getInstance().getNext());
     }
 
     public AtCommand(Command command, int value) {
-        this(command, new int[]{value}, DEFAULT_FRAME_ID);
+        this(command, new int[]{value}, FrameIdGenerator.getInstance().getNext());
     }
 
     public AtCommand(Command command, int[] value) {
-        this(command, value, DEFAULT_FRAME_ID);
+        this(command, value, FrameIdGenerator.getInstance().getNext());
     }
 
     /**

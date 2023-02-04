@@ -19,6 +19,7 @@
 
 package com.rapplogic.xbee.api.zigbee;
 
+import com.homeclimatecontrol.xbee.FrameIdGenerator;
 import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
@@ -129,7 +130,7 @@ public class ZNetTxRequest extends XBeeRequest {
 	 * Abbreviated constructor for sending a unicast TX packet.
 	 */
 	public ZNetTxRequest(XBeeAddress64 dest64, int[] payload) {
-		this(XBeeRequest.DEFAULT_FRAME_ID, dest64, XBeeAddress16.ZNET_BROADCAST, ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, Option.UNICAST, payload);
+            this(FrameIdGenerator.getInstance().getNext(), dest64, XBeeAddress16.ZNET_BROADCAST, ZNetTxRequest.DEFAULT_BROADCAST_RADIUS, Option.UNICAST, payload);
 	}
 
     /**
