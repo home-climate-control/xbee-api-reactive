@@ -2,6 +2,7 @@
 
 assertj = "3.25.3"
 errorprone = "2.26.1"
+gradle-dependency-analysis = "1.30.0"
 jacoco = "0.8.11"
 junit5 = "5.10.2"
 log4j = "2.20.0"
@@ -28,4 +29,7 @@ rxtx = { module = "org.rxtx:rxtx", version.ref = "rxtx" }
 [plugins]
 
 errorprone = { id = "net.ltgt.errorprone", version = "3.1.0" }
+gradle-dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "gradle-dependency-analysis" }
+gradle-doctor = { id = "com.osacky.doctor", version = "0.9.2" }
+gradle-versions = { id = "com.github.ben-manes.versions", version = "0.51.0"}
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

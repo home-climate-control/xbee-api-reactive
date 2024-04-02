@@ -3,6 +3,10 @@ plugins {
     jacoco
     alias(libs.plugins.errorprone)
     alias(libs.plugins.sonarqube)
+
+    alias(libs.plugins.gradle.versions)
+    alias(libs.plugins.gradle.dependency.analysis)
+    alias(libs.plugins.gradle.doctor)
 }
 
 sonarqube {
