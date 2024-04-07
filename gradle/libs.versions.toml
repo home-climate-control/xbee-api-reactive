@@ -9,7 +9,7 @@ log4j = "2.20.0"
 mockito = "5.11.0"
 reactor = "3.6.4"
 rxtx = "2.1.7"
-sonarqube = "4.4.1.3373"
+sonarqube = "5.0.0.4638"
 
 [libraries]
 
