@@ -11,7 +11,7 @@ plugins {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "home-climate-control_xbee-api")
+        property("sonar.projectKey", "home-climate-control_xbee-api-reactive")
         property("sonar.organization", "home-climate-control")
         property("sonar.host.url", "https://sonarcloud.io")
     }
