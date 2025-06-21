@@ -1,12 +1,12 @@
 [versions]
 
 assertj = "3.25.3"
-errorprone = "2.26.1"
+errorprone = "2.38.0"
 gradle-dependency-analysis = "1.30.0"
-jacoco = "0.8.11"
+jacoco = "0.8.13"
 junit5 = "5.10.2"
 log4j = "2.20.0"
-mockito = "5.11.0"
+mockito = "5.18.0"
 reactor = "3.6.4"
 rxtx = "2.1.7"
 sonarqube = "5.0.0.4638"
