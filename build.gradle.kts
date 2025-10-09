@@ -72,3 +72,7 @@ subprojects {
         useJUnitPlatform()
     }
 }
+
+repositories {
+    mavenCentral()
+}
