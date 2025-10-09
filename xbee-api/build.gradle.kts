@@ -17,4 +17,5 @@ dependencies {
     testImplementation(libs.reactor.tools)
 
     testRuntimeOnly(rootProject.libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.platform.launcher)
 }
